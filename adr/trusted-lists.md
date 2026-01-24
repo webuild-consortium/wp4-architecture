@@ -38,4 +38,5 @@ Once merged, this is our consortium’s decision. This does not mean all
 participants agree it is the best possible decision. In the decision
 making process, we have heard the following advice.
 
-- yyyy-mm-dd, Name, Affiliation, Country: OK or summary of advice
+- 2025-10-27, Leif Johansson, Sunet, Sweden: OK
+- 2025-10-27, Giuseppe De Marco, Dipartimento per la trasformazione digitale, Italy: OK

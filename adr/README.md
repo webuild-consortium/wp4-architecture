@@ -2,10 +2,14 @@
 
 [WE BUILD](https://www.webuildconsortium.eu/) maintains a lightweight architecture decision record (ADR) for each software-related decision affecting interoperability.
 
+Propose new ADRs using the [template](_template.md). Announce them to the [Architecture group](https://portal.webuildconsortium.eu/group/architecture) in the Portal to get feedback to understand the consortium’s opinion.
+
 ## ADR overview
 
 <!--BEGIN INDEX-->
-1. [You could be first 🚀](_template.md)
+1. [Publish consortium trusted lists](trusted-lists.md)
+2. [Baseline protocols](base-protocols.md)
+3. [Specify PID and eAA formats](document-formats.md)
 <!--END INDEX-->
 
 ## ADR process for WE BUILD
