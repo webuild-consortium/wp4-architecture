@@ -8,6 +8,7 @@ To stay synchronized, we use a technical governance model that relies on consens
 - Purpose: The ADR process is where we formally capture and justify significant technical choices - like which specific protocols and formats to use. Instead of having these decisions buried in a slide deck or a long email chain, we document the rationale and context so that everyone can understand the "Why" behind a choice.
 - Classification: We maintain a lightweight ADR for any software-related decision that affects how different systems work together (interoperability). This ensures we stay aligned with external rules like the eIDAS Regulation and the EUDI Architecture Reference Framework (ARF).
 - Lifecycle: ADRs are managed on GitHub ([webuild-consortium/wp4-architecture](https://github.com/webuild-consortium/wp4-architecture/)). They move from a "Proposed" state to "Accepted" once the Architecture Group and relevant stakeholders reach a consensus.
+
 <!-- TODO Remove mermaid until I have fixed it in Pages - insert temp picture-->
 ![ADR](../images/ADR_temp.png)
 
