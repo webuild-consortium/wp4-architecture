@@ -1,10 +1,19 @@
-# 3. Architecture Overview
+# Architecture Overview
 
-## 3.1 Conceptual Architecture
+## The Ecosystem at a Glance
 Description of wallet, issuer, verifier, registry, QTSP.
 
-## 3.2 System Landscape
+## System Landscape
 High-level diagram and responsibilities.
 
-## 3.3 Cross-Cutting Concerns
+## Common Rules for Everyone
 Security, error handling, auditability, portability.
+
+## Wallet Implementation Models 
+To be authored by Wallet Group. Describes the techn stacks, such as cloud-based vs. device-based solutions, and the differences between EUDIW for Natural Person and European Business Wallets for  economic operators.
+### The EUDI Wallet for Natural Person
+![CS Process and Roles](../images/EUDIWconcept.png)
+### The Business Wallet for Economic Operators
+![CS Process and Roles](../images/EBWconcept.png)
+
+
