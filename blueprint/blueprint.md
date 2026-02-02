@@ -1,7 +1,4 @@
 # WE BUILD – Architecture & Integration Blueprint (D4.1)
-This document is composed of multiple sections and can be [viewed as html](https://webuild-consortium.github.io/wp4-architecture/blueprint/blueprint.html). 
-Each section is maintained as a standalone Markdown file, it is not meant to be viewed from this page.
-
 {% include_relative 01-executive-summary.md %}
 
 ## Table of Contents
