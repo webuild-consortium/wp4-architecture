@@ -49,3 +49,4 @@ making process, we have heard the following advice.
 
 - [2025-11-17, Michelle Ludovici, Digg, Sweden](https://github.com/webuild-consortium/wp4-architecture/pull/27#discussion_r2534441610): OK, but this does not yet solve the question: which unique identifier should be used in the LPID and EBW-OID? Proposing to use the European Unique Identifier from (EU) 2017/1132.
 - [2025-11-18, Ronald Koenig, Spherity, Germany](https://github.com/webuild-consortium/wp4-architecture/pull/27): Only acceptable if it does not preclude the use of more comprehensive “identity attestations” (EUCC, KYC, etc.).
+- [2026-02-02, Erwin Nieuwlaar, KvK, the Netherlands](https://github.com/webuild-consortium/wp4-architecture/pull/27#issuecomment-3835190788): The PID/EBW-OID group agrees the EBW-OID should consist of a minimal and stable set of fields. There is still discussion about whether EBW-OID is necessary for a functional EBW (out of scope for this ADR).
