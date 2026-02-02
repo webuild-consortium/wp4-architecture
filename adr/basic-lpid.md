@@ -10,7 +10,7 @@ In BU3 on foreign tax declaration, an issue on [Identifiers in LPID](https://por
 
 In the Annex of [(EU) 2024/2977](https://data.europa.eu/eli/reg_impl/2024/2977/oj), Table 3 specifies mandatory PID for the legal person in line with the “bootstrap identity”, and Table 4 specifies optional PID for the legal person that leans more towards the “dynamic reference framework”.
 
-In [COM(2025) 838](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0838), Article 8(5) the EBW-OID is specified to contain just the name and unique identifier in accordance with Article 9.
+In [COM(2025) 838 final](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0838), Article 8(5) the EBW-OID is specified to contain just the name and unique identifier in accordance with Article 9.
 Furthermore, in Article 20, LPID may become irrelevant under EU Digital Identity.
 
 The implementation choice affects what other electronic attestations of attributes may be needed for use cases such as BU3.
