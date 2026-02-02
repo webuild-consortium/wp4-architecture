@@ -25,7 +25,8 @@ To achieve cross-border interoperability within WE BUILD, several options are po
 
 ## Decision
 
-Rely on basic LPID and EBW-OID everywhere. Develop use cases under the assumption that other attributes require additional electronic attestations.
+Rely on basic LPID and EBW-OID everywhere as a minimum identity attestation which must be supported by everyone. Develop use cases under the assumption that other attributes require additional electronic attestations.
+These other attributes can be used both for identifying the economic operator and for verifying additional claims.
 
 ## Consequences
 
@@ -44,4 +45,4 @@ Once merged, this is our consortium’s decision. This does not mean all
 participants agree it is the best possible decision. In the decision
 making process, we have heard the following advice.
 
-- yyyy-mm-dd, Name, Affiliation, Country: OK or summary of advice
+- [2025-11-18, Ronald Koenig, Spherity, Germany](https://github.com/webuild-consortium/wp4-architecture/pull/27): Only acceptable if it does not preclude the use of more comprehensive “identity attestations” (EUCC, KYC, etc.).
