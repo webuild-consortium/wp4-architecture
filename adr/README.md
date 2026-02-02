@@ -9,7 +9,8 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 <!--BEGIN INDEX-->
 1. [Publish consortium trusted lists](trusted-lists.md)
 2. [Baseline protocols](base-protocols.md)
-3. [Specify PID and eAA formats](document-formats.md)
+3. [Specify PID and EAA formats](document-formats.md)
+4. [Deliver business wallet data using QERDS](build-qerds.md)
 <!--END INDEX-->
 
 ## ADR process for WE BUILD
