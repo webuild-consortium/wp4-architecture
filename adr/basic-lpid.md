@@ -39,10 +39,13 @@ With this decision, it becomes more difficult to test the extended LPID and EBW-
 
 To manage the risk that this approach differs from EU Business Wallet legislation, WE BUILD should take the definition of LPID and EBW-OID in account in its upcoming definition of an EU Business Wallet.
 
+To get started with the minimum identification data, the WP4 PID/LPID group should specify which unique identifier(s) to use.
+
 ## Advice
 
 Once merged, this is our consortium’s decision. This does not mean all
 participants agree it is the best possible decision. In the decision
 making process, we have heard the following advice.
 
+- [2025-11-17, Michelle Ludovici, Digg, Sweden](https://github.com/webuild-consortium/wp4-architecture/pull/27#discussion_r2534441610): OK, but this does not yet solve the question: which unique identifier should be used in the LPID and EBW-OID? Proposing to use the European Unique Identifier from (EU) 2017/1132.
 - [2025-11-18, Ronald Koenig, Spherity, Germany](https://github.com/webuild-consortium/wp4-architecture/pull/27): Only acceptable if it does not preclude the use of more comprehensive “identity attestations” (EUCC, KYC, etc.).
