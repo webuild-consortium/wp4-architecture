@@ -1,7 +1,8 @@
 # Trust, Security & Governance
 
 ## Trust Ecosystem
-Relation to QTSP and Trust Registry.
+### Relation to QTSP and Trust Registry.
+Todo: We could describe how WE BUILD will adopt the QEAA Trust Service Policy document structure. There are currently the Attestation Rulebooks, Attestion Schemas and Attestation Catalogues specified by the EC, whilst ETSI TS 119 471 has specified the QEAA Trust Service Policy and the EAAPs. Furthermore, EU CIR 2025/1569 specifies attestation schemes and catalogues. It could be useful to describe how WE BUILD will structure and cross-reference the Rulebooks, Schemas and EAAPs.
 
 ## Security Measures
 Signatures, authentication, key lifecycle.
