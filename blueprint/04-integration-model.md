@@ -63,3 +63,6 @@ To be authored by Architecture and Wallets. This is the "Receiving" flow for Rel
 
 ## Signature and Seal Integration 
 To be authored by Group 6 (QTSP). Explains the technical flows for wallet-centric and QTSP-centric (remote) signing/sealing, allowing individuals to sign on behalf of a company with full legal effect
+
+## Secure communication channel
+To be authored by the QTSP group in consultation with the Architecture and Wallets groups. Explains the technical flows for usage of the qualified electronic registered delivery service (QERDS).
