@@ -9,7 +9,12 @@ Technical development follows mandatory rules such as the Article 5 revocation r
 EBW Proposal: COM(2025) 838 proposal. Explain that the EBW is intended for economic operators and public sector bodies to exchange data with full legal effect. CIR to come.
 ARF
 Standardisation work -->
+### Standardisation
+Todo: Reference the EC EUDIW Technical Specifications and link to the [EC EUDIW TS page](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/tree/main/docs/technical-specifications).
 
+Furthermore, it could make sense to reference [ETSI STF 705](https://portal.etsi.org/STFs/ToR/ToR705_EUDIW-Stan-project_with_Annexes.docx) that is based on a standardization request from the EC. ETSI will create and update circa 80 standards for the EUDIW and QTSPs.
+
+WE BUILD could benefit from evaluating these EC TS and ETSI standards.
 
 ## Architectural Principles
 - **Interoperability:** This is our primary goal, ensuring that different wallet providers, issuers, and verifiers can communicate seamlessly across borders and different sectors. 
