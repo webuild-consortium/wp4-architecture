@@ -1,6 +1,6 @@
 # Executive Summary & Project Context
 ## Background
-[WE BUILD](https://webuildconsortium.eu/) is a European project with a very practical mission: to use the European Digital Identity (EUDI) Wallet and European Business Wallet (EBW) to make life easier, faster, and cheaper for businesses and citizens across the EU. Our goal is to strengthen European competitiveness by removing the "red tape" that usually slows down cross-border transactions, like opening a bank account or registering a company branch in another country.
+[WE BUILD](https://webuildconsortium.eu/) is a [Large Scale Pilot (LSP)](https://ec.europa.eu/digital-building-blocks/sites/spaces/EUDIGITALIDENTITYWALLET/pages/694487808/What+are+the+Large+Scale+Pilot+Projects) funded by the European Commission. It is a European project with a very practical mission: to use the European Digital Identity (EUDI) Wallet and European Business Wallet (EBW) to make life easier, faster, and cheaper for businesses and citizens across the EU. Our goal is to strengthen European competitiveness by removing the "red tape" that usually slows down cross-border transactions, like opening a bank account or registering a company branch in another country.
 
 WE BUILD is strictly use-case driven. We have 13 specific use cases divided into three main areas:
 - Business (WP2): Handling things like company registration and verified mandates.
