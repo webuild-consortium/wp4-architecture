@@ -1,0 +1,79 @@
+@startuml
+
+participant User as U
+participant OS
+participant "Wallet App" as WA
+
+participant "Wallet Provider" as WP
+participant HSM
+
+participant "Pid Issuer" as PI
+participant IDP
+
+group Wallet installation 
+note over U: 1) Download app and installation from official store
+U-> OS:
+note over OS: 2) control genuinity
+
+
+end group
+
+group Wallet initiation
+U<- OS: 
+note over U: 3) launch app
+U->WA: 
+note over WA: 4) Device check
+WA->OS: 
+note over OS: 5) store device keys
+OS->WA:
+WA->WP: 
+note over WP: 6) device validation of key pairs
+note over WP: 7) issue WIA
+WP-> WA:
+note over WA: 8) store WIA 
+WA->U: 
+note over U: 9) enter PIN 
+U-> WA
+note over WA: 10) Setup Wallet Lock
+WA-> WP: 
+note over WP: 11) Wallet registration 
+WP-->HSM: 
+note over HSM: 12) optional Key generation 
+HSM-->WP:
+note over WP: 13) Issue WUA 
+WP->WA 
+
+end 
+
+group PID Issuance
+WA->U: 
+note over U: 14) select PID Provider (1...N)
+note over U: 15) asks for Wallet PIN?
+U-> WA:
+WA->PI: WIA 
+note over PI: 16) WIA is sent to the PI \n to authenticate the WA \n and check the WP trusted root.
+
+group ID proofing based on existing eID at LoA High
+PI-> IDP:
+note over IDP: 17) User authentication
+IDP-> U: Trusted channel
+note over U: 18) User ID check (NFC) with national eID card on LoA High
+U->IDP: Trusted channel
+note over WA: 19) respond with access token
+IDP-> WA: 
+end 
+
+note over WA: 20) Use access token and WUA to request PID
+WA-> PI: 
+note over PI: 21) Issue PID credentials
+note over PI: 22) PI stores revocation details 
+note over PI: 23) PI signs PID
+PI->WA: 
+note over WA: 24) send PID credentials 
+WA-->U: 
+note over U: 25) User accepts PID alternatively is informed that the PID is stored
+U-->WP: 
+note over WP: 26) store credential 
+end 
+
+@enduml

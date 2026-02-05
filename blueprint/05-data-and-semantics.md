@@ -1,10 +1,13 @@
-# 5. Data and Semantics Architecture
+# The Information Inside the Wallet (Data & Content)
 
-## 5.1 Semantic Alignment Principles
-Coordination with T4.2.
+## How We Align Our Information
+Semantics Group (and everybody else)
 
-## 5.2 Data Models in Scope
-Overview only.
+## The Data Shared
+Overview only. QEAA, EAA like micro-credentials or sector specific?  
 
-## 5.3 Dependencies on D4.3
+## Credential Metadata and Schemas
+Semantics Group. Provides the "dictionary" of attributes for things like "official name" or "representation rights" so all use cases use the same concepts. 
+
+## Dependencies on D4.3
 How this blueprint shapes later specifications.

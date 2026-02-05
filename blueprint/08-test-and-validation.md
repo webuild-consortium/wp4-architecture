@@ -1,10 +1,10 @@
-# 8. Test & Validation Alignment (T4.5)
+# Proving It Works (Testing & The ITB)
 
-## 8.1 Testing Strategy
+## Testing Strategy
 How architecture supports test coverage.
 
-## 8.2 Traceability Model
+## The Requirements Checklist
 Blueprint → Conformance Specification → Test Cases
 
-## 8.3 Expected Inputs to ITB
+## What You Need to Give the ITB
 What the testing group needs.

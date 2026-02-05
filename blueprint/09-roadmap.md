@@ -1,5 +1,5 @@
-# 9. Roadmap & Future Evolution
+# What’s Next & Scaling Up
 
 - Deliverables timeline
-- Expected updates after D4.3 and D4.4
-- Maintenance plan after project end
+- Expected updates 
+- Maintenance plan after project end?
