@@ -349,7 +349,7 @@ Trust and security responsibilities are split between **Member States**, the **E
 |----------------|-------------------|-------|--------|
 | Registration of PID Providers, Attestation Providers, Relying Parties | Member State Registrar | WE BUILD (mock Registrar) | MS Registrar or WE BUILD |
 | Registry publication and common API (e.g. TS5, TS6) | Member State | WE BUILD (the WP4 reference registry or an other WP4 registry listed in LoTL) | Member State or WE BUILD |
-| Access certificate issuance | Access Certificate Authority (notified by MS to Commission) | WE BUILD (mock Access CA) | Access CA (notified) or WE BUILD |
+| Access certificate issuance | Access Certificate Authority (notified by MS to Commission) | WE BUILD (Access CAs listed in LoTL) | Access CA (notified) or WE BUILD (Access CAs listed in LoTL) |
 | Optional registration certificates | Provider of Registration Certificates (notified by MS to Commission) | WE BUILD (mock RegCert Provider) | RegCert Provider (notified) or WE BUILD |
 | Compilation and publication of Wallet Provider, PID Provider, Access CA, RegCert Provider Trusted Lists | European Commission | WE BUILD (reference TLs) | European Commission or WE BUILD |
 | Compilation and publication of national EAA Provider TLs and MS QTSP Trusted Lists for QEAA | Member State Trusted List Provider | WE BUILD (mock MS TLP) | MS TLP or WE BUILD |
