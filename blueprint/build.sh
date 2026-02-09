@@ -1,3 +1,22 @@
+#!/usr/bin/env bash
+#
+
+
+# Set up Ruby environment to make kramdoc/asciidoc available:
+
+export GEM_HOME="$HOME/gems"
+export PATH="$HOME/gems/bin:$PATH"
+bundle
+
+# Set up Python environment
+if [ ! -d ".venv" ]; then
+    python3 -m venv .venv
+    . .venv/bin/activate
+    pip install -r ../requirements.txt
+else
+    . .venv/bin/activate
+fi
+
 rm -f main.md
 echo '# WE BUILD – Architecture & Integration Blueprint (D4.1)' >> main.md
 cat 01-executive-summary.md >> main.md
