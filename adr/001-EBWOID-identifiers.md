@@ -16,8 +16,9 @@ In general, there are two ways in which the verifier can collect the data:
 2.1 In particular, the verifying bank would need to perform attribute matching across wallets to ensure that the identities represented in credentials issued to different wallets refer to the same individual. 
 2.2 A combined proof across wallets  — asking different attributes of attestations held (e.g PID & EUCC) —  is not possible.
 2.3 Employees of a company would be required to have and use their individual EUDI wallet to complete the flow.
+on an upside: based on the discussion in PA3, companies & Banks' trust in a PID is high.
 
-3. The EU business holds the company's identity (e.g. EUCC) as well as the identities of all individuals who need to act on its behalf.
+4. The EU business holds the company's identity (e.g. EUCC) as well as the identities of all individuals who need to act on its behalf.
 The identities of natural persons are derived from the PID and issued in the EBW. This approach has the following advantages
 3.1 The identities of natural persons can be cryptographically bound to the company's identity.
 3.2 There is strict separation between the private and business identities of the natural person.
