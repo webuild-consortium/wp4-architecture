@@ -25,7 +25,6 @@ At present, the architecture does not formally define:
 
 Without an explicit lifecycle and attestation model, revocation handling, issuance eligibility and cross-border interoperability remain ambiguous.
 
-
 ## Decision
 
 The European Business Wallet SHALL introduce:
@@ -98,3 +97,13 @@ Structural trust (WUA) is foundational. Identity trust (EBWOID) depends upon it.
 - Wallet Providers are expected to implement this which will be elaborated on further, for.g. via a conformance specification.
 
 This ADR establishes WUA and lifecycle management as mandatory architectural components of the European Business Wallet.
+
+## Advice
+
+Once merged, this is our consortium’s decision. This does not mean all participants agree it is the best possible decision. In the decision making process, we have heard the following advice.
+
+## Advice
+
+Once merged, this is our consortium’s decision. This does not mean all participants agree it is the best possible decision. In the decision making process, we have heard the following advice.
+
+yyyy-mm-dd, Name, Affiliation, Country: OK or summary of advice
