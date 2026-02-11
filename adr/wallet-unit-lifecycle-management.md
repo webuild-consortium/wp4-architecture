@@ -10,14 +10,14 @@
 
 ## Context
 
-The European Business Wallet represents an economic operator and operates within a cloud or on-premise environment under regulatory oversight derived from revised eIDAS and related Implementing Regulations.
+The European Business Wallet represents an economic operator or public sector body and operates within a cloud or on-premise environment under regulatory oversight derived from revised eIDAS and related Implementing Regulations.
 
 Trust in a Business Wallet must be established at two distinct levels:
 
 1. Cybersecurity assurance in the wallet’s secure execution and key management environment.
 2. Organisational entity authentication assurance (cf. ISO/IEC 29115) represented by the European Business Wallet Owner ID (EBWOID).
 
-At present, the architecture does not formally define:
+At present, the WE BUILD architecture does not formally define:
 
 - A Wallet Unit Attestation (WUA) model for European Business Wallet.
 - A clear lifecycle model governing Wallet Unit states.
@@ -96,7 +96,7 @@ Structural trust (WUA) is foundational. Identity trust (EBWOID) depends upon it.
 - Cross-border interoperability is strengthened through explicit state semantics.
 - Wallet Providers are expected to implement this which will be elaborated on further, for.g. via a conformance specification.
 
-This ADR establishes WUA and lifecycle management as mandatory architectural components of the European Business Wallet.
+This ADR establishes WUA and lifecycle management as mandatory architectural components of the European Business Wallet. It does not yet establish lifecycle management for entry in the WE BUILD Digital Directory, to simulate the European Digital Directory. This is another layer, which governs the availability of the wallet owner for notifications and submission of documents.
 
 ## Advice
 
