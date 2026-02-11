@@ -15,7 +15,7 @@
 {% include_relative 09-roadmap.md %}
 
 ## Appendices
-
+{% include_relative appendix-trust-ecosystem.md %}
 {% include_relative appendix-glossary.md %}
 {% include_relative appendix-history.md %}
 
