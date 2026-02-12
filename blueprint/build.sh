@@ -60,4 +60,12 @@ echo "Generating HTML..."
 asciidoctor ${ASCIIDOC_ARGS} main.adoc
 
 echo "Generating PDF..."
-asciidoctor-pdf ${ASCIIDOC_ARGS} main.adoc --out-file main.pdf
+asciidoctor-pdf ${ASCIIDOC_ARGS} main.adoc --out-file blueprint.pdf
+
+mkdir -p ../build_outputs_folder/blueprint
+cp main.html ../build_outputs_folder/blueprint/index.html
+cp blueprint.pdf ../build_outputs_folder/blueprint/blueprint.pdf
+echo Outputs folder:
+ls -l ../build_outputs_folder
+echo Blueprint:
+ls -l ../build_outputs_folder/blueprint
