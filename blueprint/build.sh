@@ -19,6 +19,14 @@ else
     . .venv/bin/activate
 fi
 
+# Set up Mermaid environment
+npm install -g @mermaid-js/mermaid-cli
+npx @puppeteer/browsers install chrome@145.0.7632.46
+export CHROME_DEVEL_SANDBOX=$(realpath chrome/linux-145.0.7632.46/chrome-linux64/chrome_sandbox)
+echo CHROME_DEVEL_SANDBOX=$CHROME_DEVEL_SANDBOX
+sudo chown root:root $CHROME_DEVEL_SANDBOX
+sudo chmod 4755 $CHROME_DEVEL_SANDBOX
+
 rm -f main.md
 echo '# WE BUILD – Architecture & Integration Blueprint (D4.1)' >> main.md
 cat 01-executive-summary.md >> main.md
@@ -45,12 +53,6 @@ cat appendix-history.md >> main.md
 
 echo "Running kramdoc..."
 kramdoc --auto-ids main.md -o main.adoc
-
-# npm install -g @mermaid-js/mermaid-cli
-# npx @puppeteer/browsers install chrome@145.0.7632.46
-export CHROME_DEVEL_SANDBOX=$(realpath chrome/linux-145.0.7632.46/chrome-linux64/chrome_sandbox)
-# sudo chown root:root CHROME_DEVEL_SANDBOX
-# sudo chmod 4755 CHROME_DEVEL_SANDBOX
 
 ASCIIDOC_ARGS="-r asciidoctor-diagram -a allow-uri-read -a toc=left --doctype book"
 
