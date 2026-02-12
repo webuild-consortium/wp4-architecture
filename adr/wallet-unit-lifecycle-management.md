@@ -1,4 +1,4 @@
-# Wallet Unit Attestation and Lifecycle Management
+# Wallet Unit Attestation and Lifecycle Management (For European Business Wallet)
 
 **Status**: Proposed  
 **Date**: 11 February 2026  
@@ -20,6 +20,7 @@ Trust in a Business Wallet must be established at two distinct levels:
 At present, the WE BUILD architecture does not formally define:
 
 - A Wallet Unit Attestation (WUA) model for European Business Wallet.
+- A Wallet Instance Attestation (WIA) model and its relationship to the WUA. 
 - A clear lifecycle model governing Wallet Unit states.
 - The downgrade and revocation semantics between structural and identity trust.
 
@@ -31,6 +32,7 @@ The European Business Wallet SHALL introduce:
 
 1. A mandatory Wallet Unit Attestation (WUA).
 2. A defined lifecycle model governing Wallet Unit state transitions.
+3. For this ADR, WIA is not considered for the first iteration of WE BUILD at least. 
 
 ### Wallet Unit Attestation (WUA)
 
@@ -40,7 +42,8 @@ A Wallet Unit Attestation is a signed object issued by the Wallet Provider that:
 - Contains public keys used for credential binding.
 - Includes validity and revocation information.
 - Is presented to Issuers and Attestation Providers.
-- Is not presented to Relying Parties unless explicitly required.
+- Is presented to Relying Parties when required to determine Wallet Unit validity, for example via selective disclosure mechanisms.
+
 
 A valid WUA is required for a Wallet Unit to operate within the EBW ecosystem.
 
@@ -73,7 +76,7 @@ Valid WUA and valid EBWOID present. Fully functional for regulated and cross-bor
   Wallet Unit acquires the WUA.
 
 - **OPERATIONAL → VALID**  
-  Wallet Unit acquires the EBWOID.
+  A natural person requests and obtains the EBWOID on behalf of the Economic Operator, which is then bound to the Wallet Unit.
 
 - **VALID → OPERATIONAL**  
   EBWOID revoked or expired.
@@ -90,13 +93,13 @@ Structural trust (WUA) is foundational. Identity trust (EBWOID) depends upon it.
 
 - Cybersecurity assurance and Organisational entity authentication assurance are explicitly separated.
 - Revocation of WUA immediately suspends infrastructural legitimacy.
-- Revocation of EBWOID suspends identity validity while preserving structural trust.
+- Revocation of EBWOID suspends identity validity while preserving structural trust. Where EBWOID is short-lived, the dependency between WUA revocation and EBWOID validity must be further specified in the implementing acts to ensure Relying Parties are not exposed to invalid Wallet Units.
 - Issuers gain a clear rule for issuance eligibility.
 - Lifecycle handling becomes testable within ITB and conformance specifications.
 - Cross-border interoperability is strengthened through explicit state semantics.
 - Wallet Providers are expected to implement this which will be elaborated on further, for.g. via a conformance specification.
 
-This ADR establishes WUA and lifecycle management as mandatory architectural components of the European Business Wallet. It does not yet establish lifecycle management for entry in the WE BUILD Digital Directory, to simulate the European Digital Directory. This is another layer, which governs the availability of the wallet owner for notifications and submission of documents.
+This ADR establishes WUA and lifecycle management as mandatory architectural functions of the European Business Wallet. It does not yet establish lifecycle management for entry in the WE BUILD Digital Directory, to simulate the European Digital Directory. This is another layer, which governs the availability of the wallet owner for notifications and submission of documents.
 
 ## Advice
 
@@ -106,4 +109,7 @@ Once merged, this is our consortium’s decision. This does not mean all partici
 
 Once merged, this is our consortium’s decision. This does not mean all participants agree it is the best possible decision. In the decision making process, we have heard the following advice.
 
-yyyy-mm-dd, Name, Affiliation, Country: OK or summary of advice
+2026-02-11, Sander Dijkhuis, Cleverbase, Netherlands
+2026-02-11, George Padayatti, iGrant.io, Sweden
+2026-02-12, George Fourtounis, GRNET, Greece
+2026-02-12, Malin Norlander, Bolagsverket, Sweden
