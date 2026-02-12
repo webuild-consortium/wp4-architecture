@@ -2,11 +2,13 @@
 #
 
 
-# Set up Ruby environment to make kramdoc/asciidoc available:
+echo PWD: $(pwd)
 
+# Set up Ruby environment to make kramdoc/asciidoc available:
 export GEM_HOME="$HOME/gems"
 export PATH="$HOME/gems/bin:$PATH"
-bundle
+sudo apt install -y ruby-dev ruby-bundler
+bundle install
 
 # Set up Python environment
 if [ ! -d ".venv" ]; then
