@@ -1,34 +1,37 @@
 #!/usr/bin/env bash
-#
 
 
-echo PWD: $(pwd)
+function setup() {
+    # Set up Ruby environment to make kramdoc/asciidoc available:
+    sudo apt install -y ruby-dev ruby-bundler
+    bundle install
 
-# Set up Ruby environment to make kramdoc/asciidoc available:
+    # Set up Python environment
+    if [ ! -d ".venv" ]; then
+	python3 -m venv .venv
+	. .venv/bin/activate
+	pip install -r ../requirements.txt
+    fi
+
+    # Set up Mermaid environment
+    npm install -g @mermaid-js/mermaid-cli
+    npx @puppeteer/browsers install chrome@145.0.7632.46
+    echo CHROME_DEVEL_SANDBOX=$CHROME_DEVEL_SANDBOX
+    sudo chown root:root $CHROME_DEVEL_SANDBOX
+    sudo chmod 4755 $CHROME_DEVEL_SANDBOX
+}
+
 export GEM_HOME="$HOME/gems"
 export PATH="$HOME/gems/bin:$PATH"
-sudo apt install -y ruby-dev ruby-bundler
-bundle install
+export CHROME_DEVEL_SANDBOX=$(realpath -m chrome/linux-145.0.7632.46/chrome-linux64/chrome_sandbox)
 
-# Set up Python environment
-if [ ! -d ".venv" ]; then
-    python3 -m venv .venv
-    . .venv/bin/activate
-    pip install -r ../requirements.txt
-else
-    . .venv/bin/activate
+if [ "$1" != "--omit-installation" ]; then
+    setup
 fi
 
-# Set up Mermaid environment
-npm install -g @mermaid-js/mermaid-cli
-npx @puppeteer/browsers install chrome@145.0.7632.46
-export CHROME_DEVEL_SANDBOX=$(realpath chrome/linux-145.0.7632.46/chrome-linux64/chrome_sandbox)
-echo CHROME_DEVEL_SANDBOX=$CHROME_DEVEL_SANDBOX
-sudo chown root:root $CHROME_DEVEL_SANDBOX
-sudo chmod 4755 $CHROME_DEVEL_SANDBOX
+. .venv/bin/activate
 
-rm -f main.md
-echo '# WE BUILD – Architecture & Integration Blueprint (D4.1)' >> main.md
+echo '# WE BUILD – Architecture & Integration Blueprint (D4.1)' > main.md
 cat 01-executive-summary.md >> main.md
 
 rm -f main-body.md
@@ -64,8 +67,5 @@ asciidoctor-pdf ${ASCIIDOC_ARGS} main.adoc --out-file blueprint.pdf
 
 mkdir -p ../build_outputs_folder/blueprint
 cp main.html ../build_outputs_folder/blueprint/index.html
+cp *png ../build_outputs_folder/blueprint/
 cp blueprint.pdf ../build_outputs_folder/blueprint/blueprint.pdf
-echo Outputs folder:
-ls -l ../build_outputs_folder
-echo Blueprint:
-ls -l ../build_outputs_folder/blueprint
