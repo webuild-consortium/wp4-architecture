@@ -12,6 +12,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 3. [Specify PID and eAA formats](document-formats.md)
 4. [Provide EBWOID as a stable minimal basis](basic-lpid.md)
 5. [Wallet Unit Attestation and Lifecycle Management (For European Business Wallet)](wallet-unit-lifecycle-management.md)
+6. [Deliver business wallet data using QERDS](build-qerds.md)
 
 <!--END INDEX-->
 
