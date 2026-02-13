@@ -57,7 +57,8 @@ graph TB
 
     style MS fill:#e1f5ff
     style TL fill:#fff4e1
-    style Entities fill:#e8f5e9```
+    style Entities fill:#e8f5e9
+````
 
 WE BUILD participants willing to register are going to be able to select a registry in which they are going to be registered. 
 
