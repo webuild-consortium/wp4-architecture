@@ -10,6 +10,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 1. [Publish consortium trusted lists](trusted-lists.md)
 2. [Baseline protocols](base-protocols.md)
 3. [Specify PID and eAA formats](document-formats.md)
+4. [Provide EBWOID as a stable minimal basis](basic-lpid.md)
 <!--END INDEX-->
 
 ## ADR process for WE BUILD
