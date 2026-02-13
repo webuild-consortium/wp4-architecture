@@ -36,13 +36,22 @@ cat 01-executive-summary.md >> main.md
 
 rm -f main-body.md
 cat 02-regulatory-alignment.md >> main-body.md
+echo >> main-body.md
 cat 03-architecture-overview.md >> main-body.md
+echo >> main-body.md
 cat 04-integration-model.md >> main-body.md
+echo >> main-body.md
 cat 05-data-and-semantics.md >> main-body.md
+echo >> main-body.md
 cat 06-trust-and-security.md >> main-body.md
+echo >> main-body.md
 cat 07-governance-and-adr.md >> main-body.md
+echo >> main-body.md
 cat 08-test-and-validation.md >> main-body.md
+echo >> main-body.md
 cat 09-roadmap.md >> main-body.md
+echo >> main-body.md
+
 rm -f main-body-enum.md
 markdown-enum main-body.md 1 main-body-enum.md
 
