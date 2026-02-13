@@ -37,7 +37,7 @@ The AS4 standard is referenced in EU legislation and implementations such as Pep
 
 [eDelivery AS4]: https://ec.europa.eu/digital-building-blocks/sites/spaces/DIGITAL/pages/467110114/eDelivery
 
-The AS4 protocol is based on XML signature and encryption and as such suffers from the same challenges that all XML-based protocols have with regard to post-quantum safety. There is no current effort in any standards development organisation to propose post-quantum algorithms for XML signatures or key agreement/encryption. This means that the effective lifetime of a solution based on AS4 is limited to a maximum of 6 or 7 years from the required go-live date for the European Business Wallet.
+The AS4 protocol is based on XML signature and encryption which does do not yet provide post-quantum safety. There is no current effort in any standards development organisation to propose post-quantum algorithms for XML signatures or key agreement/encryption. This means that the effective lifetime of a solution based on AS4 as-is is limited to a maximum of 6 or 7 years from the required go-live date for the European Business Wallet. Therefore, in a production ecosystem, protocol migration should be possible.
 
 The 4-corner model of the AS4 architecture provides a way to introduce an abstraction layer towards the QERDS, which means that in principle it is possible to replace the underlying QERDS protocol in the future, although such a task would present significant challenges in practice.
 
