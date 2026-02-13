@@ -26,7 +26,7 @@ jobs:
 
       - name: Build static files
         id: build
-        run: cd blueprint && ./build.sh
+        run: cd blueprint && ./build.sh --github-action
 
       - name: Upload static files
         id: deployment
