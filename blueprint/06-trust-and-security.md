@@ -4,7 +4,7 @@
 
 The trust infrastructure for the EU Digital Identity and European Business Wallet ecosystem rests on three distinct but complementary processes: **registration/onboarding** of participants, **notification** of certain entities to the European Commission, and **publication of Trusted Lists** (or Lists of Trusted Entities) that provide cryptographic trust anchors for validation. WE BUILD aligns with the [EUDI Wallet Architecture and Reference Framework (ARF)](https://eudi.dev/) and the trust-infrastructure model described in the WP4 Trust Group deliverables.
 
-**How do participants in the WE BUILD wallet ecosystem verify that other participants are who they say they are, and that they are authorised to do what they claim?**
+## How do participants in the WE BUILD wallet ecosystem verify that other participants are who they say they are, and that they are authorised to do what they claim?
 
 To answer the above question we will in WE BUILD define the onboarding processes (how entities get registered), the trust framework (what rules apply), the PKI architecture (which certificates are used and how), the APIs (how systems query trust information programmatically), and the trust evaluation logic (how each participant checks the others at runtime).
 
