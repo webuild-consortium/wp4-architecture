@@ -32,9 +32,10 @@ fi
 . .venv/bin/activate
 
 echo '# WE BUILD – Architecture & Integration Blueprint (D4.1)' > main.md
-cat 01-executive-summary.md >> main.md
 
 rm -f main-body.md
+cat 01-executive-summary.md >> main-body.md
+echo >> main-body.md
 cat 02-regulatory-alignment.md >> main-body.md
 echo >> main-body.md
 cat 03-architecture-overview.md >> main-body.md
