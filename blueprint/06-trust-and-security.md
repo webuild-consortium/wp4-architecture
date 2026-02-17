@@ -74,10 +74,10 @@ The following scenarios align with and extend the revocation baseline defined in
 It is necessary to identify and categorize all potential situations that necessitate the invalidation of a PID, an EBWOID, or a Wallet. The resulting framework should address a wide range of real-world events, from user-initiated requests to administrative actions and security incidents.
 <!-- TODO, categorize under Security and Unauthorized Access, Lifecycle and Inactivity Management, Compliance and Service Terms and End-of-Life Events? -->
 
-* **Explicit User Request:** A direct request from the holder or an authorized representative to revoke the relevant data.
+* **Explicit user request:** A direct request from the holder or an authorized representative to revoke the relevant data.
    * _Example: A change in ownership of a company could be a reason for authorized representatives to revoke the EBWOID._
      
-* **Data Inaccuracy or Modification:** Revocation initiated by the provider when the holder's underlying data is found to be inaccurate or has been officially modified.
+* **Data inaccuracy or modification:** Revocation initiated by the provider when the holder's underlying data is found to be inaccurate or has been officially modified.
    * _Example: The holder changes name and the PID needs to be reissued._
      
 * **Regulatory Changes:** Revocation required by regulatory changes that result in an incompatible PID/EBWOID, such as required attribute added, attribute removed or renamed.
