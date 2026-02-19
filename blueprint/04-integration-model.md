@@ -22,6 +22,41 @@ To be authored by Group 6 (QTSP) and Group 7 (Wallets). Focuses on how use cases
 
 The [WE BUILD Consortium Conformance Specification (CS)](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-01-credential-issuance.md) for high assurance credential issuance. The aim is to ensure that Wallet Units and Credential Issuers within the WE BUILD ecosystem interoperate consistently for the issuance of verifiable digital credentials with high security and privacy.
 
+==
+
+The [WE BUILD Consortium Conformance Specification (CS)](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-01-credential-issuance.md) for high-assurance credential issuance defines the requirements that will be applied within the WE BUILD project to ensure that Wallet Units and Credential Issuers across the WE BUILD ecosystem interoperate reliably and consistently when issuing verifiable digital credentials, with strong security guarantees and privacy protections.
+
+**Interaction Pattern: Attestation Issuance**
+
+The WE BUILD ecosystem mainly supports two credential issuance models, which differ in which actor inititates the process: wallet-initiated issuance and issuer-initiated-issuance In both cases, if the credential cannot be issued immediately, a deferred issuance mechanism is applied. In such case, the wallet will automatically make periodic retries until the credential is successfully issued or until it receives an unrecoverable error.
+
+**Wallet-initiated issuance**
+
+This issuance flow is initiated by the wallet user:
+
+1. The user opens their wallet and selects the credential type to be issued (for example, a PID or a QEAA).
+2. The wallet connects with the corresponding issuer and requests the credential.
+3. The wallet user authenticates with the issuer, following the procedure specified by the issuer itself.
+4. The issuer requests the user's consent from the user to issue the credential and send it to their wallet.
+5. The issuer generates the credential and delivers it to the wallet.
+6. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
+
+**Issuer-initiated issuance**
+
+This issuance flow is initiated by the issuer:
+
+1. The user interacts with the issuer (for example, during a digital onboarding process).
+2. The issuer prepares one or more credentials.
+3. The issuer offers these credentials to the wallet user. This can be done in several ways, both same-device and cross-device:
+- By displaying a QR code that the user shall scan with their wallet.
+- By sending a link to the wallet.
+4. The wallet displays the offer and requess confirmation from the user.
+5. The wallet user authenticates with the issuer, following the procedure specified by the issuer itself.
+6. The issuer requests the user's consent from the user to issue the credential and send it to their wallet.
+7. The issuer generates the credential and delivers it to the wallet.
+8. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
+
+
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 To be authored by Architecture and Wallets. This is the "Receiving" flow for Relying Parties, detailing how they request and receive verified attributes under the user's sole control using OpenID4VP. 
 
