@@ -30,7 +30,7 @@ The [WE BUILD Consortium Conformance Specification (CS)](https://github.com/webu
 
 The WE BUILD ecosystem mainly supports two credential issuance models, which differ in which actor inititates the process: wallet-initiated issuance and issuer-initiated-issuance In both cases, if the credential cannot be issued immediately, a deferred issuance mechanism is applied. In such case, the wallet will automatically make periodic retries until the credential is successfully issued or until it receives an unrecoverable error.
 
-**Wallet-initiated issuance**
+### Wallet-initiated issuance
 
 This issuance flow is initiated by the wallet user:
 
