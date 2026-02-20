@@ -14,19 +14,19 @@ The [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/sko
 
 ## European Wallet Vocabulary
 The [European Wallet Vocabulary](https://ebw-vocabulary.spherity.dev/ebw/v0.1/vocabulary) will be developed within the WeBuild Large Scale Pilot. The vocabulary is maintained in [github](https://github.com/webuild-consortium/wp4-semantics-group/tree/main/vocab) and published in the web.
-[Web Ontology Language (OWL)](https://www.w3.org/OWL/)
+The [Web Ontology Language (OWL)](https://www.w3.org/OWL/) is used to define classes, properties and individuals of the vocabulary. The terms of the vocabulary are linked to the concepts of the terminology to define their semantic.  
 
 ## Vocabulary mapping
-To ensure semantic interoperability, all credentials used within the European Wallet Framework are based on a vocabulary. The terms defined in the vocabulary are mapped to the terms used in the attestations.
-W3C VCDM 2.0 credentials support semantic mapping. The context, which defines the mapping for this credential format, is referred in the published vocabulary and credential data carry semantic information.
+To ensure semantic interoperability, all credentials subject used within the European Wallet Framework are model in the vocabulary. The terms defined in the vocabulary are mapped to the terms used in the attestations.
+W3C VCDM 2.0 credentials support machine-readable semantic mapping. The context, which defines the mapping for this credential format, is referred in the published vocabulary and the credential data carry semantic information.
 [JSON Linked Data](https://www.w3.org/TR/json-ld11/) is used to provide the mapping.
 
-If the credential format does not support semantic information, the meaning of the data fields is described in attestation rulebooks. In this case, the rulebook owner is responsible for providing the mapping to the semantic definitions.
+If the credential format does not support semantic information, the meaning of the data fields are described in attestation rulebooks. In this case, the rulebook owner is responsible for providing the mapping to the semantic definitions of the vocabulary.
 
 ## Reuse of existing vocabularies
-The EBW vocabulary defines the vocabulary for credential subjects, i.e. the domain-specific terms used in attestations. Vocabularies for credential metadata, proof mechanisms, security, decentralised identifiers, and credential status already exist and are reused.
+The EBW vocabulary defines the domain-specific vocabulary of the WeBuild attestations. Vocabularies for credential metadata, proof mechanisms, security, decentralised identifiers, and credential status already exist and are reused.
 Furthermore, existing vocabularies for credential subjects of other domains are reused (e.g. digital product passports, supply chains, education, railway, dataspaces, etc.).
-Reuse works straight away for W3C VCDM 2.0 credentials. However, for mDoc and SD-JWT-VC, the rulebook owner needs to map the vocabulary to the attestations.
+Reuse works straight away for W3C VCDM 2.0 credentials. However, for mDoc and SD-JWT-VC, the rulebook owner needs to map existing vocabularies to the attestations if applicable.
 
 ## Decentralised identifiers and identity binding
 Linked data are based on unique identifiers. Cryptographic decentralised identifiers are used for identity binding. W3C credentials support holder binding and decentralised identities natively. They are an integral part of the semantic model. For other formats, identifiers and bindings are defined in the relevant rulebook by the rulebook owner.
