@@ -19,6 +19,7 @@ While this document avoids abbreviations as much as possible, commonly used abbr
 | **Interoperability Testbed** | ITB | The primary gatekeeper and automated testing infrastructure used to prove that a technical solution is ready for real-world piloting. |
 | <del>**Issuer**</del> | — | See *EAA Provider* instead. |
 | **Large Scale Pilot** | LSP | A project funded by the European Commission to test the practical implementation of the EUDI Wallet framework across various cross-border use cases. |
+| <del>**Legal Person Identification Data**</del> | LPID | See **EBW Owner Identification Data** instead. |
 | **Level of Assurance** | LoA | A classification of the degree of confidence in the electronic identification of a natural person, a legal person, or a natural person representing a legal person. Recognised levels are: Low, Substantial, High. |
 | **Personal Identification Data** | PID | A mandatory set of attributes issued to a natural person to uniquely identify them at Level of Assurance (LoA) High. |
 | **Qualified Electronic Registered Delivery Service** | QERDS | A secure communication channel that provides legal evidence of the handling of transmitted data. |
