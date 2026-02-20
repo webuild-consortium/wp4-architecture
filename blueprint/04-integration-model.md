@@ -40,7 +40,7 @@ This issuance flow is initiated by the wallet user:
 5. The issuer generates the credential and delivers it to the wallet.
 6. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
 
-**Issuer-initiated issuance**
+### Issuer-initiated issuance
 
 This issuance flow is initiated by the issuer:
 
