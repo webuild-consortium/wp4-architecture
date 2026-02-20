@@ -40,6 +40,23 @@ This issuance flow is initiated by the wallet user:
 5. The issuer generates the credential and delivers it to the wallet.
 6. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
 
+```mermaid
+sequenceDiagram
+participant User
+participant Wallet
+participant Issuer
+
+User->>Wallet:Selects the credential type
+Wallet-->>Issuer: Requests the credential
+Issuer->>User: Requests authentication
+User->>Issuer: Authentication
+Issuer->>User: Requests consent
+User->>Issuer: Gives consent
+Issuer-->>Issuer: Generates the credential
+Issuer-->>Wallet: Sends the credential
+Wallet-->>Wallet: Validates the credential
+Wallet-->>Wallet: Stores the credential 
+User->>Wallet: Accesses the credential
 ### Issuer-initiated issuance
 
 This issuance flow is initiated by the issuer:
