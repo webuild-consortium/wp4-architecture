@@ -72,6 +72,28 @@ This issuance flow is initiated by the issuer:
 7. The issuer generates the credential and delivers it to the wallet.
 8. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
 
+```mermaid
+sequenceDiagram
+participant User
+participant Wallet
+participant Issuer
+
+User->>Issuer: Interacts digitally
+Issuer-->>Issuer: Prepares the credential
+Issuer->>User: Offers the credential diplaying a QR code
+User->>Wallet: Scans the QR code
+Wallet->>User: Requests confirmation
+User->>Wallet: Accepts the offer
+Wallet-->>Issuer: Requests the credential
+Issuer->>User: Requests authentication
+User->>Issuer: Authenticates
+Issuer->>User: Requests consent
+User->>Issuer: Gives consent
+Issuer-->>Issuer: Generates the credential
+Issuer-->>Wallet: Sends the credential
+Wallet-->>Wallet: Validates the credential
+Wallet-->>Wallet: Stores the credential
+User->>Wallet: Accesses the credential
 
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 To be authored by Architecture and Wallets. This is the "Receiving" flow for Relying Parties, detailing how they request and receive verified attributes under the user's sole control using OpenID4VP. 
