@@ -88,18 +88,18 @@ Business wallets keep logs and provide dashboard user interfaces to enable contr
 
 ## Appendix Business Wallet Definition Contributors
 
-| **Full Name** | **Email** | **Group(s)** | **Role (Contributor / Reviewer / Presenter)** |
+| **Full Name** | **Org** | **Group(s)** | **Role (Contributor / Reviewer / Presenter)** |
 |---|---|---|---|
-| Eelco Klaver | [Eelco.klaver@credenco.com](mailto:Eelco.klaver@credenco.com) | Wallet | All |
-| Alejandro Nieto | alejandro.nieto@madisonmk.com | Wallet/QTSP | Reviewer |
-| Alejandro Alfonso | alejandro.alfonso@madisonmk.com | Wallet/QTSP | Reviewer |
-| David Sanchez | david.sanchezo@madisonmk.com | Wallet | Reviewer |
-| Lal Chandran | [lal@igrant.io](mailto:lal@igrant.io) | Wallet/Arch | All |
-| Marcel Wendt | [mwendt@digidentity.com](mailto:mwendt@digidentity.com) | Wallet | Reviewer |
-| Michelle Ludovici | michelle.ludovici@digg.se | Arch | Reviewer |
-| Ronald Koenig | [ronald.koenig@spherity.com](mailto:ronald.koenig@spherity.com) | Wallet | All |
-| Martin Westerkamp | [martin.westerkamp@spherity.com](mailto:martin.westerkamp@spherity.com) | Wallet | All |
-| Malin Norlander | [Malin.Norlander@bolagsverket.se](mailto:Malin.Norlander@bolagsverket.se) | Arch | Contributor / Reviewer |
-| Sander Dijkhuis | sander.dijkhuis@cleverbase.com | Wallet/Arch | All |
-| Sophia Nguyen | sophianguyen@google.com | Wallet/arch | Contributor |
-| Miriam Weber | weber@procivis.ch | Wallet | Contributor / Reviewer |
+| Eelco Klaver | Credenco| Wallet | All |
+| Alejandro Nieto | Madison | Wallet/QTSP | Reviewer |
+| Alejandro Alfonso |Madison | Wallet/QTSP | Reviewer |
+| David Sanchez | Madison | Wallet | Reviewer |
+| Lal Chandran | iGrant.io | Wallet/Arch | All |
+| Marcel Wendt | Digidentity | Wallet | Reviewer |
+| Michelle Ludovici | Digg | Arch | Reviewer |
+| Ronald Koenig | Spherity | Wallet | All |
+| Martin Westerkamp |Spherity| Wallet | All |
+| Malin Norlander | Bolagsverket | Arch | Contributor / Reviewer |
+| Sander Dijkhuis | Cleverbase| Wallet/Arch | All |
+| Sophia Nguyen | Google| Wallet/arch | Contributor |
+| Miriam Weber | Procivis | Wallet | Contributor / Reviewer |
