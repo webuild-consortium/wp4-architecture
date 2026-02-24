@@ -86,21 +86,3 @@ To enable wallet owners, authorised representatives and other authorised users t
 #### Digital transaction management
 
 Business wallets keep logs and provide dashboard user interfaces to enable control over transactions, including operations on the wallet lifecycle and on digital documents and messages sent and received over the secure communication channel. In addition, these logs enable dispute resolution regarding potentially unauthorised transactions, failures to meet reporting obligations, or administrative or procedural activities.
-
-## Appendix Business Wallet Definition Contributors
-
-| **Full Name** | **Org** | **Group(s)** | **Role (Contributor / Reviewer / Presenter)** |
-|---|---|---|---|
-| Eelco Klaver | Credenco| Wallet | All |
-| Alejandro Nieto | Madison | Wallet/QTSP | Reviewer |
-| Alejandro Alfonso |Madison | Wallet/QTSP | Reviewer |
-| David Sanchez | Madison | Wallet | Reviewer |
-| Lal Chandran | iGrant.io | Wallet/Arch | All |
-| Marcel Wendt | Digidentity | Wallet | Reviewer |
-| Michelle Ludovici | Digg | Arch | Reviewer |
-| Ronald Koenig | Spherity | Wallet | All |
-| Martin Westerkamp |Spherity| Wallet | All |
-| Malin Norlander | Bolagsverket | Arch | Contributor / Reviewer |
-| Sander Dijkhuis | Cleverbase| Wallet/Arch | All |
-| Sophia Nguyen | Google| Wallet/arch | Contributor |
-| Miriam Weber | Procivis | Wallet | Contributor / Reviewer |
