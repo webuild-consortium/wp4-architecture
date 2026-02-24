@@ -34,7 +34,6 @@ The Regulation is operationalized through several packages of Commission impleme
   - [2025/1570 – Notification of certified or cancelled QSCDs](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202501570)
   - [2025/1572 – QTSP initiation, notification and verification](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202501572)
 
-In the second batch (of 6 May 2025), four implementing regulations were adopted, namely: 2025/848 (registration of wallet-relying parties), 2025/849 (submission of information to the Commission and to the Cooperation Group for the list of certified European Digital Identity Wallets), 2025/847 (reactions to Wallet security breaches), and 2025/846 (cross-border identity matching for natural persons). 
 
 ## EUBW Framework
 
