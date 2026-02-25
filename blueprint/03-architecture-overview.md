@@ -40,7 +40,21 @@ Security, error handling, auditability, portability.
 
 ## Wallet Implementation Models 
 To be authored by Wallet Group. Describes the techn stacks, such as cloud-based vs. device-based solutions, and the differences between EUDIW for Natural Person and European Business Wallets for  economic operators.
+
 ### The EUDI Wallet for Natural Person
 To come: [Issue 63](https://github.com/webuild-consortium/wp4-architecture/issues/63) will produce concept model in collaboration with Wallet Group.
+
+The diagram below provides a concept-level view of the EUDI Wallet ecosystem for natural persons (informative, non-normative).
+
+![EUDI Wallet concept model](../images/EUDIWconcept.png)
+
+_Concept diagram for discussion and alignment. Terminology and role labels should be interpreted in line with the EUDIW ARF and the corresponding WE BUILD architecture artefacts._
+
 ### The Business Wallet for Economic Operators
 To come: [Issue 63](https://github.com/webuild-consortium/wp4-architecture/issues/63) will produce concept model in collaboration with Wallet Group.
+
+The diagram below provides a concept-level view of the European Business Wallet ecosystem for economic operators (informative, non-normative).
+
+![European Business Wallet concept model](../images/EBWconcept.png)
+
+_Concept diagram for discussion and alignment. It illustrates a WE BUILD-style business wallet landscape and should be read together with the Blueprint, ADRs, and Conformance Specifications for detailed implementation requirements._
