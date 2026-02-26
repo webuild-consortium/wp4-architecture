@@ -86,7 +86,7 @@ asciidoctor ${ASCIIDOC_ARGS} main-svg.adoc -o blueprint.html
 
 mkdir -p ../build_outputs_folder/blueprint
 cp blueprint.html ../build_outputs_folder/blueprint/blueprint.html
-for IMAGE in *.png *.svg; do
+for IMAGE in $(find . -maxdepth 1 -name "*.png") $(find . -maxdepth 1 -name "*.svg") $(find . -maxdepth 1 -name "*.jpg"); do
     cp ${IMAGE} ../build_outputs_folder/blueprint/
 done
 
