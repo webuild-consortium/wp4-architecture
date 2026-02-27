@@ -1,8 +1,8 @@
-# Appendix - Trust Ecosystem
+# Appendix C – Trust Ecosystem
 
 The trust infrastructure for the EU Digital Identity and European Business Wallet ecosystem rests on three distinct but complementary processes: **registration/onboarding** of participants, **notification** of certain entities to the European Commission, and **publication of Trusted Lists** (or Lists of Trusted Entities) that provide cryptographic trust anchors for validation. WE BUILD aligns with the [EUDI Wallet Architecture and Reference Framework (ARF)](https://eudi.dev/) and the trust-infrastructure model described in the WP4 Trust Group deliverables.
 
-### Trust infrastructure authorities and registries
+## Trust infrastructure authorities and registries
 
 - **Member State Registrar:** Manages registration and operational authorization of **PID Providers**, **Attestation Providers**, and **Relying Parties**. Registration yields registry entries (used for entitlement verification and online lookup via common APIs such as TS5/TS6) and triggers access certificate issuance.
 - **European Commission:** Compiles, signs/seals, and publishes Trusted Lists for Wallet Providers, PID Providers, Access Certificate Authorities (Access CAs), and Providers of Registration Certificates. It maintains the **List of Trusted Lists (LoTL)** and publishes LoTL location and trust anchors in the Official Journal of the European Union (OJEU).
@@ -12,7 +12,7 @@ The trust infrastructure for the EU Digital Identity and European Business Walle
 
 **Registration vs Trusted List publication:** Registration defines *who is allowed to do what* (entitlements, attributes, intended use) and is consumed via registries and optional registration certificates. Trusted List publication establishes *cryptographic trust anchors* (keys, certificates) and, via profile-specific extensions defined in **ETSI TS 119 602** (for example the Pub-EAA and national non-qualified EAA Provider LoTE profile in Annex H, including its additionalInfo structures), can also publish **which attestation types an Attestation Provider is authorised to issue**. Trusted Lists follow ETSI TS 119 612 and TS 119 602 (Lists of Trusted Entities) and are consumed per ETSI TS 119 615. Wallet Providers, Access CAs, and Providers of Registration Certificates are **not** registered with Registrars; these entities are notified by Member States to the Commission.
 
-#### Responsibilities matrix
+### Responsibilities matrix
 
 The Task 2 trust-infrastructure schema defines the following responsibilities matrix for registration and Trusted List compilation:
 
@@ -27,7 +27,7 @@ The Task 2 trust-infrastructure schema defines the following responsibilities ma
 
 This blueprint section mirrors the Task 2 responsibilities matrix so that architectural roles are consistent across WP4.
 
-### Working group scope: [MVP] and [MVP+]
+## Working group scope: [MVP] and [MVP+]
 
 In line with the EUDI Wallet ARF, the WP4 Trust Group focuses on defining **architectural patterns and profiles**, not on specifying Member State-specific policies or operating production infrastructure. To make this concrete, the trust and security work is scoped in two steps:
 
@@ -43,7 +43,7 @@ In line with the EUDI Wallet ARF, the WP4 Trust Group focuses on defining **arch
 
 The **boundary of the working group** is therefore to: (a) define the trust‑infrastructure architecture, profiles, and flows needed for [MVP] and [MVP+]; (b) document how to apply ETSI TS 119 602/119 612/119 615 and the ARF in these scenarios; and (c) leave Member State policy choices (approval criteria, national extensions, operational SLAs) and long‑term production operation out of scope.
 
-### Trust infrastructure architecture (overview)
+## Trust infrastructure architecture (overview)
 
 The following diagram summarises the roles of Member State and European Commission, the split between registration and notification, and how Trusted Lists and the LoTL are produced and consumed. Source: WP4 Trust Group Task 2, [trust-infrastructure schema](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task2-trust-framework/trust-infrastructure-schema.md).
 
@@ -121,7 +121,8 @@ graph TB
     style EntitiesScope fill:#e8f5e9
     style TL fill:#f3e5f5
 ```
-> Note: WP4 is going to expose trust infrastructure depicted on this diagram, mimicking the infrastructure of at least one Member State. In the case of mimicking more than a single Member State, WE BUILD participants willing to register are going to be able to select a registry in which they are going to be registered, or the WP4 registrar, if single, is going to place them in one of the registries. For the sake of simplicity, in such a case, not all the technical components depicted on a diagram within a Member State will have to be multiplied; e.g. there may be multiple registries but a single trusted list across the countries to which all wallet-reliant parties are provisioned.
+> Note: WP4 is going to expose trust infrastructure depicted on this diagram, mimicking the infrastructure of at least one Member State. In the case of mimicking more than a single Member State, WE BUILD participants willing to register are going to be able to select a registry in which they are going to be registered, or the WP4 registrar, if single, is going to place them in one of the registries. For the sake of simplicity, in such a case, not all the technical components depicted in the diagram within a Member State will have to be multiplied; e.g. there may be multiple registries but a single trusted list across the countries to which all wallet-relying parties are provisioned.
+
 ## Security Measures
 
  From an architectural perspective, security in the wallet ecosystem is structured in four dimensions. (1) **Trust anchor layer**: cryptographic validation and key lifecycle management, including revocation of keys, certificates, and services. Trust Anchors are published by Trusted Lists and related mechanisms (ETSI TS 119 602/119 612/119 615), applying to the entities and roles described in the [Trust Ecosystem](#trust-ecosystem) (PID Providers, Attestation Providers, Wallet Providers, Access CAs, etc.). (2) **Identity assurance**: the level of assurance (LoA) of the identities involved is maintained across the full lifecycle of those identities. (3) **Device and execution environment**: the security of the devices and execution environments that host Wallet Instances and cryptographic material (WSCA/WSCD) is addressed by the wallet secure cryptographic application/device (WSCA/WSCD) architecture for wallet-side components, to be specified by the Architecture and Wallets groups (and, for remote WSCA/WSCD, together with the QTSP group). Secure environments operated by PID Providers, Pub-EAA and QEAA Providers, and Trust Service Providers (TSPs) are addressed by applicable eIDAS and ETSI requirements for TSP and provider infrastructure. (4) **Protocol and policy layer**: authentication (verifying who or what is acting) and authorization (what the subject is allowed to do, driven by policies) are realised in conformance with the ARF and related technical specifications, per application-specific flow and per attestation data format.

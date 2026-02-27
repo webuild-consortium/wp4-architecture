@@ -19,9 +19,9 @@ The diagram below illustrates the baseline trust topology of the EU wallet ecosy
 graph LR;
   issuer-->holder;
   holder-->verifier;
-  issuer-->trust;
-  verifier-->trust;
-  holder-->trust;
+  issuer-->trust["trust "];
+  verifier-->trust["trust "];
+  holder-->trust["trust "];
 ```
 
 In the WE BUILD project the focus is primarily on wallets for legal entities. In this case the regulation includes the use of qualified electronic registered delivery services to enable messaging services between entities in the ecosystem. Accordingly, the generic trust anchor is replaced by a Qualified Trust Service Provider operating a Qualified Electronic Registered Delivery Service (QTSP/QERDS), through which issuers, holders, and verifiers route their trust and messaging interactions. The diagram changes to this:
