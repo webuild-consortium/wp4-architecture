@@ -4,7 +4,7 @@
 The EU digital identity and EU business wallet ecosystem is an instance of the 3 party model for attestations. In this model there are 5 main actors:
 1. The holder, aka the natural or legal party controlling the identity wallet
 2. The issuer (or Electronic Attestation of Attributes Service Provider) that relies on authentic sources of information to issue attestations to the holder/wallet
-3. The verifier (or Relying Party, RP) receives an attestation based on information present in the wallet.
+3. The verifier (or Relying Party, RP) receives an attestation based on information present in the wallet. The Relying Party may use a trusted RP Intermediary between the verifier and the wallet, handling protocol complexity, attestation validation, and attribute transformation on behalf of the verifier.
 4. The Relying Party Intermediary (RPI) may act as a trusted intermediary between the verifier and the wallet, handling protocol complexity, attestation validation, and attribute transformation on behalf of the verifier (as recognized in eIDAS 2 Article 5b(10))
 5. The trust framework that in the EU ecosystems is based on ETSI TS 119604/119612 aka trust status lists populated by trust status providers that for some use cases are QTSPs
 
