@@ -11,7 +11,7 @@ The top two layers are independent of the format of the attestations. The third 
 
 
 ## Webuild Terminology 
-The WeBuild terminology is defined on the Nordic countries' interoperability platform. It defines the abstract terms specific to the European Business Wallet Trust Framework of the WeBuild large-scale pilot. [The WeBuild terminology](https://sanastot.suomi.fi/en/terminology/webuild) is hosted online and will serve as a blueprint for the final terminology of the European Digital Identity Framework.
+[The WE BUILD terminology](https://sanastot.suomi.fi/en/terminology/webuild) is hosted online and will serve as a blueprint for the final terminology of the European Digital Identity Framework.
 The [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/skos/) is used to define the terminology.
 
 ## European Business Wallet Vocabulary
