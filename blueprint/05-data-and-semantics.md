@@ -18,7 +18,7 @@ The [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/sko
 The European Wallet vocabulary is maintained in [github](https://github.com/webuild-consortium/wp4-semantics-group/tree/main/vocab).
 The [Web Ontology Language (OWL)](https://www.w3.org/OWL/) is used to define classes, properties and individuals of the vocabulary. The terms of the vocabulary are linked to the concepts of the terminology to define their semantic.  
 
-## Vocabulary mapping
+### Vocabulary mapping
 To ensure semantic interoperability, all credentials subject used within the European Wallet Framework are model in the vocabulary. The terms defined in the vocabulary are mapped to the terms used in the attestations.
 W3C VCDM 2.0 credentials support machine-readable semantic mapping. The context, which defines the mapping for this credential format, is referred in the published vocabulary and the credential data carry semantic information.
 [JSON Linked Data](https://www.w3.org/TR/json-ld11/) is used to provide the mapping.
