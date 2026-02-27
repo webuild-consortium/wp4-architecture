@@ -15,7 +15,7 @@ The architecture must ensure that the revocation status check preserves the priv
 
 ## Decision
 
-The WE BUILD project adopts the [IETF Token Status List](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/) as the mechanism for semantics, formats, and protocols regarding revocation.
+The WE BUILD project adopts the [IETF Token Status List](https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/) as the mechanism for semantics, formats, and protocols regarding revocation of attestations.
 
 ## Consequences
 
@@ -31,12 +31,9 @@ The WE BUILD project adopts the [IETF Token Status List](https://datatracker.iet
 *  Offline verification scenarios require Relying Parties to cache revocation lists. To address this, Issuers should include expiration dates and time-to-live (TTL) in revocation info to drive caching decisions.
 
 ### Impact (resulting from ADR High-Level Requirements):
-* **Wallet Providers** MUST implement revocable Wallet Unit Attestations (WUAs).
-* **Issuers** (PID/EBWOID Providers, EAA Providers, including QEAA, Pub-EAA) MUST implement attestation revocation for applicable attestations and that are valid for more than 24h.
-* Both, **Wallet Providers** and **Issuers** MUST randomly assign a status list and random index within it for revocable WUAs and attestations before signing them, all in batches.
-* **Wallet Providers** SHALL regularly verify that the security of the Wallet Unit is not breached or compromised and if so, and if the breach or compromise affects the trustworthiness or reliability of the Wallet Unit, the Wallet Provider SHALL immediately revoke the corresponding WUA(s).
-* **PID/EBWOID Providers** MUST regularly check the status of WUA used during issuance and, if a WUA is revoked, the PID/EBWOID Provider SHALL immediately revoke the respective PIDs/EBWOIDs. Other attestation providers MAY decide to revoke the attestations their issued if the respective WUA is revoked.
-* **Wallet Providers** SHOULD ensure their Wallet Units regularly check the revocation status of its PIDs, attestations, and WUAs, and notify the User if any is revoked.
+* **Issuers** (PID/EBWOID Providers, EAA Providers, including QEAA, Pub-EAA) MUST implement attestation revocation for applicable attestations and that are valid for more than 24h. Revocable attestations MUST be assigned a random status list and random index within it before being signed, all in batches.
+* **Issuers** MUST ensure the invalid status for not yet expired and revoked attestations is published within a reasonable amount of time (under 1h?).
+* **Wallet Providers** SHOULD ensure their Wallet Units regularly check the revocation status of its PIDs/EBWOIDs and other attestations, and notify the User if any is revoked.
 * **Relying Parties** SHOULD check the revocation status via a Revocation Status Service. If reliable information is unavailable, they SHOULD perform a risk analysis rather than a mandatory failure.
 
 ## Advice
@@ -46,3 +43,4 @@ Once merged, this is our consortium’s decision. This does not mean all partici
 In the decision making process, we have heard the following advice:
 - 2026-02-04, Jonas Toeniss, Brønnøysundregistrene (BRC), Norway: Move Impact items to Consequences section
 - 2026-02-13, Feedback in WP4 Architecture meeting: Clarify that regular check of WUA revocation is a MUST only for PID/EBWOID Providers
+- 2026-02-17, Eelco Klaver, Credenco B.V., Netherlands: WUA implementation and impact to be decided in a separate ADR
