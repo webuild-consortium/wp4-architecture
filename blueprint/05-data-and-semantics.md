@@ -15,7 +15,7 @@ The WeBuild terminology is defined on the Nordic countries' interoperability pla
 The [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/skos/) is used to define the terminology.
 
 ## European Business Wallet Vocabulary
-The [European Wallet Vocabulary](https://ebw-vocabulary.spherity.dev/ebw/v0.1/vocabulary) will be developed within the WeBuild Large Scale Pilot. The vocabulary is maintained in [github](https://github.com/webuild-consortium/wp4-semantics-group/tree/main/vocab) and published in the web.
+The European Wallet vocabulary is maintained in [github](https://github.com/webuild-consortium/wp4-semantics-group/tree/main/vocab).
 The [Web Ontology Language (OWL)](https://www.w3.org/OWL/) is used to define classes, properties and individuals of the vocabulary. The terms of the vocabulary are linked to the concepts of the terminology to define their semantic.  
 
 ## Vocabulary mapping
