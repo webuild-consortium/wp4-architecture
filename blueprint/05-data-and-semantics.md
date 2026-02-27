@@ -10,7 +10,7 @@ The semantic model is defined across three layers.
 The top two layers are independent of the format of the attestations. The third layer, however, depends on the attestation format. Currently, only W3C VCDM 2.0 supports the mapping of semantic information into attestations. The meaning of the mDoc and SD-JWT-VC data fields needs to be provided in rulebooks. In this case, semantic interoperability between attestations isn't enforced.
 
 
-## Webuild Terminology 
+### WE BUILD Terminology 
 [The WE BUILD terminology](https://sanastot.suomi.fi/en/terminology/webuild) is hosted online and will serve as a blueprint for the final terminology of the European Digital Identity Framework.
 The [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/skos/) is used to define the terminology.
 
