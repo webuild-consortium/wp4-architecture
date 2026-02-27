@@ -115,7 +115,7 @@ flowchart LR
 _Concept diagram for discussion and alignment. Terminology and role labels should be interpreted in line with the EUDIW ARF and the corresponding WE BUILD architecture artefacts._
 
 ### The Business Wallet for Economic Operators and Public Sector Bodies
-To come: [Issue 63](https://github.com/webuild-consortium/wp4-architecture/issues/63) will produce concept model in collaboration with Wallet Group.
+The Business Wallet is described in further detail in [Appendix D](https://github.com/webuild-consortium/wp4-architecture/blob/main/blueprint/appendix-ebw-definition.md)
 
 The diagram below provides a concept-level view of the European Business Wallet ecosystem for economic operators (informative, non-normative).
 
