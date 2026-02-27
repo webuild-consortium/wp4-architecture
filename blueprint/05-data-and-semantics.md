@@ -1,4 +1,6 @@
-# Semantik Model of the European Business Wallet
+# The Information Inside the Wallet (Data & Content)
+
+## Semantic Model of the European Business Wallet
 
 The semantic model is defined across three layers.
 1. The top layer is the terminology, which defines terms and their abstract concepts. This layer also establishes the relationships between these terms at an abstract level.
