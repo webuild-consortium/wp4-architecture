@@ -15,7 +15,7 @@ This includes how Relying Parties (RPs) register, accept policies, and set up ac
 Building on the onboarding foundation, we have recently developed a complete set of trust evaluation use cases that describe how participants actually verify each other at runtime.
 These cover the Wallet Unit evaluating a Credential Issuer before requesting a PID or attestation; the Credential Issuer evaluating the Wallet Unit before issuing; the Wallet Unit evaluating a Relying Party before presenting attributes; the Relying Party evaluating presented credentials (PID, QEAA, PuB-EAA, non-qualified EAA); and the cross-cutting process of Trusted List discovery and consumption (how any participant finds and uses the LoTL and TLs).
 
-For detailed information on authorities, registries, responsibilities etc read [Appendix A - Trust Ecosystem](#appendix-a-trust-ecosystem) that describes everything in more detail.
+For detailed information on authorities, registries, responsibilities etc read [Appendix C - Trust Ecosystem](#appendix-c-trust-ecosystem) that describes everything in more detail.
 
 ### Relation to QTSP and Trust Registry
 
@@ -28,7 +28,7 @@ The blueprint aims to describe how WE BUILD structures and cross-references Rule
 
 ### Trust infrastructure architecture (overview)
 
-In the [Appendix - Trust Ecosystem](../appendix-trust-ecosystem.md) there is a diagrom that summarises the roles of Member State and European Commission, the split between registration and notification, and how Trusted Lists and the LoTL are produced and consumed. The simplified version for WE BUILD:
+In the [Appendix C - Trust Ecosystem](#appendix-c-trust-ecosystem) there is a diagram that summarises the roles of Member State and European Commission, the split between registration and notification, and how Trusted Lists and the LoTL are produced and consumed. The simplified version for WE BUILD:
 
 ````mermaid
 graph TB

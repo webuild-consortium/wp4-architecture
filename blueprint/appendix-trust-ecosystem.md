@@ -1,4 +1,4 @@
-# Appendix A - Trust Ecosystem
+# Appendix C – Trust Ecosystem
 
 The trust infrastructure for the EU Digital Identity and European Business Wallet ecosystem rests on three distinct but complementary processes: **registration/onboarding** of participants, **notification** of certain entities to the European Commission, and **publication of Trusted Lists** (or Lists of Trusted Entities) that provide cryptographic trust anchors for validation. WE BUILD aligns with the [EUDI Wallet Architecture and Reference Framework (ARF)](https://eudi.dev/) and the trust-infrastructure model described in the WP4 Trust Group deliverables.
 

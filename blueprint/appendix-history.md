@@ -1,4 +1,4 @@
-# Appendix C – Document History
+# Appendix B – Document History
 
 ## Changes
 

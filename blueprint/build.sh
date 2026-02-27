@@ -59,13 +59,16 @@ markdown-enum main-body.md 1 main-body-enum.md
 cat main-body-enum.md >> main.md
 
 echo >> main.md
-cat appendix-trust-ecosystem.md >> main.md
-
-echo >> main.md
 cat appendix-glossary.md >> main.md
 
 echo >> main.md
 cat appendix-history.md >> main.md
+
+echo >> main.md
+cat appendix-trust-ecosystem.md >> main.md
+
+echo >> main.md
+cat appendix-ebw-definition.md >> main.md
 
 echo "Running kramdoc..."
 kramdoc --auto-ids main.md -o main.adoc
@@ -81,4 +84,6 @@ asciidoctor-pdf ${ASCIIDOC_ARGS} main.adoc --out-file blueprint.pdf
 mkdir -p ../build_outputs_folder/blueprint
 cp blueprint.html ../build_outputs_folder/blueprint/blueprint.html
 cp *png ../build_outputs_folder/blueprint/
+rm -rf ../build_outputs_folder/images
+cp -R ../images ../build_outputs_folder/
 cp blueprint.pdf ../build_outputs_folder/blueprint/blueprint.pdf
