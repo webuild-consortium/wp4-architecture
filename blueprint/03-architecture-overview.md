@@ -13,7 +13,7 @@ Several sources exist for describing the more general 3rd party model, including
 
 ## System Landscape
 
-The diagram below illustrates the baseline trust topology of the EU wallet ecosystem. Issuers provide attestations to holders, holders present them to verifiers, and all parties anchor trust decisions against the EU trusted lists defined under ETSI TS 119 612 and ETSI TS 119 604 within the framework of the eIDAS Regulation.
+The diagram below illustrates the baseline trust topology of the EU wallet ecosystem. Issuers provide attestations to holders, holders present them to verifiers, and all parties anchor trust decisions against the EU trusted lists defined under ETSI TS 119 612 and ETSI TS 119 604 within the framework of the eIDAS Regulation. The trusted lists specify the recognised participants in schemes for electronic identification and trust services.
 
 ```mermaid
 graph LR;
@@ -24,16 +24,16 @@ graph LR;
   holder-->trust["trust "];
 ```
 
-In the WE BUILD project the focus is primarily on wallets for legal entities. In this case the regulation includes the use of qualified electronic registered delivery services to enable messaging services between entities in the ecosystem. Accordingly, the generic trust anchor is replaced by a Qualified Trust Service Provider operating a Qualified Electronic Registered Delivery Service (QTSP/QERDS), through which issuers, holders, and verifiers route their trust and messaging interactions. The diagram changes to this:
+In the WE BUILD project the focus is primarily on wallets for economic operators and public sector bodies. In this case the proposed regulation COM(2025) 838 includes the use of qualified electronic registered delivery services (QERDS) to enable messaging services between entities recognised in the ecosystem, and listed in a common digital directory. Accordingly, the generic trust anchor is replaced by a Qualified Trust Service Provider operating a Qualified Electronic Registered Delivery Service (QTSP/QERDS), through which senders and recipients route their trust and messaging interactions. The QTSP is recognised in a scheme for trust services, just like in the previous diagram, enabling other participants to verify QERDS evidence issued by the QTSP. The diagram changes to this:
 
 ```mermaid
 graph LR;
-  issuer-->holder;
-  holder-->verifier;
-  issuer-->QTSP/QERDS;
-  verifier-->QTSP/QERDS;
-  holder-->QTSP/QERDS;
+  sender-->recipient;
+  sender-->QTSP/QERDS;
+  recipient-->QTSP/QERDS;
 ```
+
+The sender and recipient can exchange documents such as electronic attestations of attributes and notifications. In some cases, senders and recipients can take the issuer-holder-verifier roles as illustrated above.
 
 ## Common Rules for Everyone
 Security, error handling, auditability, portability.
