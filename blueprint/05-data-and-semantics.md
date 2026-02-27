@@ -31,4 +31,3 @@ Furthermore, existing vocabularies for credential subjects of other domains are 
 Reuse works straight away for W3C VCDM 2.0 credentials. However, for mDoc and SD-JWT-VC, the rulebook owner needs to map existing vocabularies to the attestations if applicable.
 
 ## Decentralised identifiers and identity binding
-Linked data are based on unique identifiers. Cryptographic decentralised identifiers are used for identity binding. W3C credentials support holder binding and decentralised identities natively. They are an integral part of the semantic model. For other formats, identifiers and bindings are defined in the relevant rulebook by the rulebook owner.
