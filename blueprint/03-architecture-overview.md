@@ -121,4 +121,4 @@ The diagram below provides a concept-level view of the European Business Wallet 
 
 ![European Business Wallet concept model](../images/EBWconcept.png)
 
-_Concept diagram for discussion and alignment. It illustrates a WE BUILD-style business wallet landscape and should be read together with the Blueprint, ADRs, and Conformance Specifications for detailed implementation requirements._
+_Concept diagram for discussion and alignment. It illustrates a WE BUILD-style business wallet landscape_
