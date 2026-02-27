@@ -42,7 +42,6 @@ Security, error handling, auditability, portability.
 To be authored by Wallet Group. Describes the techn stacks, such as cloud-based vs. device-based solutions, and the differences between EUDIW for Natural Person and European Business Wallets for  economic operators.
 
 ### The EUDI Wallet for Natural Person
-To come: [Issue 63](https://github.com/webuild-consortium/wp4-architecture/issues/63) will produce concept model in collaboration with Wallet Group.
 
 The diagram below provides a concept-level view of the EUDI Wallet ecosystem for natural persons (informative, non-normative).
 
