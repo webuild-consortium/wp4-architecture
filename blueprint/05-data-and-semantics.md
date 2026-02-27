@@ -26,7 +26,7 @@ W3C VCDM 2.0 credentials support machine-readable semantic mapping. The context,
 If the credential format does not support semantic information, the meaning of the data fields are described in attestation rulebooks. In this case, the rulebook owner is responsible for providing the mapping to the semantic definitions of the vocabulary.
 
 ## Reuse of existing vocabularies
-The EBW vocabulary defines the domain-specific vocabulary of the WeBuild attestations. Vocabularies for credential metadata, proof mechanisms, security, decentralised identifiers, and credential status already exist and are reused.
+The EBW vocabulary defines the domain-specific vocabulary of the WE BUILD attestations. Vocabularies for credential metadata, proof mechanisms, security, decentralised identifiers, and credential status already exist and are reused.
 Furthermore, existing vocabularies for credential subjects of other domains are reused (e.g. digital product passports, supply chains, education, railway, dataspaces, etc.).
 Reuse works straight away for W3C VCDM 2.0 credentials. However, for mDoc and SD-JWT-VC, the rulebook owner needs to map existing vocabularies to the attestations if applicable.
 
