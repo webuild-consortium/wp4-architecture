@@ -41,7 +41,7 @@ flowchart TB
 
 ---
 
-In the WE BUILD project the focus is primarily on wallets for legal entities. In this case the regulation (Regulation (EU) 2025/2747) includes the use of qualified electronic registered delivery services to enable messaging services between entities in the ecosystem. Accordingly, the generic trust anchor is replaced by a Qualified Trust Service Provider operating a Qualified Electronic Registered Delivery Service (QTSP/QERDS), through which issuers, holders, and verifiers route their trust and messaging interactions. The European Digital Directory (Article 10) provides digital addressing for secure routing of documents and notifications. The diagram changes to this:
+In the WE BUILD project the focus is primarily on wallets for legal entities. In this case the regulation includes the use of qualified electronic registered delivery services to enable messaging services between entities in the ecosystem. Accordingly, the generic trust anchor is replaced by a Qualified Trust Service Provider operating a Qualified Electronic Registered Delivery Service (QTSP/QERDS), through which issuers, holders, and verifiers route their trust and messaging interactions. The European Digital Directory provides digital addressing for secure routing of documents and notifications. The diagram changes to this:
 
 ```mermaid
 %% WE BUILD trust topology with QTSP/QERDS and European Digital Directory
