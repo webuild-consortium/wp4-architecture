@@ -13,7 +13,7 @@ Several sources exist for describing the more general 3rd-party model, including
 
 ## System Landscape
 
-The diagram below illustrates the baseline trust topology of the EU wallet ecosystem.
+The diagram below illustrates the baseline trust topology of the EU wallet ecosystem. Issuers provide attestations to holders, holders present them to verifiers, and all parties anchor trust decisions against the EU trusted lists defined under ETSI TS 119 612 and ETSI TS 119 604 within the framework of the eIDAS Regulation.
 
 ```mermaid
 %% Baseline trust topology of the EU wallet ecosystem
@@ -21,7 +21,7 @@ flowchart TB
     issuer["Issuer&nbsp;&nbsp;"]
     holder["Holder&nbsp;&nbsp;"]
     verifier["Verifier&nbsp;&nbsp;"]
-    trust["Trusted Lists&nbsp;&nbsp;<br/><i>ETSI TS 119 612 / 604</i>"]
+    trust["WE BUILD Trusted Lists&nbsp;&nbsp;<br/><i>ETSI TS 119 612 / 604</i>"]
 
     issuer -->|"issues attestations<br/>(PID, EAA, QEAA)"| holder
     holder -->|"presents attestations<br/>(selective disclosure)"| verifier
