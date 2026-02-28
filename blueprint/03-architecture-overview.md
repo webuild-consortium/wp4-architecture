@@ -7,7 +7,7 @@ The EU digital identity and EU business wallet ecosystem is an instance of the 3
 2. **Issuer** — an entity that relies on authentic sources of information to issue electronic attestations of attributes to the holder's wallet. Issuer types include PID Providers, EBWOID Providers, QEAA Providers, PuB-EAA Providers, and non-qualified EAA Providers.
 3. **Verifier** — a relying party (natural person, economic operator, or public sector body) that requests and receives attestations based on information present in the wallet.
 
-The EU ecosystem for the natural person wallet is described in more detail in [ARF]. The European Business Wallet framework for legal persons is established by Regulation (EU) 2025/2747.
+The EU ecosystem for the natural person wallet is described in more detail in [ARF]. The corresponding document for the EU legal person wallet is in progress.
 
 Several sources exist for describing the more general 3rd-party model, including ongoing work in the IETF eg [https://datatracker.ietf.org/doc/draft-ietf-spice-vdcarch/]
 
