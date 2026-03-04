@@ -75,7 +75,191 @@ Security, error handling, auditability, portability.
 
 ## Wallet Implementation Models 
 To be authored by Wallet Group. Describes the techn stacks, such as cloud-based vs. device-based solutions, and the differences between EUDIW for Natural Person and European Business Wallets for  economic operators.
+
 ### The EUDI Wallet for Natural Person
-To come: [Issue 63](https://github.com/webuild-consortium/wp4-architecture/issues/63) will produce concept model in collaboration with Wallet Group.
-### The Business Wallet for Economic Operators
-To come: [Issue 63](https://github.com/webuild-consortium/wp4-architecture/issues/63) will produce concept model in collaboration with Wallet Group.
+
+The diagram below provides a concept-level view of the EUDI Wallet ecosystem for natural persons (informative, non-normative).
+
+```mermaid
+%% EUDI Wallet concept model for natural persons
+  flowchart TB
+      %% --- Roles ---
+      subgraph roles ["Roles"]
+          direction LR
+          H["Holder&nbsp;&nbsp;"]
+          RP["Relying Party&nbsp;&nbsp;"]
+          I["Issuer&nbsp;&nbsp;"]
+          R["Role&nbsp;&nbsp;"]
+      end
+
+      %% --- Users & Identity ---
+      subgraph identity ["Users & Identity"]
+          direction LR
+          U["User&nbsp;&nbsp;"]
+          NP["Natural Person&nbsp;&nbsp;"]
+          LP["Legal Person&nbsp;&nbsp;"]
+          PP["PID Provider&nbsp;&nbsp;"]
+          PID["PID&nbsp;&nbsp;"]
+      end
+
+      %% --- Wallet Solution ---
+      subgraph solution ["Wallet Solution"]
+          direction LR
+          WP["Wallet Provider&nbsp;&nbsp;"]
+          WS["Wallet Solution&nbsp;&nbsp;"]
+          WCC["Wallet Core Component(s)&nbsp;&nbsp;"]
+          WA["Wallet Application&nbsp;&nbsp;"]
+      end
+
+      %% --- Wallet Runtime ---
+      subgraph runtime ["Wallet Runtime"]
+          direction LR
+          WIC["Wallet Instance&nbsp;&nbsp;"]
+          WIT["Wallet Instance (External)&nbsp;&nbsp;"]
+          WIA["WIA / WTE&nbsp;&nbsp;"]
+      end
+
+      %% Type relationships (solid)
+      H -->|is type of| R
+      RP -->|is type of| R
+      I -->|is type of| R
+      I -->|is type of| PP
+
+      %% User relationships (solid)
+      R -->|has| U
+      U -->|is a| NP
+      U -->|is a| LP
+      U -->|controls| WIC
+
+      %% Issuance (solid, thick)
+      PP ==>|issues| PID
+      WP ==>|issues| WIA
+      WP -->|provides| WS
+
+      %% Authentication & validation (dashed)
+      U -.->|authenticated by| PID
+      WIC -.->|defines type and validates| PID
+      WIA -.->|validates| WIC
+
+      %% Wallet structure (solid)
+      WIC -->|instance of| WS
+      WS -->|consists of| WCC
+      WS -->|consists of| WA
+      WCC -->|integrates with| WA
+
+      %% Cross-wallet communication (dotted)
+      WIT -->|communicates with| WIC
+
+      %% Styling
+      classDef primaryRole fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000;
+      classDef component fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000;
+      classDef walletPart fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000;
+
+      class H,RP,I,NP,LP primaryRole;
+      class R,U,PP,PID component;
+      class WP,WS,WCC,WA,WIC,WIT,WIA walletPart;
+
+      %% Subgraph styling
+      style roles fill:none,stroke:#d6b656,stroke-width:1px,stroke-dasharray: 5 5
+      style identity fill:none,stroke:#9673a6,stroke-width:1px,stroke-dasharray: 5 5
+      style solution fill:none,stroke:#b85450,stroke-width:1px,stroke-dasharray: 5 5
+      style runtime fill:none,stroke:#b85450,stroke-width:1px,stroke-dasharray: 5 5
+```
+_Concept diagram for discussion and alignment. Terminology and role labels should be interpreted in line with the EUDIW ARF and the corresponding WE BUILD architecture artefacts._
+
+### The Business Wallet for Economic Operators and Public Sector Bodies
+The Business Wallet is described in further detail in [Appendix D](https://github.com/webuild-consortium/wp4-architecture/blob/main/blueprint/appendix-ebw-definition.md)
+
+The diagram below provides a concept-level view of the European Business Wallet ecosystem for economic operators (informative, non-normative).
+
+```mermaid
+%% European Business Wallet concept model for economic operators
+  flowchart TB
+      %% --- Roles ---
+      subgraph roles ["Roles"]
+          direction LR
+          H["Holder&nbsp;&nbsp;"]
+          RP["Relying Party&nbsp;&nbsp;"]
+          I["Issuer&nbsp;&nbsp;"]
+          R["Role&nbsp;&nbsp;"]
+      end
+
+      %% --- Ownership & Identity ---
+      subgraph identity ["Ownership & Identity"]
+          direction LR
+          O["Owner&nbsp;&nbsp;"]
+          EO["Economic Operator&nbsp;&nbsp;"]
+          U["User&nbsp;&nbsp;"]
+          NP["Natural Person&nbsp;&nbsp;"]
+          EP["EBWOID Provider&nbsp;&nbsp;"]
+          EID["EBWOID&nbsp;&nbsp;"]
+      end
+
+      %% --- Wallet Solution ---
+      subgraph solution ["EBW Solution"]
+          direction LR
+          EBP["EBW Provider&nbsp;&nbsp;"]
+          EBW["EBW&nbsp;&nbsp;"]
+          WCC["Wallet Core Component&nbsp;&nbsp;"]
+          WA["Wallet Application&nbsp;&nbsp;"]
+      end
+
+      %% --- Wallet Runtime ---
+      subgraph runtime ["Wallet Runtime"]
+          direction LR
+          EBI["EBW Instance&nbsp;&nbsp;"]
+          EUDI["EUDIW Instance&nbsp;&nbsp;"]
+          BW["BWUA&nbsp;&nbsp;"]
+      end
+
+      %% Type relationships (solid)
+      H -->|is type of| R
+      RP -->|is type of| R
+      I -->|is type of| R
+      I -->|is type of| EP
+
+      %% Ownership relationships (solid)
+      R -->|has| O
+      O -->|is an| EO
+      U -->|is a| NP
+      O -->|controls| EBI
+
+      %% Issuance (solid, thick)
+      EP ==>|issues| EID
+      EBP ==>|issues| BW
+      EBP -->|provides| EBW
+
+      %% Authentication & validation (dashed)
+      O -.->|authenticated by| EID
+      O -.->|is subject in| EID
+      EBI -.->|validates| EID
+      BW -.->|validates| EBI
+      WCC -.->|validates| EBI
+
+      %% Wallet structure (solid)
+      EBI -->|instance of| EBW
+      EBW -->|consists of| WCC
+      EBW -->|consists of| WA
+      WCC -->|integrates with| WA
+
+      %% User & cross-wallet interaction (solid)
+      U -->|accesses| WA
+      EBI -->|communicates with| WA
+      EUDI -->|communicates with| EBI
+
+      %% Styling
+      classDef primaryRole fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000;
+      classDef component fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000;
+      classDef walletPart fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000;
+
+      class H,RP,I,EO,NP primaryRole;
+      class R,O,EP,EID,U component;
+      class EBP,EBW,WCC,WA,EBI,EUDI,BW walletPart;
+
+      %% Subgraph styling
+      style roles fill:none,stroke:#d6b656,stroke-width:1px,stroke-dasharray: 5 5
+      style identity fill:none,stroke:#9673a6,stroke-width:1px,stroke-dasharray: 5 5
+      style solution fill:none,stroke:#b85450,stroke-width:1px,stroke-dasharray: 5 5
+      style runtime fill:none,stroke:#b85450,stroke-width:1px,stroke-dasharray: 5 5
+```
+_Concept diagram for discussion and alignment. It illustrates a WE BUILD-style business wallet landscape_
