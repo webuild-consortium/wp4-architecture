@@ -2,32 +2,32 @@
 
 ## Semantic Model of the European Business Wallet
 
-The semantic model is defined across three layers.
-1. The top layer is the terminology, which defines terms and their abstract concepts. This layer also establishes the relationships between these terms at an abstract level.
-2. The second layer is the vocabulary. It defines classes, properties, and individuals. Each term in the vocabulary is linked to an abstract concept in the terminology.
-3. The third layer involves mapping the vocabulary terms to the terms used in the attestations.
+The semantic model is organised into three layers:
+1. Terminology - which defines terms and their abstract concepts. This layer also establishes the relationships between these terms at an abstract level.
+2. Vocabulary - It defines classes, properties, and individuals. Each term in the vocabulary is linked to an abstract concept in the terminology.
+3. Attestation mapping - maps the vocabulary terms to the terms used in the attestations.
 
-The top two layers are independent of the format of the attestations. The third layer, however, depends on the attestation format. Currently, only W3C VCDM 2.0 supports the mapping of semantic information into attestations. The meaning of the mDoc and SD-JWT-VC data fields needs to be provided in rulebooks. In this case, semantic interoperability between attestations isn't enforced.
+The terminology and vocabulary layers are independent of attestation formats. The mapping layer depends on the format used.
 
+Currently, only W3C VCDM 2.0 supports machine-readable semantic mappings. For mDoc and SD-JWT-VC, the meaning of data fields must instead be defined in attestation rulebooks. In these cases, semantic interoperability between attestations is not automatically enforced.
 
 ### WE BUILD Terminology 
-[The WE BUILD terminology](https://sanastot.suomi.fi/en/terminology/webuild) is hosted online and will serve as a blueprint for the final terminology of the European Digital Identity Framework.
-The [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/skos/) is used to define the terminology.
+[The WE BUILD terminology](https://sanastot.suomi.fi/en/terminology/webuild) is published online and serves as a reference model for the terminology of the European Digital Identity Framework. The terminology is defined using the [Simple Knowledge Organisation System (SKOS)](https://www.w3.org/2004/02/skos/).
 
-## European Business Wallet Vocabulary
-The European Wallet vocabulary is maintained in [github](https://github.com/webuild-consortium/wp4-semantics-group/tree/main/vocab).
-The [Web Ontology Language (OWL)](https://www.w3.org/OWL/) is used to define classes, properties and individuals of the vocabulary. The terms of the vocabulary are linked to the concepts of the terminology to define their semantic.  
+### European Business Wallet Vocabulary
+The European Wallet vocabulary is maintained in [Github](https://github.com/webuild-consortium/wp4-semantics-group/tree/main/vocab).
+It is defined using the [Web Ontology Language (OWL)](https://www.w3.org/OWL/) which specifies classes, properties and individuals of the vocabulary.  
 
-### Vocabulary mapping
-To ensure semantic interoperability, all credentials subject used within the European Wallet Framework are model in the vocabulary. The terms defined in the vocabulary are mapped to the terms used in the attestations.
-W3C VCDM 2.0 credentials support machine-readable semantic mapping. The context, which defines the mapping for this credential format, is referred in the published vocabulary and the credential data carry semantic information.
-[JSON Linked Data](https://www.w3.org/TR/json-ld11/) is used to provide the mapping.
+To support semantic interoperability, credential subjects used within the EBW framework are modelled in the vocabulary. These vocabulary terms are then mapped to the corresponding elements used in attestations.
 
-If the credential format does not support semantic information, the meaning of the data fields are described in attestation rulebooks. In this case, the rulebook owner is responsible for providing the mapping to the semantic definitions of the vocabulary.
+If the credential format supports machine-readable semantic contexts, the mapping between credential data and the vocabulary can be embedded in the credential itself. Otherwise, the meaning of the data fields must be defined in attestation rulebooks, and the rulebook owner is responsible for mapping those fields to the vocabulary definitions.
 
-### Reuse of existing vocabularies
-The EBW vocabulary defines the domain-specific vocabulary of the WE BUILD attestations. Vocabularies for credential metadata, proof mechanisms, security, decentralised identifiers, and credential status already exist and are reused.
-Furthermore, existing vocabularies for credential subjects of other domains are reused (e.g. digital product passports, supply chains, education, railway, dataspaces, etc.).
-Reuse works straight away for W3C VCDM 2.0 credentials. However, for mDoc and SD-JWT-VC, the rulebook owner needs to map existing vocabularies to the attestations if applicable.
+**Reuse of existing vocabularies** 
+The EBW vocabulary defines the domain-specific vocabulary used in the WE BUILD attestations. Existing vocabularies are reused where possible, including those for credential metadata, proof mechanisms, security, decentralised identifiers, and credential status. Domain vocabularies from other sectors may also be reused (for example digital product passports, supply chains, education, railway and data spaces).
 
-## Decentralised identifiers and identity binding
+## Attestation Rulebooks and Credential Schemas
+WE BUILD defines rulebooks and credential data schemas for the attestations used in the project’s use cases. Rulebooks describe requirements, roles, processes and conformance criteria for specific attestations. They also define how credential data fields relate to the semantic vocabulary used in the project.
+
+Credential schemas define the structure of credential data and support implementers in producing interoperable credentials and validating that the data follows the agreed format.
+
+The rulebooks are maintained in the [WE BUILD Attestation Rulebooks repository](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks), including rulebooks for key credentials such as **PID** and **EBWOID**.
