@@ -138,69 +138,93 @@ The Business Wallet is described in further detail in [Appendix D](https://githu
 The diagram below provides a concept-level view of the European Business Wallet ecosystem for economic operators (informative, non-normative).
 
 ```mermaid
-%% fix cropped text in some browsers using "&nbsp;&nbsp;" in various labels
-flowchart LR
-    %% Entities
-    H[Holder]
-    RP["Relying Party&nbsp;&nbsp;"]
-    I["Issuer&nbsp;&nbsp;"]
-    R["Role&nbsp;&nbsp;"]
-    EO[Economic operator]
-    O[Owner]
-    EP["EBWOID Provider&nbsp;&nbsp;"]
-    EID["EBWOID&nbsp;&nbsp;"]
-    EUDI["EUDIW Instance&nbsp;&nbsp;"]
-    BW["BWUA&nbsp;&nbsp;"]
-    EBI["EBW Instance&nbsp;&nbsp;"]
-    EBP["EBW Provider&nbsp;&nbsp;"]
-    EBW["EBW&nbsp;&nbsp;"]
-    WCC[Wallet Core Component]
-    WA[Wallet Application]
-    U[User]
-    NP["Natural Person&nbsp;&nbsp;"]
+%% European Business Wallet concept model for economic operators
+  flowchart TB
+      %% --- Roles ---
+      subgraph roles ["Roles"]
+          direction LR
+          H["Holder&nbsp;&nbsp;"]
+          RP["Relying Party&nbsp;&nbsp;"]
+          I["Issuer&nbsp;&nbsp;"]
+          R["Role&nbsp;&nbsp;"]
+      end
 
-    %% Relationships
-    H -->|is type of| R
-    RP -->|is type of| R
-    I -->|is type of| R
-    I -->|is type of| EP
+      %% --- Ownership & Identity ---
+      subgraph identity ["Ownership & Identity"]
+          direction LR
+          O["Owner&nbsp;&nbsp;"]
+          EO["Economic Operator&nbsp;&nbsp;"]
+          U["User&nbsp;&nbsp;"]
+          NP["Natural Person&nbsp;&nbsp;"]
+          EP["EBWOID Provider&nbsp;&nbsp;"]
+          EID["EBWOID&nbsp;&nbsp;"]
+      end
 
-    R -->|has| O
-    O -->|is an| EO
+      %% --- Wallet Solution ---
+      subgraph solution ["EBW Solution"]
+          direction LR
+          EBP["EBW Provider&nbsp;&nbsp;"]
+          EBW["EBW&nbsp;&nbsp;"]
+          WCC["Wallet Core Component&nbsp;&nbsp;"]
+          WA["Wallet Application&nbsp;&nbsp;"]
+      end
 
-    O -->|controls| EBI
-    O -->|authenticated by| EID
-    O -->|is subject in| EID
+      %% --- Wallet Runtime ---
+      subgraph runtime ["Wallet Runtime"]
+          direction LR
+          EBI["EBW Instance&nbsp;&nbsp;"]
+          EUDI["EUDIW Instance&nbsp;&nbsp;"]
+          BW["BWUA&nbsp;&nbsp;"]
+      end
 
-    EP -->|issues| EID
-    EBI -->|validates| EID
+      %% Type relationships (solid)
+      H -->|is type of| R
+      RP -->|is type of| R
+      I -->|is type of| R
+      I -->|is type of| EP
 
-    EUDI -->|communicates with| EBI
-    BW -->|validates| EBI
+      %% Ownership relationships (solid)
+      R -->|has| O
+      O -->|is an| EO
+      U -->|is a| NP
+      O -->|controls| EBI
 
-    EBP -->|issues| BW
-    EBP -->|provides| EBW
+      %% Issuance (solid, thick)
+      EP ==>|issues| EID
+      EBP ==>|issues| BW
+      EBP -->|provides| EBW
 
-    EBI -->|instance of| EBW
-    EBI -->|communicates with| WA
-    WCC -->|validates| EBI
+      %% Authentication & validation (dashed)
+      O -.->|authenticated by| EID
+      O -.->|is subject in| EID
+      EBI -.->|validates| EID
+      BW -.->|validates| EBI
+      WCC -.->|validates| EBI
 
-    EBW -->|consists of| WCC
-    EBW -->|consists of| WA
+      %% Wallet structure (solid)
+      EBI -->|instance of| EBW
+      EBW -->|consists of| WCC
+      EBW -->|consists of| WA
+      WCC -->|integrates with| WA
 
-    WCC -->|integrates with| WA
+      %% User & cross-wallet interaction (solid)
+      U -->|accesses| WA
+      EBI -->|communicates with| WA
+      EUDI -->|communicates with| EBI
 
-    U -->|Accesses&nbsp;&nbsp;| WA
-    U -->|is a| NP
+      %% Styling
+      classDef primaryRole fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000;
+      classDef component fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000;
+      classDef walletPart fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000;
 
-    %% Styling to differentiate logical groups (Optional)
-    classDef greyBox fill:#f4f4f4,stroke:#ccc,stroke-width:1px,color:#333;
-    classDef tanBox fill:#fcecd4,stroke:#b5966a,stroke-width:1px,color:#333;
-    classDef yellowBox fill:#ffe699,stroke:#c4a450,stroke-width:1px,color:#333;
+      class H,RP,I,EO,NP primaryRole;
+      class R,O,EP,EID,U component;
+      class EBP,EBW,WCC,WA,EBI,EUDI,BW walletPart;
 
-    class H,RP,I,EO,NP greyBox;
-    class R,O,EP,EID,EUDI,BW,EBI,EBP,WCC,WA,U tanBox;
-    class EBW yellowBox;
-```
+      %% Subgraph styling
+      style roles fill:none,stroke:#d6b656,stroke-width:1px,stroke-dasharray: 5 5
+      style identity fill:none,stroke:#9673a6,stroke-width:1px,stroke-dasharray: 5 5
+      style solution fill:none,stroke:#b85450,stroke-width:1px,stroke-dasharray: 5 5
+      style runtime fill:none,stroke:#b85450,stroke-width:1px,stroke-dasharray: 5 5
 
 _Concept diagram for discussion and alignment. It illustrates a WE BUILD-style business wallet landscape_
