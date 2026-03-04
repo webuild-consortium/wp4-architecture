@@ -7,14 +7,13 @@ WE BUILD is strictly use-case driven. We have 13 specific use cases divided into
 - Supply Chain (WP2): Streamlining logistics, transport, and eInvoicing.
 - Payments & Banking (WP3): Making secure, fraud-resistant payments and simplifying bank onboarding.
 
-## WE BUILD’s Role in the EUDI and Business Wallet Journey
+## WE BUILD’s Role in the EUDI and EBW Journey
 WE BUILD operates within, but is not identical to, the final legally mandated EUDI and Business Wallet ecosystem. While the final ecosystem represents the mandatory end-state for all EU Member States, WE BUILD is the practical proving ground where these rules are tested and refined through use cases.
 
-### A Bridge to the Business Wallet 
 While the final EUDI ecosystem mandates a wallet for every citizen at Level of Assurance (LoA) High, WE BUILD is specifically pioneering the European Business Wallet. Unlike the citizen-centric wallet, the EBW is designed for economic operators to manage mandates, exchange professional documents like electronic invoices, and receive legally valid notifications. Some Business Wallet operations like onboarding and data portability target Level of Assurance (LoA) Substantial.
 
 ### Bridging ARF Gaps through Specifications and Testing
-The final ecosystem is strictly governed by the official [Architecture Reference Framework (ARF)](https://eudi.dev/latest/architecture-and-reference-framework-main/). However, because the ARF is still evolving, it does not yet cover every detail needed for complex scenarios. Also, in WE BUILD pre-production tests and pilots, the full production certification and qualification schemes cannot always be applied.
+The final EUDI ecosystem is strictly governed by the [Architecture Reference Framework (ARF)](https://eudi.dev/latest/architecture-and-reference-framework-main/). However, because the ARF is still evolving, it does not yet cover every detail needed for complex scenarios. Also, in WE BUILD pre-production tests and pilots, the full production certification and qualification schemes cannot always be applied.
 
 To address this, WE BUILD uses [WE BUILD Conformance Specifications (WBCS)](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) and [Architectural Decision Records (ADRs)](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) to create consortium-specific rules that dictate the implementation for our pilots.
 
@@ -39,14 +38,13 @@ WP4 does not build technology for its own sake. Our technical groups - Architect
 
 WP2 and WP3 use cases are expected to implement the technology provided by WP4, rather than develop parallel solutions. 
 
-### How WP4 Works: From Strategy to Testing and Piloting
 To ensure interoperability across participants, we use three levels of documentation:
 
 1. This **Blueprint (D4.1)**: The "big picture." It describes high-level patterns and how the different parts of the system fit together.
-2. [**Architectural Decision Records (ADRs)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) document and justify major architectural decisions. When we make a major choice (like which standard to use), we document it here to ensure everyone understands the rationale.
+2. [**Architectural Decision Records (ADRs)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) document and justify major architectural decisions. When we make a choice (like which standard to use), we document it here to ensure everyone understands the reasoning behind it.
 3. [**WE BUILD Conformance Specifications (WBCS)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) define the detailed technical requirements that implementations must follow. If you implement your service according to these specs, you will be able to pass our automated tests.
 
-The Interoperability Testbed (ITB) is a first step toward understanding conformity assessment requirements. In a controlled consortium environment, regulatory and technical specifications are translated into executable interoperability scenarios to expose gaps. This builds the technical and organisational maturity required before entering formal certification processes.
+The Interoperability Testbed (ITB) is a first step toward understanding conformity assessment requirements. In a controlled consortium environment, regulatory and technical specifications are translated into executable interoperability scenarios. 
 
 ## How to get started
 The Blueprint is your starting point to understand the "WE BUILD way" of doing things.
