@@ -29,6 +29,10 @@ function extract_last_parenthesis() {
     grep --color=none '.md)$' | rev | cut -d ')' -f 2 | cut -d '(' -f 1 | rev
 }
 
+function extract_last_parenthesis_in_line() {
+    grep --color=none '.md)' | rev | cut -d ')' -f 2 | cut -d '(' -f 1 | rev
+}
+
 export GEM_HOME="$HOME/gems"
 export PATH="$HOME/gems/bin:$PATH"
 export CHROME_DEVEL_SANDBOX=$(realpath -m chrome/linux-145.0.7632.46/chrome-linux64/chrome_sandbox)
@@ -90,7 +94,8 @@ done
 # CS appendix, gathers all conformance specifications
 echo >> main.md
 cat appendix-cs.md >> main.md
-for CS in cs-01-credential-issuance.md cs-02-credential-presentation.md; do
+for CS in $(cat ../conformance-specs/README.md | extract_last_parenthesis_in_line); do
+    echo "Adding CS: ${CS}"
     echo >> main.md
     cat ../conformance-specs/${CS} | indent_headers | indent_headers >> main.md
 done
