@@ -1,14 +1,12 @@
 # Regulatory and Foundational Alignment
-The WE BUILD project is anchored in a  legal framework designed to reduce administrative burdens and strengthen the Single Market. Our architectural choices are driven by two key mandates: [Regulation (EU) No 910/2014](https://eur-lex.europa.eu/eli/reg/2014/910/oj/eng), as amended by [Regulation (EU) 2024/1183](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1183), for natural persons and the [European Business Wallet proposal](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A52025PC0838) for economic operators.
 
-Technical development follows mandatory rules such as the Article 5 revocation requirements and the "Business-Wallet-by-Default" principle, ensuring our infrastructure supports future initiatives. 
+The WE BUILD project is anchored in a legal framework designed to reduce administrative burdens and strengthen the Single Market. Our architectural choices are driven by two key instruments: [Regulation (EU) No 910/2014](https://eur-lex.europa.eu/eli/reg/2014/910/oj/eng), as amended by [Regulation (EU) 2024/1183](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1183), and the proposed [European Business Wallet proposal](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex%3A52025PC0838) for economic operators.
 
 ## The EUDI Framework
-WE BUILD’s use case designs, governance and assurance approach will be aligned to the legal requirements for wallets that are mutually recognised across the EU and usable in both public and private sector service contexts.
+WE BUILD’s use case design, governance model and assurance approach align with the legal requirements for wallets that are mutually recognised across the EU and usable in both public and private sector services.
+In practical terms, WE BUILD relies on the core principles of the EUDI framework. These include enabling users to authenticate and present identity and attributes in a legally recognised way, while ensuring that users retain control over data sharing through selective disclosure and explicit user consent.
 
-In practical terms, WE BUILD will rely on the EUDI framework’s core policy commitments: enabling users to authenticate and present identity and attributes in a legally recognised manner, while ensuring that users retain control over data sharing (including selective disclosure and user consent as the operating principle). 
-
-The amended eIDAS Regulation is operationalized through several implementing regulations that harden the technical and governance requirements into enforceable rules as follows:
+The amended eIDAS Regulation is implemented through a set of implementing acts that translate legal requirements into concrete technical and governance rules.
 
 **Core wallet architecture and technical framework**
   - [2024/2979 – Integrity and core functionalities](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202402979)
@@ -34,34 +32,34 @@ The amended eIDAS Regulation is operationalized through several implementing reg
 
 ## The EBW Framework
 
-The European Business Wallet (EBW) framework is introduced through the European Commission’s [Digital Package proposal](https://digital-strategy.ec.europa.eu/en/news/simpler-eu-digital-rules-and-new-digital-wallets-save-billions-businesses-and-boost-innovation) as part of its 2025 Work Programme. The proposal aims to establish the EBW as a harmonised digital solution to reduce administrative burden and to enable companies and public sector bodies to identify, authenticate and exchange data with legal effect across the European Union.
+The European Business Wallet (EBW) framework is introduced through the European Commission’s [Digital Package proposal](https://digital-strategy.ec.europa.eu/en/news/simpler-eu-digital-rules-and-new-digital-wallets-save-billions-businesses-and-boost-innovation) as part of its 2025 Work Programme. The proposal aims to establish the EBW as a harmonised digital solution that reduces administrative burden and allows companies and public authorities to identify, authenticate and exchange data with legal effect across the European Union.
 
-The EBW framework complements the EUDI framework by addressing the needs of economic operators and public authorities. It includes digital management of representation rights and mandates, a secure channel for exchanging official documents and attestations, and support for a common directory. Interoperability with the EUDI Wallet is a stated requirement.
+The EBW framework complements the EUDI framework by addressing the needs of economic operators and public authorities. It supports the digital management of representation rights and mandates, provides a secure channel for exchanging official documents and attestations, and includes support for a common directory. Interoperability with the EUDI Wallet is a core requirement.
 
-The proposal foresees support for the management and use of Electronic Attestations of Attributes (EAA), including owner identification data, with selective disclosure. It establishes requirements for authenticating owners and authorised users through (Q)EAAs, enabling links between EAAs and other attestations, and ensuring that relying parties may access EAAs on the basis of proper authorisation.
+The proposal supports the management and use of Electronic Attestations of Attributes (EAA), including owner identification data with selective disclosure. It defines requirements for authenticating owners and authorised users through (Q)EAAs and enables links between EAAs and other attestations. Access to EAAs by relying parties requires proper authorisation.
 
-In addition, the framework relies on existing eIDAS trust services, including:
+The framework also relies on existing eIDAS trust services, including:
 
 - Qualified Electronic Signatures (QES)  
 - Qualified Electronic Seals (QESeals)  
 - Qualified Electronic Time Stamps  
 - Qualified Electronic Registered Delivery Services (QERDS) for secure transmission of electronic documents and data  
 
-The EBW proposal also introduces a European Digital Directory maintained by the Commission. The directory functions as a trusted internal system where EBW providers notify relevant service information and which supports digital addressing. Detailed technical and organisational requirements are to be defined in implementing acts.
+The proposal also introduces a European Digital Directory maintained by the Commission. The directory functions as a trusted internal system where EBW providers notify relevant service information and where digital addressing can be supported. Detailed requirements will be defined in future implementing acts.
 
-The regulation provides for role-based access to accommodate multiple authorised users and facilitates secure data exchange between EBWs, EUDI Wallets and relying parties, while allowing additional functionalities provided that core features remain unaffected.
+The regulation supports role-based access so that multiple authorised users can operate a wallet. It also enables secure data exchange between EBWs, EUDI Wallets and relying parties, while allowing additional functionalities provided that core features remain unaffected.
 
-From a technical perspective, the framework promotes the use of common protocols for sharing attestations, requires secure onboarding through eID means with a Level of Assurance (LoA) of at least Substantial, and mandates interoperability, secure communication interfaces, and mechanisms for validation and revocation. Further requirements will be specified in implementing regulations.
+From a technical perspective, the framework promotes the use of common protocols for sharing attestations. It requires secure onboarding using eID with a Level of Assurance (LoA) of at least Substantial and mandates interoperability, secure communication interfaces, and mechanisms for validation and revocation. Further requirements will be defined in implementing acts.
 
-Within WE BUILD, the proposed EBW framework is treated as a primary regulatory and architectural reference for business-focused identity and data exchange scenarios. Use case design and piloting activities are aligned with the EBW model’s legal structure, interoperability requirements and trust-service framework, taking forthcoming implementing acts into account as they become available.
+Within WE BUILD, the proposed EBW framework is treated as a primary regulatory and architectural reference for business-focused identity and data exchange scenarios. Use case design and pilot activities align with the EBW model’s legal structure, interoperability requirements and trust-service framework, while taking forthcoming implementing acts into account.
 
 ## Standardization and Technical Specifications
-The WE BUILD consortium will rely upon several technical specifications and standards.
+The WE BUILD consortium relies upon several technical specifications and standards.
 
-The European Commission in collaboration with the European Digital Identity Cooperation Group has published the EUDI Wallet Architecture and Reference Framework (ARF) and the related Technical Specifications.
+The European Commission, together with the European Digital Identity Cooperation Group, has published the EUDI Wallet Architecture and Reference Framework (ARF) and related technical specifications.
 
-- **The EUDI Wallet Architecture and Reference Framework (ARF):** The [EUDIW ARF](https://eudi.dev/latest/architecture-and-reference-framework-main/) is written by the EUDI Wallet Expert Group, supervised by the EU Commission DG-CNCT, and specifies the following aspects of the EUDI Wallet ecosystem: main functionalities, roles and responsibilities, architecture and design principles, attestation formats and protocols, trust model, certification, risk management.
-- **The EUDI Wallet Technical Specifications:** The [EUDI Wallet Technical Specifications](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/tree/main/docs/technical-specifications) are created by the EU Commission, in collaboration with the European Digital Identity Cooperation Group and the European Standards Organizations (ESO), and specify more technical details of selected topics derived from the ARF. The technical specifications describe various topics such as Relying Party registrations, zero-knowledge proofs, attestation rulebooks, schemas and catalogues, etc.
+- **The EUDI Wallet Architecture and Reference Framework (ARF):** The [EUDIW ARF](https://eudi.dev/latest/architecture-and-reference-framework-main/) specifies the following aspects of the EUDI Wallet ecosystem: main functionalities, roles and responsibilities, architecture and design principles, attestation formats and protocols, trust model, certification, and risk management.
+- **The EUDI Wallet Technical Specifications:** The [EUDI Wallet Technical Specifications](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/tree/main/docs/technical-specifications) are created by the EU Commission, in collaboration with the European Digital Identity Cooperation Group and the European Standards Organizations (ESO), and specify more technical details of selected topics derived from the ARF. The technical specifications describe various topics such as Relying Party registrations, zero-knowledge proofs, attestation rulebooks, schemas and catalogues.
 
 Furthermore, there are several standardization organizations that contribute with standards for the EUDIW ecosystem.
 
@@ -76,8 +74,8 @@ Furthermore, there are several standardization organizations that contribute wit
 In addition to the aforementioned standardization organizations, the [European Cybersecurity Agency (ENISA)](https://www.enisa.europa.eu/) is developing the [EUDI Wallet Certification Scheme](https://certification.enisa.europa.eu/browse-topic/eudi-wallet_en), which will be published as an implementing regulation under the Cybersecurity Act. The purpose of the EUDI Wallet Certification Scheme is to harmonize the national certifications of the EU Member States' EUDI Wallets.
 
 ## Architectural Principles
-- **Interoperability:** This is our primary goal, ensuring that different wallet providers, issuers, and verifiers can communicate seamlessly across borders and different sectors. 
-- **Reusability:** WE BUILD is designed to maximize efficiency by building upon existing EU digital infrastructures and successful results from previous Large Scale Pilots. 
-- **Security-by-design:** Security is integrated into the architecture from the start, aiming at following the strict mandates for Level of Assurance (LoA) High for citizens and Substantial for business transactions. 
-- **Privacy-by-design:** While business interactions require transparency and traceability, we need to ensure that users maintain sole control over their data. 
+- **Interoperability:** Ensuring that different wallet providers, issuers and verifiers can communicate seamlessly across borders and sectors.
+- **Reusability:** Maximising efficiency by building on existing EU digital infrastructures and results from previous Large Scale Pilots.
+- **Security-by-design:** Integrating security into the architecture from the start.
+- **Privacy-by-design:** Ensuring that users retain control over their data while maintaining the transparency and traceability required in business interactions.
 
