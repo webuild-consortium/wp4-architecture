@@ -20,12 +20,25 @@ A technical decomposition (front end, back end, and cryptographic components) is
 
 Each Business Wallet has a single **wallet owner**, which is the entity that the wallet represents through its interactions. Note that this is distinct from, for example, the company owner or the wallet provider.
 
-The wallet owner is defined by **owner identification data**, which includes an official name and an EU-unique identifier. These owner identification data are issued into the business wallet as an electronic attestation of attributes.
+The wallet owner is defined by **European Business Wallet Owner Identification Data (EBW-OID)**, which includes an official name and an EU-unique identifier. These owner identification data are issued into the business wallet as an electronic attestation of attributes.
 
 A Business Wallet can have multiple **wallet users**, meaning natural or legal persons that operate the wallet through a user interface or an application programming interface under roles and mandates set by the wallet owner. These wallet users may apply software applications to access these interfaces. Some users may be **authorised representatives**, while others may be employees or service providers operating within delegated permissions.
 
 ### Conceptual model
-![Conceptual model](../images/EBW-def-1.png)
+```mermaid
+graph LR
+    A(Other Business Wallets) --> B(Business Wallets)
+    C(Attestation Providers and Other Trust Service Providers) --> B
+    B --> D(Other Business or Digital Identity Wallets)
+    B --> E(Other Relying Parties)
+
+    %% Styling
+    classDef externalActor stroke:#0000ff, stroke-width:2px
+    classDef businessWallet color:#ffffff, fill:#0000ff, stroke:#0000aa, stroke-width:2px, font-weight:bold, border-radius:15px
+
+    class A,C,D,E externalActor
+    class B businessWallet
+```
 
 ## Business Wallet definition
 
