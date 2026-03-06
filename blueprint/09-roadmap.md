@@ -7,7 +7,7 @@ The roadmap for Months 8–19 is dedicated to maturing the trust infrastructure 
 
 **Table of Milestones Deliverables for Months 8-19**
 
-| **Month** | **Type** | **Reference and  Title** | **Connection to D4.1** |
+| **Month** | **Type** | **Reference and Title** | **Connection to D4.1** |
 |---|---|---|---|
 | 10 | Deliverable | D4.3 Attestations Data Models & PID/EBWOID Rulebook | Finalizes the data structures for the issuance patterns defined in D4.1 |
 | 11 | Milestone | MS5 WP2 Pilot Design Complete (Business) | Finalizes the scope of business use journeys based on D4.1 architectural patterns |
