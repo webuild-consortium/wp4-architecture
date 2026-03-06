@@ -20,6 +20,7 @@ The Task 2 trust-infrastructure schema defines the following responsibilities ma
 | :--- | :--- | :--- | :--- |
 | **PID Provider** | Register with MS Registrar | European Commission (EU-level TL for PID Providers) | None (no national TL for PID Providers) |
 | **Attestation Provider** | Register with MS Registrar | Member State / MS TLP (national QTSP TL for QEAA Providers; national TL for non-qualified EAA Providers) | Compiles, signs, and publishes national Trusted Lists (QTSP TL for QEAA Providers per Article 22; EAA Provider TL for non-qualified EAA Providers) |
+| **Relying Party Intermediary (RPI)** | Register with MS Registrar per served RP | N/A (uses Access Certificates and Registry) | None (not listed in Trusted Lists) |
 | **Relying Party (RP)** | Register with MS Registrar | N/A (uses Access Certificates and Registry) | None (not listed in Trusted Lists) |
 | **Wallet Provider** | Notification only (by MS to EC) | European Commission (EU-level TL for Wallet Providers) | Not applicable in [MVP](#working-group-scope-mvp-and-mvp) (notification from MS to EC only) |
 | **Access CA** | Notification only (by MS to EC) | European Commission (EU-level TL for Access CAs) | Not applicable in [MVP](#working-group-scope-mvp-and-mvp) (notification from MS to EC only) |
@@ -272,6 +273,24 @@ flowchart TB
     WPTL -.-> Issuance
     Issuer -->|5. Trust established?<br/>Issue credential| WU
 ```
+### Relying Party Intermediaries in the Trust Ecosystem
+
+RPIs introduce an additional trust relationship layer:
+
+**Direct Trust Relationships:**
+- RP → RPI (contractual service relationship)
+- RPI → QTSP/EAASP (trust list verification)
+- Wallet → Registration Authority or Registrar (RP-RPI relationship verification)
+
+**Indirect Trust Relationships:**
+- Wallet → RP (via RPI validation and RP registration)
+- RP → Issuer (via RPI trust status checking)
+
+**Critical Trust Requirements:**
+- RPIs must not store attribute data (Article 5b(10))
+- RPIs should meet TSP-equivalent security requirements
+- Validation performed by RPI must be reliably communicated to RP
+- Wallet holders must be able to verify both RPI and RP identities
 
 ## Governance Responsibilities
 
