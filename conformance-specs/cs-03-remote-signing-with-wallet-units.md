@@ -232,6 +232,9 @@ The `transaction_data` array MUST contain the following object, base64url-encode
   ]
 }
 ```
+> **NOTE_CSRS_03** In this profile, the base64url-decoded `transaction_data` value is the CSC `qesRequest` object with `type` `https://cloudsignatureconsortium.org/2025/qes`.
+> The `credential_ids` values refer to the `id` of the associated DCQL credential query, and not to CSC API `credentialID` values.
+> For interoperability with Wallet Units that validate `transaction_data` strictly, Relying Parties should not include additional profile-specific members unless this specification defines them.
 
 ## 8.2 Presentation Endpoint
 
