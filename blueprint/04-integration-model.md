@@ -1,13 +1,6 @@
 # How the Wallet Interacts with Services
-Todo:
- - EBW: the issuing we do
- - This chapter describes the general **WE BUILD PID/EBWOID issuing process** in a sequence diagram.
- - Mention ETSI standardization: ETSI TS 119 472-3 for (Q)EAA and PID issuance. ETSI TS 119 476-3 will standardize WUA and WIA.
- - High-Level Flows - Revocation and status checking
- - PID issuing
 
 ## Interaction Pattern: Attestation Issuance
-To be authored by Group 6 (QTSP) and Group 7 (Wallets). Focuses on how use cases get data into the wallet (e.g., PID or QEAA) using protocols like OpenID4VCI (but no need to mention that part, stuff like that should be mainly in CS). 
 
 The [WE BUILD Consortium Conformance Specification (CS)](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-01-credential-issuance.md) for high-assurance credential issuance defines the requirements that will be applied within the WE BUILD project to ensure that Wallet Units and Credential Issuers across the WE BUILD ecosystem interoperate reliably and consistently when issuing verifiable digital credentials, with strong security guarantees and privacy protections.
 
@@ -81,6 +74,64 @@ Wallet-->>Wallet: Validates the credential
 Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
+### General EBWOID issuing process
+The sequence diagram below shows the minimum issuance flow for an EBWOID credential. It focuses on the common steps shared across use cases. Optional activities and alternative flows may be included in extended versions of the diagram.
+
+``` mermaid
+sequenceDiagram
+  autonumber
+  actor Rep as Representative
+  participant Issuer as EBWOID Issuer
+  participant AS as Authentic Source
+  participant Wallet as Business Wallet
+  %%participant Reg as Revocation / Directory Services
+
+  rect rgb(245,245,245)
+    Note left of Rep: Initiate request
+    Rep->>Issuer: Initiate EBWOID request
+    Rep->>Issuer: Provide credentials (LoA Substantial)
+    Issuer-->>Issuer: Verify user credentials
+  end
+
+  rect rgb(235,245,255)
+    Note left of Issuer: Verify eligibility
+      Issuer->>Rep: Request economic operator information
+      Rep-->>Issuer: Provide economic operator information
+      Issuer->>AS: Request authentic economic operator information
+      AS-->>Issuer: Provide authentic economic operator information
+      Issuer->>Issuer: Verify economic operator status
+      Issuer->>AS: Request user powers
+      AS-->>Issuer: Provide user powers information
+      Issuer->>Issuer: Verify user powers
+      Wallet-->>Issuer: Wallet eligible
+  end
+  
+rect rgb(235,245,255)
+    Note left of Issuer: Verify Wallet
+    Issuer->>Rep: Request wallet address
+    Rep-->>Issuer: Provide wallet address
+    Issuer->>Issuer: Verify wallet eligibility / status
+end
+
+  rect rgb(235,245,255)
+    Note left of Issuer: Issue EBWOID attestation
+    Issuer->>AS: Request EBWOID information
+    AS->>Issuer: Provide EBWOID information
+    Issuer->>Issuer: Construct EBWOID
+    Issuer->>Wallet: Issue EBWOID
+    Wallet-->>Wallet: Store EBWOID in wallet
+  end
+
+  rect rgb(235,245,255)
+    Note left of Issuer: Publish revocation information & register issuance
+    %% Should it be the issuer or will there be a revocation or directory service
+    Issuer->>Issuer: Publish revocation / status information
+    Issuer->>Issuer: Register EBWOID issuance information
+  end
+
+  Issuer-->>Rep: Confirm EBWOID issuance complete
+```
+Find out more in the [EBWOID Rulebook](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/ds001-ebw-oid-rulebook.md)
 
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 
