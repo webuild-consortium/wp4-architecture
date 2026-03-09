@@ -75,7 +75,7 @@ Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
 ### General EBWOID issuing process
-The sequence diagram below shows the minimum issuance flow for an EBWOID credential. It focuses on the common steps shared across use cases. Optional activities and alternative flows may be included in extended versions of the diagram.
+The [EBWOID Rulebook](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/ds001-ebw-oid-rulebook.md) provides more details on the EBWOID. The sequence diagram below shows the minimum issuance flow for an EBWOID credential. It focuses on the common steps shared across use cases. Optional activities and alternative flows may be included in extended versions of the diagram.
 
 ``` mermaid
 sequenceDiagram
@@ -89,7 +89,7 @@ sequenceDiagram
   rect rgb(245,245,245)
     Note left of Rep: Initiate request
     Rep->>Issuer: Initiate EBWOID request
-    Rep->>Issuer: Provide credentials (LoA Substantial)
+    Rep->>Issuer: Provide credentials 
     Issuer-->>Issuer: Verify user credentials
   end
 
@@ -131,7 +131,6 @@ end
 
   Issuer-->>Rep: Confirm EBWOID issuance complete
 ```
-Find out more in the [EBWOID Rulebook](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/ds001-ebw-oid-rulebook.md)
 
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 
