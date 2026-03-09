@@ -69,11 +69,11 @@ flowchart TB
     class directory governance;
 ```
 
-## Wallet Types in the WE BUILD Ecosystem
+## Wallet Types in WE BUILD 
 
 WE BUILD supports wallet solutions for both natural persons and economic operators.
 
-Natural persons interact through **EUDI Wallets**, which enable individuals to authenticate and present personal identity attributes. Economic operators interact through **European Business Wallets (EBW)**, which enable organisations to manage and present business-related attestations such as representation rights or organisational attributes.
+Natural persons interact through EUDI Wallets, which enable individuals to authenticate and present personal identity attributes. Economic operators interact through EBW, which enable organisations to manage and present business-related attestations such as representation rights or organisational attributes.
 
 From a deployment perspective, wallet solutions can be implemented in several ways depending on the target users, operational requirements, and cryptographic architecture. In practice, three main implementation approaches are relevant within the WE BUILD ecosystem.
 
