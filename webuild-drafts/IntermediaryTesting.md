@@ -73,7 +73,10 @@ Wallet Holder → EUDIW → RPI → Relying Party
 
 **Characteristics:**
 
-- RPI handles protocol negotiation with wallet
+- RPI handles protocol negotiation with wallet for the scope of the presentation flows
+
+- RPI handles protocol negotiation with subordinates RPs for the scope of the interoperability with legacy infrastructures and data exchange mechanisms
+
   
 - RPI performs attestation validation
   
