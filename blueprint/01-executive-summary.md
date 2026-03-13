@@ -23,7 +23,7 @@ The future EUDI ecosystem is defined through the [Architecture Reference Framewo
 
 To address these gaps, WE BUILD defines project-specific implementation rules through: 
 - [WE BUILD Conformance Specifications (WBCS)](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) – technical rules that implementations must follow.
-- [Architectural Decision Records (ADRs)](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) documented architecture decisions that guide the project.
+- [Architectural Decision Records (ADRs)](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) – documented architecture decisions that guide the project.
 
 In the final ecosystem, wallets and services must undergo formal certification by national supervisory bodies. 
 
@@ -50,8 +50,8 @@ WP2 and WP3 use cases are expected to use the capabilities provided by WP4 rathe
 
 To ensure interoperability across participants, WE BUILD uses three levels of documentation:
 
-1. This **Architecture & Integration Blueprint (D4.1)** - the high-level architecture and system overview.
-2. [**Architectural Decision Records (ADR)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) - explain major architecture decisions and the reasoning behind them.
+1. This **Architecture & Integration Blueprint (D4.1)** – the high-level architecture and system overview.
+2. [**Architectural Decision Records (ADR)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) – explain major architecture decisions and the reasoning behind them.
 3. [**WE BUILD Conformance Specifications (WBCS)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) – define the detailed technical requirements that implementations must follow.
 
 The governance process behind ADRs and WBCS, including how decisions are proposed and adopted, is described in Chapter 7.
