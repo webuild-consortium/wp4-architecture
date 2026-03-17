@@ -15,7 +15,7 @@ WE BUILD operates within the emerging EUDI and EBW ecosystem, but it is not the 
 
 In the final EUDI ecosystem, every EU citizen will receive an EUDI Wallet at Level of Assurance (LoA) High.
 
-WE BUILD focuses in particular on the EBW - designed for economic operators to manage mandates, exchange trusted business documents such as electronic invoices, and receive legally valid notifications. Some EBW functions, such as onboarding and data portability, will operate at Level of Assurance (LoA) Substantial.
+WE BUILD focuses in particular on the EBW, designed for economic operators to manage mandates, exchange trusted business documents such as electronic invoices, and receive legally valid notifications. Some EBW functions, such as onboarding and data portability, will operate at LoA Substantial.
 
 ### Bridging ARF Gaps through Specifications and Testing
 
@@ -23,42 +23,40 @@ The future EUDI ecosystem is defined through the [Architecture Reference Framewo
 
 To address these gaps, WE BUILD defines project-specific implementation rules through: 
 - [WE BUILD Conformance Specifications (WBCS)](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) – technical rules that implementations must follow.
-- [Architectural Decision Records (ADRs)](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) documented architecture decisions that guide the project.
+- [Architectural Decision Records (ADRs)](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) – documented architecture decisions that guide the project.
 
 In the final ecosystem, wallets and services must undergo formal certification by national supervisory bodies. 
 
-WE BUILD operates in a pilot setting but builds functional, interoperable software that is as close to production-ready as possible. Where relevant, later sections refer back to this pilot framework rather than repeating these distinctions.
-
 | WE BUILD does not | WE BUILD does |
 |---------------|----------------|
-| certify EUDI wallets | provide WE BUILD wallets that pass the ITB |
-| rely on eIDAS-eID | provide WE BUILD-eID, with fictitious but realistic identities |
-| create eIDAS-qualified e-signatures | define WE BUILD-qualification of e-signatures, focusing on realistic technical interoperability |
-| use real MS registries | involve real public sector bodies where possible, and otherwise simulate them, always with fictitious registries |
+| certify EUDI wallets | provide WE BUILD wallets that pass ITB testing |
+| rely on eIDAS-eID | provide WE BUILD eID with fictitious but realistic identities |
+| create eIDAS-qualified e-signatures | define WE BUILD qualification of e-signatures focused on technical interoperability |
+| use real MS registries | use real public sector bodies where possible, otherwise simulate them using fictitious |
 | use the EC List of Trusted Lists (LoTL) | provide a WE BUILD LoTL |
-| use the MS Trusted lists (TL) | provide WE BUILD TLs, with feedback from real supervisory bodies if available |
+| use the MS Trusted lists (TL) | provide WE BUILD TLs with input from supervisory bodies where available |
 | reach production-level legal liability | operate within the WE BUILD agreement and trust framework, not within eIDAS |
-| deal with national policy-making | let the WP5 MS Forum indicate where alignment with national policy-making is advisable |
-| deal with universal definitions | assess how far WE BUILD semantics can go within the available timeframe |
+| deal with national policy-making | use the WP5 MS Forum to indicate alignment with national policy-making |
+| deal with universal definitions | define WE BUILD semantics within the available timeframe |
 | issue EUDIW-RP access certificates | issue WE BUILD RP access certificates |
-| issue eIDAS-QEAA | define WE BUILD-QEAA, focusing on realistic technical interoperability |
+| issue eIDAS-QEAA | define WE BUILD QEAA focused on technical interoperability |
 
 ## Work Package 4 (WP4) - General Capabilities
-WP4 provides the shared technical capabilities that enable the WE BUILD use cases. Our technical groups - Architecture, Semantics, Wallet Providers, PID & EBWOID Provider, Qualified Trust Service Provider (QTSP), Trust Registry Infrastructure, and Test Infrastructure exist solely to provide the engine that powers the use cases. 
+The technical groups in WP4 - Architecture, Semantics, Wallet Providers, PID & EBWOID Providers, Qualified Trust Service Provider (QTSP), Trust Registry Infrastructure, and Test Infrastructure - provide the technical capabilities that support the use cases. 
 
 WP2 and WP3 use cases are expected to use the capabilities provided by WP4 rather than developing parallel technical solutions.
 
 To ensure interoperability across participants, WE BUILD uses three levels of documentation:
 
 1. This **Architecture & Integration Blueprint (D4.1)** - the high-level architecture and system overview.
-2. [**Architectural Decision Records (ADR)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) - explain major architecture decisions and the reasoning behind them.
-3. [**WE BUILD Conformance Specifications (WBCS)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) – define the detailed technical requirements that implementations must follow.
+2. [**Architectural Decision Records (ADR)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/adr) - explains major architecture decisions and the reasoning behind them.
+3. [**WE BUILD Conformance Specifications (WBCS)**](https://github.com/webuild-consortium/wp4-architecture/tree/main/conformance-specs) – defines the detailed technical requirements that implementations must follow.
 
 The governance process behind ADRs and WBCS, including how decisions are proposed and adopted, is described in Chapter 7.
 
 The Interoperability Testbed (ITB) is a first step toward understanding conformity assessment requirements. In a controlled consortium environment, regulatory and technical specifications are translated into executable interoperability scenarios.
 
-## How to get Started
+## Getting Started
 The Blueprint is the starting point for understanding how WE BUILD works.
 
 - Technical teams should begin with the WBCS to implement their interfaces.
