@@ -5,7 +5,7 @@ While the previous chapter describes the regulatory and architectural frameworks
 
 - **Interoperability:** Wallet providers, issuers and verifiers interact across organisational and national boundaries.
 - **Reusability:** The architecture builds on existing EU digital infrastructure and results from previous Large Scale Pilots.
-- **Security by design:**Security controls are integrated into the architecture from the start.
+- **Security by design:** Security controls are integrated into the architecture from the start.
 - **Privacy by design:** Users retain control over personal and organisational data through selective disclosure and explicit consent.
 
 ## The Ecosystem at a Glance
