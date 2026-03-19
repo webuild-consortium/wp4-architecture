@@ -1,4 +1,4 @@
-# Appendix D - Business Wallet Definition
+# Appendix D. Business Wallet Definition
 
 Revision 1.0
 

@@ -1,4 +1,4 @@
-# Appendix F: Conformance Specifications (CS)
+# Appendix G. Conformance Specifications (CS)
 
 ## About
 

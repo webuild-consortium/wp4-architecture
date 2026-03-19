@@ -1,4 +1,4 @@
-# Appendix E: Architecture decision records
+# Appendix F. Architecture decision records
 
 [WE BUILD](https://www.webuildconsortium.eu/) maintains a lightweight architecture decision record (ADR) for each software-related decision affecting interoperability.
 
