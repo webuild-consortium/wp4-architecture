@@ -4,7 +4,7 @@ The previous chapter described the structure of the information stored in wallet
 
 ## Trust Ecosystem
 
-The trust infrastructure for the EUDI and EBW ecosystem is based on three complementary processes: **registration/onboarding** of participants, **notification** of certain entities to the European Commission, and **publication of Trusted Lists** (or Lists of Trusted Entities) that provide cryptographic trust anchors for validation. 
+The trust infrastructure for the EUDI and EBW ecosystem is based on three complementary processes: registration/onboarding of participants, notification of certain entities to the European Commission, and publication of Trusted Lists (or Lists of Trusted Entities) that provide cryptographic trust anchors for validation. 
 
 ## Establishing Trust Between Participants
 
@@ -64,51 +64,27 @@ graph TB
 ````
 WE BUILD participants select the registry in which they register.
 
-## Revocation Scenarios 
-The following scenarios align with and extend the revocation baseline defined in the [EUDI Wallet Architecture and Reference Framework (ARF)](https://eudi.dev/). EBWOID revocation follows the same principles as PID revocation where applicable for the European Business Wallet; any additional provisions are as defined in the EBW proposal and related ARF updates.
+## Revocation 
+Revocation ensures that attestations that are no longer valid can no longer be trusted or used. 
 
-It is necessary to identify and categorize all potential situations that necessitate the invalidation of a PID, an EBWOID, or a Wallet. The resulting framework should address a wide range of real-world events, from user-initiated requests to administrative actions and security incidents.
-
-* **Explicit User Request:** A direct request from the holder or an authorised representative to revoke the relevant data.
-     
-* **Data Inaccuracy or Modification:** Revocation initiated by the provider when the holder's underlying data is found to be inaccurate or has been officially modified.
-   * _Example: The holder changes their name and the PID needs to be reissued._
-     
-* **Regulatory Changes:** Revocation required by regulatory changes that result in an incompatible PID/EBWOID, such as a required attribute being added, removed or renamed.
-   * _Example:  A new obligatory attribute is introduced in the EBWOID following a new regulation._
-     
-* **Loss, Theft, or Compromise:** Notification that the holder's credentials or authentication device have been lost, stolen, or otherwise compromised.
-     
-* **Provider Revocation:** Revocation of wallet unit certificate (e.g. as a result of Wallet Provider compromise) or PID/LPID Provider certificate.
-   * _Example: A Wallet Provider fails to meet mandatory security compliance standards, resulting in the withdrawal of its authorization to operate in the eIDAS Trust Framework and is thus not allowed to provide wallet solutions anymore._
-     
-* **Abusive or Fraudulent Use:** Detection of abusive, fraudulent, or unauthorised activities associated with the identity data.
-   * _Example 1: An economic operator observes that the business wallet is used for unauthorised transactions by representatives of the company._
-   * _Example 2: A law enforcement agency asks the PID provider by court order for revocation of a criminal user's PID._
-     
-* **Prolonged Inactivity:** Revoking/Cancelling of reissuance due to extended periods of non-use, as defined by the provider's policy.
-   * _Example: A new PID is issued to replace an expiring one, but the holder fails to actively accept or "pick up" the new credential within the allowed grace period, leading the provider to revoke/cancel the unclaimed PID to prevent it from remaining in a pending state._
-     
-* **Violation of Service Terms:** A breach of contractual obligations, service terms of use, or other applicable regulations by the holder.
-   * _Example: The EBWOID Issuer's terms of service specify an annual fee for issued attestations which the business fails to pay._
-     
-* **End-of-life Revocation Events:** End of life lifecycle events for natural respectively legal persons.
-  * _Example PID: Death of holder_
-  * _Example EBWOID: Termination of the legal entity/business activity, such as liquidation of a company._
+WE BUILD distinguishes between attestation revocation, which is handled by issuers, and revocation or withdrawal of providers and services, which is reflected in the trust infrastructure.
 
 ### Technical realisation
+Revocation of PID, EBWOID and attestations is implemented by issuers. In WE BUILD, attestation revocation follows the agreed mechanism defined in the [ADR on Attestation Revocation](https://github.com/webuild-consortium/wp4-architecture/blob/main/adr/attestation-revocation-mechanism.md), based on the IETF Token Status List and aligned with OpenID4VC HAIP.
 
-Revocation of PID or attestation data itself is implemented by issuers through issuer-specific mechanisms (e.g. revocation lists). **Revocation or withdrawal of providers or services** is reflected in the trust infrastructure as follows: (1) status changes in **Trusted Lists / Lists of Trusted Entities** (e.g. service status values, withdrawn or suspended), and (2) where applicable, invalidation of access or unit certificates. Wallet Units and Relying Parties SHALL evaluate Trusted Lists and registry information per the referenced ETSI procedures and ARF trust-evaluation requirements (e.g. ISSU_24, ISSU_24a, ISSU_34a, RPA_04, RPRC_16, RPRC_21) so that revoked or withdrawn providers and services are not trusted. Formats and procedures are specified in the WP4 Trust Group trust-infrastructure schema and ETSI trusted lists implementation profile.
+Short-lived attestations (valid for 24 hours or less) are not subject to revocation.
+
+Revocation or withdrawal of providers and services is reflected in the trust infrastructure through status changes in Trusted Lists and, where applicable, invalidation of certificates. 
 
 ### Provider Obligations
 To maintain a trusted ecosystem, PID and EBWOID providers agree to:
-  * Publish clear policies stating when and how data is revoked.
-  * Own the Authority: only the original issuer can materially revoke the data it issued.
-  * Notify holders promptly: if data is revoked, the holder must be informed of the reason within 24 hours via a secure channel.
-  * Be Irreversible: Once identity data is revoked, it stays revoked to prevent fraud.
+  * Define and publish revocation policies.
+  * Ensure that only the issuing authority can revoke its attestations.
+  * Publish revocation status information within a reasonable time frame.
 
 ### Conditions for Mandatory Revocation
 According to the rules, a provider must revoke without delay if:
  * The holder explicitly requests it.
  * The security of the wallet app itself (the unit certificate) is compromised.
  * Any of the specific situations defined in the provider's public policy occur.
+
