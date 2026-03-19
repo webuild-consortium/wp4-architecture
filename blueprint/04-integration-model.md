@@ -84,53 +84,62 @@ sequenceDiagram
   actor Rep as Representative
   participant Issuer as EBWOID Issuer
   participant AS as Authentic Source
-  participant Wallet as Business Wallet
-  %%participant Reg as Revocation / Directory Services
+  participant IW as Issuer Business Wallet /Component
+  participant HW as Holder Business Wallet
+  %%participant Reg as Revocation Directory
 
   rect rgb(245,245,245)
     Note left of Rep: Initiate request
-    Rep->>Issuer: Initiate EBWOID request
-    Rep->>Issuer: Provide credentials 
+    Rep->>Issuer: Visit eService of EBWOID issuer
+    %% either through an eservice or initiated from the wallet
+    Rep->>Issuer: Provide user credentials (LoA Substantial)
     Issuer-->>Issuer: Verify user credentials
+    Rep->>Issuer: Initiate EBWOID request
+    Rep->>Issuer: Provide economic operator identifier
+    %%user can either provide, select or choose the identifier
+    Rep->>Issuer: Provide endpoint information
+    %%EBW. could be previously registered. issuer needs to understand where to send the credential offer
   end
 
   rect rgb(235,245,255)
     Note left of Issuer: Verify eligibility
-      Issuer->>Rep: Request economic operator information
-      Rep-->>Issuer: Provide economic operator information
-      Issuer->>AS: Request authentic economic operator information
-      AS-->>Issuer: Provide authentic economic operator information
+      Issuer->>AS: Request economic operator information
+      AS-->>Issuer: Provide economic operator information
       Issuer->>Issuer: Verify economic operator status
       Issuer->>AS: Request user powers
       AS-->>Issuer: Provide user powers information
       Issuer->>Issuer: Verify user powers
-      Wallet-->>Issuer: Wallet eligible
+      %%Assumption the user has representation or signatory rights to request EBWOID issuance according to national regulation
+      %%The issuer may need a signature as part of the eligibility process
   end
   
-rect rgb(235,245,255)
-    Note left of Issuer: Verify Wallet
-    Issuer->>Rep: Request wallet address
-    Rep-->>Issuer: Provide wallet address
-    Issuer->>Issuer: Verify wallet eligibility / status
-end
-
   rect rgb(235,245,255)
     Note left of Issuer: Issue EBWOID attestation
     Issuer->>AS: Request EBWOID information
-    AS->>Issuer: Provide EBWOID information
-    Issuer->>Issuer: Construct EBWOID
-    Issuer->>Wallet: Issue EBWOID
-    Wallet-->>Wallet: Store EBWOID in wallet
-  end
+    AS-->>Issuer: Provide EBWOID information
+    Issuer->>IW: Request EBWOID issuance
+    IW->>IW: Construct EBWOID
 
-  rect rgb(235,245,255)
-    Note left of Issuer: Publish revocation information & register issuance
-    %% Should it be the issuer or will there be a revocation or directory service
-    Issuer->>Issuer: Publish revocation / status information
-    Issuer->>Issuer: Register EBWOID issuance information
-  end
+    rect rgb(255,245,255)
+%%Verify that the wallet is operational to receive the EBWOID credential
 
-  Issuer-->>Rep: Confirm EBWOID issuance complete
+    Note left of Issuer: Verify Wallet
+    IW->>HW: Request proof of state operational
+    HW-->>IW: Provide proof
+    IW->>IW: Verify wallet status
+end
+    IW->>HW: Issue EBWOID
+    HW->>HW: Store EBWOID
+    %%Business 
+    IW-->>Issuer: Notify of issuance
+    
+    rect rgb(245,345,355)
+    Note left of Issuer: Publish revocation information for longlived EBWOID
+    Issuer->>Issuer: Publish revocation information
+    %%Publish to Trust register
+end
+    Issuer-->>Rep: Notify representative (and economic operator)
+end
 ```
 
 ## Interaction Pattern: Attestation Presentation (Receiving) 
