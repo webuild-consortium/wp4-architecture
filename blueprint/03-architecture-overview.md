@@ -17,6 +17,7 @@ The EUDI Wallet and EBW ecosystem follows the common three-party attestation mod
 
 ## System Landscape
 The diagram below illustrates the baseline trust topology of the EU wallet ecosystem. Issuers provide attestations to holders, holders present them to verifiers, and all actors validate trust relationships using the trusted lists.
+The trusted lists specify the recognised participants in schemes for electronic identification and trust services.
 
 ```mermaid
 %% Baseline trust topology of the EU wallet ecosystem
@@ -40,38 +41,38 @@ flowchart TB
     class trust component;
 ```
 
-WE BUILD focuses primarily on wallets for economic operators. 
-In these scenarios, qualified electronic registered delivery services (QERDS) support trusted messaging between participants. 
-Accordingly, interactions between issuers, holders and verifiers may be routed through a Qualified Trust Service Provider (QTSP) operating a QERDS. 
-The European Digital Directory provides digital addressing for secure routing of documents and notifications.
+WE BUILD focuses primarily on wallets for economic operators and public sector bodies. 
+In these scenarios, qualified electronic registered delivery services (QERDS) support trusted messaging between recognised participants. 
+Accordingly, interactions between data senders and receipients may be routed through a Qualified Trust Service Provider (QTSP) providing a QERDS. 
+The QTSP is recognised in a scheme for trust services, just like in the previous diagram, enabling other participants to verify QERDS evidence issued by the QTSP.
+The WE BUILD Digital Directory (simulating the European Digital Directory) provides economic and public sector bodies with digital addressing for secure routing of documents and notifications.
 
-In WE BUILD, the ecosystem typically includes the following additional components:
+While this model can apply to any data transmission, the senders, recipients and their QERDS providers can take the issuer-holder-verifier roles as illustrated as above.
+The QERDS provides an additional layer in the WE BUILD ecosystem:
 
 ```mermaid
-%% WE BUILD trust topology with QTSP/QERDS and European Digital Directory
-flowchart TB
-    issuer["Issuer&nbsp;&nbsp;"]
-    holder["Holder&nbsp;&nbsp;"]
-    verifier["Verifier&nbsp;&nbsp;"]
-    qtsp["QTSP / QERDS&nbsp;&nbsp;"]
-    directory["European Digital<br/>Directory"]
+%% WE BUILD additional trust topology with the QERDS and the European Digital Directory
+graph TB
+    Directory["WE BUILD<br>Digital Directory"]
+    TL["WE BUILD<br>Trusted Lists"]
+    subgraph Users[Wallet users]
+      direction LR
+      Sender
+      Recipient
+    end
+    Sender-->|"submits documents using the QERDS to"|Recipient
+    Sender-->|"uses the QERDS to notify"|Recipient
+    Users-->|"discover wallet services and capabilities using"|Directory
+    Users-->|"validate QERDS evidence against"|TL
 
-    issuer -->|"issues EBWOID &<br/>attestations"| holder
-    holder -->|"presents attestations<br/>(selective disclosure)"| verifier
-    issuer -.->|"signing/sealing certificates &<br/>revocation via QERDS"| qtsp
-    holder -.->|"transmits/receives documents &<br/>signs/seals"| qtsp
-    verifier -.->|"sends/receives<br/>notifications via QERDS"| qtsp
-    qtsp -->|"routes via<br/>digital addresses"| directory
-    holder -.->|"registers<br/>digital address"| directory
-
-    %% Styling
+    classDef group fill:#ffffff,stroke:#d6b656,stroke-width:2px,color:#000;
     classDef primaryRole fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000;
     classDef component fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000;
     classDef governance fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000;
 
-    class issuer,holder,verifier primaryRole;
-    class qtsp component;
-    class directory governance;
+    class Users group
+    class Sender,Recipient primaryRole
+    class Directory,TL governance
 ```
 
 ## Wallet Types in WE BUILD 
