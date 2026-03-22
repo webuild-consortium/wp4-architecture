@@ -97,7 +97,7 @@ sequenceDiagram
     Rep->>Issuer: Initiate EBWOID request
     Rep->>Issuer: Provide economic operator identifier
     %%user can either provide, select or choose the identifier
-    Rep->>Issuer: Provide endpoint information
+    Issuer->>Rep: discover wallet endpoint
     %%EBW. could be previously registered. issuer needs to understand where to send the credential offer
   end
 
