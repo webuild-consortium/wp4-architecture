@@ -75,7 +75,63 @@ Wallet-->>Wallet: Validates the credential
 Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
+### PID Issuing Process
+[Text needed as an intro.]
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User
+    participant OS as OS
+    participant WalletApp as Wallet App
+    participant WalletProvider as Wallet Provider
+    participant HSM as HSM
+    participant PidIssuer as Pid Issuer
+    participant IDP as IDP
 
+rect rgb(245,245,245)
+    Note right of User: Wallet installation
+    User->>OS:Download app and installation from official store
+    OS->>WalletApp:control genuinity
+end
+
+rect rgb(245,245,245)
+    Note right of User: Wallet initiation
+    User->>WalletApp:Launch app
+    WalletApp->>OS:Device check
+    OS->>WalletApp:Store device keys
+    WalletApp->>WalletProvider:Device validation of key pairs
+    WalletProvider-->>WalletApp:Issue WIA
+    WalletApp->>WalletApp:Store WIA
+    User->>WalletApp:Enter PIN
+    WalletApp->>WalletApp:Setup Wallet Lock
+    WalletApp->>WalletProvider:Wallet registration
+    WalletProvider->>HSM:Optional Key generation
+    HSM-->>WalletApp:Issue WUA
+end
+
+ rect rgb(245,245,245)
+    Note right of User: Pid Issuance
+    User->>WalletApp: select Pid Provider (1...N)
+    WalletApp-->>User: asks for Wallet PIN?
+    WalletApp->>PidIssuer: WIA
+    Note right of WalletApp:WIA is sent to the PID Issuer to Authenticate the WA and check the WP trusted root
+
+  rect rgb(235,245,255)
+    Note right of WalletApp: ID proofing based on existing eID at LoA High
+    PidIssuer->>IDP:User authentication
+    WalletApp->>IDP:User ID check (NFC) with national eID card on LoA High
+    IDP-->>WalletApp:Respond with access token
+  end
+
+    WalletApp->>PidIssuer:Use access token and WUA to request Pid
+    PidIssuer->>PidIssuer:Issue Pid credentials
+    PidIssuer->>PidIssuer:Pid Issuer stores revocation details
+    PidIssuer->>PidIssuer:Pid Issuer signs Pid
+    PidIssuer->>WalletApp:Send Pid credentials
+    WalletApp->>User:User accepts Pid alternatively is informed that the Pid is stored
+    User->>WalletProvider:Store credential
+end
+```
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 
 In this pattern, a verifier requests specific attestations from the wallet. The wallet presents the requested information, typically using selective disclosure mechanisms, and the verifier validates the received data.
