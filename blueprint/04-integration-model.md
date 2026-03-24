@@ -76,7 +76,7 @@ Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
 ### PID Issuing Process
-The following sequence diagram illustrates a generic transactions for Personal Identity Data (PID) issuance during the initial onboarding process.
+The following sequence diagram illustrates a generic transaction for Personal Identity Data (PID) issuance during the initial onboarding process.
 
 The sequence diagram applies specifically to solutions involving mobile-based wallets (including hybrid cloud or on-prem models). The interaction sequence may therefore not fully align with the architectural constraints or interaction patterns of an entirely web-based wallet environment.
 
