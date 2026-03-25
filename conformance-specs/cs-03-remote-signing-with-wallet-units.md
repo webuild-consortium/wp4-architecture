@@ -1,7 +1,13 @@
 # WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units
 
 Version 1.0-draft
-Date: 05 March 2026
+Date: 25 March 2026
+
+**Authors**: WP4 Architecture  
+
+- Lal Chandran, iGrant.io, Sweden
+- Hristian Daskalov, EvroTrust, Bulgaria
+- George J Padayatti, iGrant.io, Sweden
 
 **Table of Contents**
 - [WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units](#we-build---conformance-specification-remote-qualified-signing-with-wallet-units)
