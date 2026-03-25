@@ -76,62 +76,89 @@ Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
 ### PID Issuing Process
-[Text needed as an intro.]
+The following sequence diagram illustrates a generic transaction for Personal Identity Data (PID) issuance during the initial onboarding process.
+
+The sequence diagram applies specifically to solutions involving mobile-based wallets (including hybrid cloud or on-prem models). The interaction sequence may therefore not fully align with the architectural constraints or interaction patterns of an entirely web-based wallet environment.
+
+It illustrates the 'Happy Path' for PID issuance. For the sake of readability, exception handling and error states are not depicted.
+
+This diagram shows a wallet-initiated flow; however, the interactions could alternatively be triggered by the PID Provider/Issuer. Regardless of the starting point, the transactions should remain largely the same, though the sequence in which they occur may differ. The decision to model the diagram starting within the wallet reflects the impressions of the current implementation landscape. Based on demonstrations and published documentation, many member states and service providers seem to favor a user-initiated onboarding journeys starting within their mobile wallet application.
+
 ```mermaid
 sequenceDiagram
     autonumber
     actor User as User
     participant OS as OS
-    participant WalletApp as Wallet App
+    participant Wallet as Wallet Unit
     participant WalletProvider as Wallet Provider
-    participant HSM as HSM
-    participant PidIssuer as Pid Issuer
-    participant IDP as IDP
+    participant WSCD as WSCA/WSCD
+    participant PIDIssuer as PID Issuer
 
 rect rgb(245,245,245)
-    Note right of User: Wallet installation
-    User->>OS:Download app and installation from official store
-    OS->>WalletApp:control genuinity
+  Note right of User: Wallet Launch (Activation)
+    User->>Wallet: Initiation of wallet
+    Wallet->>OS: Device check
+    OS->>Wallet: Store device keys
+    Wallet->>WalletProvider: Device validation of key pairs
+    WalletProvider-->>Wallet: Issue WIA
+    Wallet->>Wallet: Store WIA
+    User->>Wallet: Verify Authentication Factor
+    Wallet->>Wallet: Setup Wallet Lock
+    Wallet->>WalletProvider: Wallet registration
+    WalletProvider->>WSCD: Optional Key generation
+    WSCD->>WalletProvider:Public key + hardware attestation
+    WalletProvider-->>Wallet: Issue WUA
 end
 
 rect rgb(245,245,245)
-    Note right of User: Wallet initiation
-    User->>WalletApp:Launch app
-    WalletApp->>OS:Device check
-    OS->>WalletApp:Store device keys
-    WalletApp->>WalletProvider:Device validation of key pairs
-    WalletProvider-->>WalletApp:Issue WIA
-    WalletApp->>WalletApp:Store WIA
-    User->>WalletApp:Enter PIN
-    WalletApp->>WalletApp:Setup Wallet Lock
-    WalletApp->>WalletProvider:Wallet registration
-    WalletProvider->>HSM:Optional Key generation
-    HSM-->>WalletApp:Issue WUA
-end
+    Note right of User: PID Issuance
+    User->>Wallet: select PID Provider (1...N)
+    Wallet->>User: Request PID and confirm request
+    Wallet->>PIDIssuer: WIA (and WUA)
+    Note right of Wallet: WIA/WUA is sent to authenticate the Wallet Unit [10]
 
- rect rgb(245,245,245)
-    Note right of User: Pid Issuance
-    User->>WalletApp: select Pid Provider (1...N)
-    WalletApp-->>User: asks for Wallet PIN?
-    WalletApp->>PidIssuer: WIA
-    Note right of WalletApp:WIA is sent to the PID Issuer to Authenticate the WA and check the WP trusted root
+    rect rgb(235,245,255)
+        Note right of Wallet: ID proofing [11, 12]
+        User->>PIDIssuer: User authentication
+        PIDIssuer-->>Wallet: Respond with access token
+    end
 
-  rect rgb(235,245,255)
-    Note right of WalletApp: ID proofing based on existing eID at LoA High
-    PidIssuer->>IDP:User authentication
-    WalletApp->>IDP:User ID check (NFC) with national eID card on LoA High
-    IDP-->>WalletApp:Respond with access token
-  end
-
-    WalletApp->>PidIssuer:Use access token and WUA to request Pid
-    PidIssuer->>PidIssuer:Issue Pid credentials
-    PidIssuer->>PidIssuer:Pid Issuer stores revocation details
-    PidIssuer->>PidIssuer:Pid Issuer signs Pid
-    PidIssuer->>WalletApp:Send Pid credentials
-    WalletApp->>User:User accepts Pid alternatively is informed that the Pid is stored
-    User->>WalletProvider:Store credential
+    Wallet->>PIDIssuer: Use access token and WUA to request PID
+    PIDIssuer->>PIDIssuer: Issue PID credentials
+    PIDIssuer->>PIDIssuer: PID Issuer stores revocation details
+    PIDIssuer->>PIDIssuer: PID Issuer signs PID
+    PIDIssuer->>Wallet: Send PID (cryptographically bound to WSCD) [13]
+    Wallet->>User: User accepts and stores PID [14]
+    User->>WalletProvider: (Optional) Update Migration Object [15]
 end
 ```
+
+**Description of PID Issuing Process steps**
+1. The user launches the Wallet
+2. Do device check to prove that the device environment is secure and untampered and collect evidence. 
+3. Generate and store hardware protected device keys (possession factor).
+4. Validate device integrity evidence in order to issue Wallet Instance Attestation (WIA). 
+5. The WIA is sent to the Wallet by the Wallet provider. It is a short-lived token attestation that proves that the Wallet is genuine and the Wallet Provider is trusted.
+6. The WIA is stored in the Wallet.
+7. The user is prompted to authenticate.
+8. The Wallet sets up a secure user private key storage. 
+9. A user profile is created at the Wallet provider, linked to the device, user and wallet instance.
+10. Optional: In some processes, a user protected signing key is generated in a Wallet Secure Cryptographic Device/Application (WSCD/WSCA) and a reference is associated with the user-profile.
+11. Optional: Response with a public key and hardware attestation
+12. With the assurance of hardware protected keys and user control over a device and Wallet, the Wallet Provider generates the Wallet Unit Attestation (WUA). The WUA is a key-attestation and proof that the user's keys for a certain Wallet are managed securely. 
+13. User is prompted to choose a PID Provider.
+14. User unlocks the secure storage in order to be able to use the WUA and WIA. 
+15. WIA is sent to the PID Issuer to authenticate the wallet attestation and check the Wallet Provider trusted root.
+16. The user is authenticated. How authentication works depends on the PID issuer and methods used.
+17. Optional: The PID Issuer response the authentication with the access token.
+18. The Wallet sends the access token and WUA to the PID Issuer
+19. PID Issuer verifies access token and validates WUA. PID Issuer obtains data for PID (f.ex. in trusted channel from IDP)
+20. PID Issuer stores revocation details inside the PID attestation and its own register and reserves an index (if status lists are used).
+21. PID Issuer signs the PID
+22. PID Issuer sends PID credentials to the Wallet
+23. User accepts the PID in the Wallet
+24. In some cases the PID can be stored server-side (Wallet Provider)
+
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 
 In this pattern, a verifier requests specific attestations from the wallet. The wallet presents the requested information, typically using selective disclosure mechanisms, and the verifier validates the received data.
