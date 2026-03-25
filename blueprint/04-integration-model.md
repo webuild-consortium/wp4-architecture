@@ -75,8 +75,12 @@ Wallet-->>Wallet: Validates the credential
 Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
-### General EBWOID issuing process
-The [EBWOID Rulebook](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/ds001-ebw-oid-rulebook.md) provides more details on the EBWOID. The sequence diagram below shows the minimum issuance flow for an EBWOID credential. It focuses on the common steps shared across use cases. Optional activities and alternative flows may be included in extended versions of the diagram.
+### EBWOID issuing process
+The EBW Owner Identification Data (EBWOID) is the primary identifier and credential for economic operators and is required to operate an EBW. It is issued by the responsible authentic source and stored in the EBW of the economic operator. Once the EBWOID is available, the economic operator can participate in the EBW ecosystem and store additional attestations. The EBWOID therefore serves as the foundational credential for the EBW. 
+
+The key verification steps in its issuance must be carried out in accordance with legal requirements and consistently across the ecosystem. Further details are provided in the [EBWOID Rulebook](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/ds001-ebw-oid-rulebook.md).
+
+The sequence diagram below shows the minimum issuance flow for an EBWOID credential. It focuses on the common steps shared across use cases. Optional activities and alternative flows may be included in extended versions of the diagram.
 
 ``` mermaid
 sequenceDiagram
