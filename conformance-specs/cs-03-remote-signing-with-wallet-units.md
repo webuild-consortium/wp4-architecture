@@ -49,7 +49,7 @@ It covers:
 - Signer consent requirements specific to qualified electronic signatures
 - Inline and out-of-band signed document delivery
 
-> **NOTE_CSRS_01** The `qesApproval` flow (provider-centric model using mdoc or SD-JWT VC approval credentials) is out of scope for this version and will be addressed in a subsequent version. For provider-centric remote signing with long-term certificates, see EWC RFC-010 [6].
+> **NOTE_CSRS_01** The `qesApproval` flow (provider-centric model using mdoc or SD-JWT VC approval credentials) is out of scope for this version and will be addressed in a subsequent version.
 
 # 2. Scope
 
@@ -73,6 +73,7 @@ Out of scope:
 - All requirements already covered by CS-02 [5]
 - CSC API endpoints (`signatures/signDoc`, `signatures/signHash`)
 - The qesApproval flow (see NOTE_CSRS_01)
+- The credential used for signature request confirmation
 
 # 3. Normative Language
 
@@ -90,7 +91,6 @@ This specification uses the roles defined in CS-02 [5] Section 4, with the follo
 
 This specification applies the protocol baseline defined in CS-02 [5] Section 5 without modification, with the following signing-specific additions:
 
-- The DCQL query MUST use the CSC X.509 credential format: `https://cloudsignatureconsortium.org/2025/x509`
 - The Authorisation Request MUST include `transaction_data` containing a base64url-encoded `qesRequest` object as defined in CSC-DMB [3] Section 6.2.1
 - `signatureQualifier` MUST always be present in the `qesRequest`
 - Document integrity MUST be verified by the WU when both `href` and `checksum` are present
@@ -104,6 +104,44 @@ High-level steps:
 5. WU generates AdES signature(s)
 6. WU submits the Presentation Response containing the signed document(s)
 7. Relying Party validates and returns the outcome
+
+The above flow is illustrated below:
+
+```mermaid
+sequenceDiagram
+    actor Signer
+    participant RP as Relying Party (Verifier)
+    participant WU as Wallet Unit
+    activate RP
+    note over RP: Prepares Authorization Request<br/>containing transaction_data<br/>(signatureQualifier, doc hashes, checksums)
+    alt Same-device
+        RP->>+WU: 1. via Deeplink
+    else Cross-device
+        RP-->>Signer: 1. Display QR code
+        Signer->>WU: 1.1 Scan QR code
+    end
+    alt Request Object by reference (request_uri)
+        WU->>+RP: 2. GET Request Object (request_uri)
+        RP->>-WU: 2.1 Signed Request Object<br/>(dcql_query + transaction_data[])
+    else Request Object embedded (request parameter)
+        note over WU: Request Object already received<br/>in step 1 (signed JWT in request param)
+    end
+    WU->>WU: 3. Validate Request Object<br/>(client_id, signature, transaction_data types)
+    WU-->>+Signer: 4. Show signing UI<br/>(credential + docs from transaction_data (w/ QES) + response_uri)
+    Signer->>-WU: 4.1 Sign and approve
+    WU->>WU: 5. Generate VP:<br/>• AdES signature(s) over docs<br/>• Bind transaction_data hash<br/>  into credential proof (same key)
+    alt Same-device (redirect)
+        WU-->>RP: 6. Redirect with vp_token (VP + bound transaction_data)
+    else Cross-device (direct_post)
+        WU->>+RP: 6. POST vp_token to response_uri
+        RP->>-WU: 6.1 200 OK + redirect_uri
+        WU-->>Signer: 6.2 Redirect to redirect_uri
+    end
+    RP->>RP: 7. Verify VP, validate transaction_data<br/>binding, extract AdES signature(s)
+    RP-->>Signer: 8. Return outcome
+```
+
+<br>
 
 > **NOTE_CSRS_02** ISO18013-5 and ISO18013-7 credential formats will be considered in subsequent versions based on use case requirements.
 
