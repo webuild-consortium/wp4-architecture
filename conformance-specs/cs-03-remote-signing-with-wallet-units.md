@@ -3,11 +3,13 @@
 Version 1.0-draft
 Date: 25 March 2026
 
-**Authors**: WP4 Architecture  
+**Authors / Contributors**: WP4 Architecture  
 
 - Lal Chandran, iGrant.io, Sweden
 - Hristian Daskalov, EvroTrust, Bulgaria
 - George J Padayatti, iGrant.io, Sweden
+- Andreas Abraham, ValidatedID, Spain
+- Alejandro Nieto, DigitalTS, Spain
 
 **Table of Contents**
 - [WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units](#we-build---conformance-specification-remote-qualified-signing-with-wallet-units)
@@ -41,6 +43,8 @@ Date: 25 March 2026
 This document defines the **WE BUILD Conformance Specification: Remote Qualified Signing with Wallet Units**, describing how Wallet Units (WU) and Relying Parties interoperate to create qualified electronic signatures using OpenID for Verifiable Presentations (OpenID4VP) 1.0 [1] and the CSC Data Model Bindings [3].
 
 This specification extends the WE BUILD Conformance Specification: Credential Presentation [5] (hereafter CS-02). All requirements defined in CS-02 apply unless explicitly superseded here. This document defines only the signing-specific additions.
+
+> **NOTE_CSRS_00** In this specification, "remote" refers to the interaction pattern between the Signer and the Relying Party. The signing request and response are exchanged over the network via OpenID4VP. It does not imply a remote signing service (QTSP) hosting the signing key server-side. In the wallet-centric model defined here, the WU holds the signing key and generates the signature locally.
 
 It covers:
 
@@ -276,6 +280,7 @@ The `transaction_data` array MUST contain the following object, base64url-encode
   ]
 }
 ```
+
 > **NOTE_CSRS_03** In this profile, the base64url-decoded `transaction_data` value is the CSC `qesRequest` object with `type` `https://cloudsignatureconsortium.org/2025/qes`.
 > The `credential_ids` values refer to the `id` of the associated DCQL credential query, and not to CSC API `credentialID` values.
 > For interoperability with Wallet Units that validate `transaction_data` strictly, Relying Parties should not include additional profile-specific members unless this specification defines them.
@@ -294,10 +299,10 @@ The Presentation Endpoint defined in CS-02 [5] Section 8.3 applies. The request 
 }
 ```
 
-When `responseURI` is specified, the WU MUST HTTP POST the `qesResponse` to that URI. The following requirements apply:
+When `responseURI` *(CSC-DMB parameter, not to be confused with OpenID4VP `response_uri`)* is specified in the `qesRequest`, the WU MUST HTTP POST the `qesResponse` to that URI. The following requirements apply:
 
 - `responseURI` MUST use the `https` scheme.
-- The WU MUST verify that the `responseURI` host matches the Relying Party's `client_id` or a domain listed in the RP's verified metadata.
+- The WU MUST verify that the `responseURI` host matches the Relying Party's `client_id` or a domain listed in the RP's verified metadata. This prevents the signed output from being redirected to an endpoint not controlled by the authenticated RP, even if the request object itself is properly signed.
 - If the HTTP POST to `responseURI` fails (network error or non-2xx response), the WU MUST abort the signing flow and report an error to the Signer.
 
 ```
@@ -308,7 +313,11 @@ Content-Type: application/json
 { "documentWithSignature": ["<base64-encoded signed document>"] }
 ```
 
-The `responseURI` endpoint MUST return `HTTP 200 OK` on successful receipt. The `vp_token` returned to the Presentation Endpoint MUST be empty:
+The `responseURI` endpoint MUST return `HTTP 200 OK` on successful receipt. 
+
+> **NOTE_CSRS_04** Replay protection for the signing flow is provided by the OpenID4VP `nonce` binding mandated by CS-02, combined with the `transaction_data` hash bound into the VP token. Implementations SHOULD additionally consider including an application-specific nonce in the `qesRequest` as recommended by CSC Data Model Bindings Note 25, to provide defence-in-depth at the CSC layer.
+
+The `vp_token` returned to the Presentation Endpoint MUST be empty:
 
 ```json
 { "signing-cert-01": {} }
@@ -316,7 +325,7 @@ The `responseURI` endpoint MUST return `HTTP 200 OK` on successful receipt. The 
 
 ## 8.3 Relying Party Metadata Interface
 
-The Verifier Metadata Interface defined in CS-02 [5] Section 8.4 applies. Relying Parties MUST additionally declare support for the CSC X.509 credential format in `vp_formats`.
+The Verifier Metadata Interface defined in CS-02 [5] Section 8.4 applies. Relying Parties MUST additionally declare support for the CSC X.509 credential format in `vp_formats_supported`.
 
 # 9. Conformance
 
@@ -338,9 +347,9 @@ An implementation conforms to this specification as a **Relying Party** if it:
 
 [2] OpenID Foundation (2025). OpenID4VC High Assurance Interoperability Profile - Implementer's Draft 1. Available at: https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-ID1.html (Accessed: 5 March 2026).
 
-[3] Cloud Signature Consortium (2025). CSC Data Model Bindings, version 1.0.0. Published 14 October 2025.
+[3] Cloud Signature Consortium (2025). CSC Data Model Bindings, version 1.0.0. Published 14 October 2025. Available at: https://cloudsignatureconsortium.org/wp-content/uploads/2025/10/data-model-bindings.pdf (Accessed: 30 March 2026)
 
-[4] Cloud Signature Consortium (2025). Data Model for Remote Signature Applications, version 1.0.0. Published 16 October 2025.
+[4] Cloud Signature Consortium (2025). Data Model for Remote Signature Applications, version 1.0.0. Published 16 October 2025. Available at: https://cloudsignatureconsortium.org/wp-content/uploads/2025/10/csc-dm.pdf (Accessed: 30 March 2026)
 
 [5] WE BUILD (2025). Conformance Specification: Credential Presentation, version 1.0. Available at: https://github.com/webuild-consortium/wp4-architecture/blob/main/conformance-specs/cs-02-credential-presentation.md (Accessed: 5 March 2026).
 
