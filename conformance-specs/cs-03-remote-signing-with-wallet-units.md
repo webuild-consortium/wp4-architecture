@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units
 
-Version 1.0-draft
-Date: 25 March 2026
+Version 1.0 / Approved
+Date: 01 April 2026
 
 **Authors / Contributors**: WP4 Architecture  
 
