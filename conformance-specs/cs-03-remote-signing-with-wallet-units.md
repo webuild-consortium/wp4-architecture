@@ -9,7 +9,7 @@ Date: 25 March 2026
 - Hristian Daskalov, EvroTrust, Bulgaria
 - George J Padayatti, iGrant.io, Sweden
 - Andreas Abraham, ValidatedID, Spain
-- Alejandro Nieto, DigitalTS, Spain
+- Alejandro Nieto, DigitelTS, Spain
 
 **Table of Contents**
 - [WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units](#we-build---conformance-specification-remote-qualified-signing-with-wallet-units)
