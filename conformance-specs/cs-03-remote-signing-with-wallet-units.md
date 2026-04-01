@@ -10,6 +10,8 @@ Date: 25 March 2026
 - George J Padayatti, iGrant.io, Sweden
 - Andreas Abraham, ValidatedID, Spain
 - Alejandro Nieto, DigitelTS, Spain
+- Hidde Dorhout, Cleverbase, Netherlands
+- Andrew Freund, D-Trust, Germany
 
 **Table of Contents**
 - [WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units](#we-build---conformance-specification-remote-qualified-signing-with-wallet-units)
@@ -182,6 +184,8 @@ In addition to the consent requirements of CS-02 [5] Section 6.1.4, the WU MUST 
 - The label of each document, or a clear indication that no label is provided
 - Whether document integrity has been automatically verified
 - The URI to which the signed response will be sent, if `responseURI` is specified
+
+The WU SHOULD provide a preview or rendering of the to-be-signed document(s) where technically feasible, to allow the Signer to verify the content before approving.
 
 ### 6.1.5 Signature Generation
 
