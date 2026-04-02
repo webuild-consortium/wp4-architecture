@@ -87,7 +87,7 @@ The WE BUILD presentation profile is based on OpenID4VP with the following manda
 
 * JWT-Secured Authorisation Request (JAR): All authorisation requests MUST be signed.
 * Digital Credentials Query Language (DCQL): MUST be used for querying credentials.
-* Client Identifier Schemes: Usage of `x509_san_dns` or `verifier_attestation`, `decentralized_identifiers` is also recommended (`did:web`, `did:jwk`)
+* Client Identifier Schemes: Usage of `x509_san_dns` or `verifier_attestation`, `decentralized_identifiers` is also recommended (`did:webvh`, `did:jwk`)
 * Crypto Suites: Strict adherence to P-256 (secp256r1) with ES256 for signing.
 * Holder Binding: Mandatory Key Binding JWT (KB-JWT) for SD-JWT VCs. (See **NOTE_CS02_01**)
 
