@@ -40,7 +40,8 @@ Table Of Contents
 
 # 1. Introduction
 
-This document defines the **WE BUILD Conformance Specification for Credential Presentation**, describing how Wallet Units (WU) and Verifiers interoperate using OpenID for Verifiable Presentations (OpenID4VP) 1.0 [1] in alignment with the OpenID4VC High Assurance Interoperability Profile (HAIP) 1.0 - Implementer’s Draft 1 [2], based on the decision recorded in WE BUILD [ADR Base Protocols](https://github.com/webuild-consortium/architecture/blob/main/adr/base-protocols.md).
+This document defines the **WE BUILD Conformance Specification for Credential Presentation**, describing how Wallet Units (WU), Verifiers (Relying Parties), and optionally Relying Party 
+Intermediaries (RPIs) interoperate using OpenID for Verifiable Presentations (OpenID4VP) 1.0 [1] in alignment with the OpenID4VC High Assurance Interoperability Profile (HAIP) 1.0 - Implementer’s Draft 1 [2], based on the decision recorded in WE BUILD [ADR Base Protocols](https://github.com/webuild-consortium/architecture/blob/main/adr/base-protocols.md).
 
 It specifies a high‑assurance presentation profile for use within the WE BUILD ecosystem, covering:
 
@@ -60,6 +61,7 @@ This specification defines the conformance profile for high‑assurance credenti
 * Requirements for:
     * WUs that respond to presentation requests
     * Verifiers that initiate presentation requests
+    * Relying Party Intermediaries (RPIs) that act on behalf of Verifiers
 * Mandatory features:
     * OpenID4VP 1.0
     * HAIP ID‑1 Section 5 requirements
@@ -67,6 +69,8 @@ This specification defines the conformance profile for high‑assurance credenti
     * SD‑JWT‑VC selective disclosure
     * Same‑device and cross‑device invocation
     * openid4vp:// Wallet invocation
+    * Dual identification for intermediary scenarios
+    * Embedded disclosure policy evaluation with intermediaries
 
 # 3. Normative Language
 
@@ -79,7 +83,28 @@ This specification uses the following roles:
 
 * **Wallet Unit (WU):** A client application or component acting on behalf of the Holder to obtain and store Verifiable Credentials.
 * **Holder:** The subject or representative of the subject who controls the Wallet Unit.
-* **Verifier:** Entity requesting verifiable presentations, validating responses and making authorisation decisions.
+* **Relying Party (RP) / Verifier:** Entity requesting verifiable presentations (directly or via an intermediary), validating responses and making authorisation decisions.
+* **Relying Party Intermediaries:** RPIs act as trusted intermediaries between Relying Parties and Wallet Holders, simplifying RP integration while maintaining security and trust guarantees. RPIs handle protocol complexity, perform attestation validation, and transform attributes to RP-specific formats.
+
+**Role Relationships**
+
+Direct Presentation Model:
+```
+Holder ← controls → WU ← presents to → Verifier (RP)
+```
+
+Intermediary-Mediated Presentation Model:**
+```
+Holder ← controls → WU ← presents to → RPI ← forwards to → Verifier (RP)
+                                         ↑
+                                    validates on
+                                    behalf of RP
+```
+
+In both models:
+- Holder maintains full control over disclosure decisions
+- WU performs same security and privacy operations
+- Trust anchor verification against QTSP lists occurs at point of validation
 
 # 5. Protocol Overview
 
@@ -222,6 +247,17 @@ WU delivers the Presentation directly to the Verifier’s Presentation Endpoint 
 
 Verifier processes the Presentation and returns the outcome as in 6.1.7.
 
+## 6.3 Intermediary-Mediated Presentation Flows
+
+Intermediary-mediated presentations follow the same OpenID4VP flows as direct presentations 
+(Sections 6.1 and 6.2), with the following modifications:
+
+1. **RP-RPI Communication:** RP initiates request to RPI (implementation-specific interface)
+2. **Dual Identification:** Presentation request includes both RPI and actual RP identity
+3. **Wallet sees RPI as client:** Wallet validates presentation request from RPI
+4. **Policy evaluation:** Wallet evaluates disclosure policies against actual RP (not RPI)
+5. **Validation delegation:** RPI validates presentation on behalf of RP
+6. **Attribute forwarding:** RPI forwards validated attributes to RP (no persistent storage)
 
 # 7. Normative Requirements
 
@@ -267,6 +303,46 @@ Verifiers MUST NOT:
 
 * Request unnecessary personal information
 * Disable nonce or audience validation
+
+## 7.3 Relying Party Intermediary Requirements
+
+### 7.3.1 Baseline Requirements
+
+RPIs inherit **all Verifier requirements from Section 7.2** and acts as the Verifier in the OpenID4VP protocol.
+
+### 7.3.2 Additional RPI-Specific Requirements
+
+RPIs MUST additionally:
+
+**1. Dual Identification (Section 6.3.1.1)**
+* Include RPI Access Certificate in presentation request
+* Include either:
+  - RP Registration Certificate (linking RP to RPI), OR
+  - RP details for online Registrar verification
+* Publish RPI Metadata including supported identification mechanisms
+
+**2. RP Relationship Management**
+* Authenticate RP clients before accepting presentation requests
+* Verify RP authorization to request specific attributes
+* Forward only authorized attributes to RP
+
+**3. Privacy Preservation (eIDAS Article 5b(10))**
+* **MUST NOT** persistently store attribute data
+* Process attributes in-memory only
+* Securely erase attribute data after forwarding to RP
+* Maintain audit logs WITHOUT personal data (timestamps, transaction IDs, credential types only)
+
+**4. Attribute Forwarding**
+* Forward validated attributes to requesting RP (implementation-specific interface)
+* Include validation assurance level and issuer trust status
+* Format attributes per RP requirements if needed
+
+### 7.3.3 RPI MUST NOT
+
+* Store attribute values persistently (eIDAS Article 5b(10))
+* Request attributes not authorized by RP
+* Forward attributes to different RP than specified in request
+* Log personally identifiable information
 
 # 8. Interface Definitions
 
