@@ -19,7 +19,7 @@ function extract_last_parenthesis() {
 }
 
 function translate_mermaid_blocks() {
-    sed -e "s/\`\`\`mermaid/\`\`\`{mermaid}/"
+    sed -e "s/\`\`\`mermaid/\`\`\`{mermaid}\n%%| fig-width: 6.5/"
 }
 
 function disable_numbering() {
