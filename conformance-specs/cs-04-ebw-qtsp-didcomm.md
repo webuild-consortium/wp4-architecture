@@ -1,7 +1,4 @@
 # WE BUILD - Conformance Specification: EBW–QTSP DIDComm Interface
-d
-
-Version 0.1 (Draft)
 
 ## Table of Contents
 
