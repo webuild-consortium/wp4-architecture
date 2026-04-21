@@ -11,7 +11,7 @@ The WE BUILD conformance specifications for:
 - credential issuance (`conformance-specs/cs-01-credential-issuance.md`, section “6. High-level Flows”), and
 - credential presentation (`conformance-specs/cs-02-credential-presentation.md`, section “5. Protocol Overview”, step “4. Holder consents” and subsequent steps)
 
-assume largely synchronous interactions between a Wallet Unit (WU) and external parties (Issuer / Authorisation Server for issuance; Verifier for presentation), with wallet invocation mechanisms such as `openid-credential-offer://` and `openid4vp://`.
+assume largely synchronous interactions (as it should because those are the most common) between a Wallet Unit (WU) and external parties (Issuer / Authorisation Server for issuance; Verifier for presentation), with wallet invocation mechanisms such as `openid-credential-offer://` and `openid4vp://`.
 
 However, several WE BUILD scenarios can benefit from:
 
