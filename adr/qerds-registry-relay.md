@@ -43,10 +43,13 @@ The decision makes it easier to learn about the consequences of the technical di
 
 The decision precludes solutions where the transport protocol may already provide the end-to-end security required from QERDS in European Business Wallets. For example, while mTLS between business wallet instances could technically be used for the mandatory identification of sender and recipient or for the mandatory end-to-end encryption, WE BUILD deliberately decouples these functions from the transport.
 
-The main risk to manage is divergence with the ongoing ETSI standardisation and European Business Wallet legislation by the European Commission, rendering the test and pilot results less relevant for the production ecosystem. We address this risk by requesting early feedback on WE BUILD deliverables from both the Commission and ETSI STF 705 WP4.
+Especially if package apply end-to-end security, the decision reduces the ability for delivery relay operators to add value beyond transport, as for example Peppol Service Providers do: format transformation, compliance validation, routing, and access management. A delivery relay operator cannot transform the payload without breaking the seal, and cannot even read it if the content is encrypted. The architecture does not answer the question where such value may be added instead: at the delivery agent, at the business wallet, or as its client application? These are consequential questions for the ecosystem of service providers that currently operate network infrastructure.
+
+The main interoperability risk to manage is divergence with the ongoing ETSI standardisation and European Business Wallet legislation by the European Commission, rendering the test and pilot results less relevant for the production ecosystem. We address this risk by requesting early feedback on WE BUILD deliverables from both the Commission and ETSI STF 705 WP4.
 
 ## Advice
 
 Once merged, this is our consortium’s decision. This does not mean all participants agree it is the best possible decision. In the decision making process, we have heard the following advice.
 
-- 2026-04-18, Leif Johansson, SIROS, Sweden: OK, but separate into three concerns instead of two (applied) and use “message” instead of “package” (not applied).
+- [2026-04-18, Leif Johansson, SIROS, Sweden](https://github.com/webuild-consortium/wp4-architecture/pull/186#pullrequestreview-4134352334): OK, but separate into three concerns instead of two (applied) and use “message” instead of “package” (not applied).
+- [2026-04-22, Rune Kjørlaug, OpenPeppol, Belgium](https://github.com/webuild-consortium/wp4-architecture/pull/186#issuecomment-4293881617): OK, but add the consideration of value added by the delivery relay operator (applied).
