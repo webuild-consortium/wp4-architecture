@@ -1,4 +1,4 @@
-# Separate QERDS registry from relay
+# Separate the QERDS agent, log and relay
 
 **Authors:**
 
@@ -6,16 +6,17 @@
 
 ## Context
 
-To [Deliver business wallet data using QERDS](https://github.com/webuild-consortium/wp4-architecture/blob/main/adr/build-qerds.md), the WP4 QTSP group is specifying an interoperability framework for testing and piloting this Qualified Electronic Registered Delivery Service using WE BUILD Business Wallets. Two major components of its [reference architecture](https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qerds/architecture.md) are:
+To [Deliver business wallet data using QERDS](https://github.com/webuild-consortium/wp4-architecture/blob/main/adr/build-qerds.md), the WP4 QTSP group is specifying an interoperability framework for testing and piloting this Qualified Electronic Registered Delivery Service using WE BUILD Business Wallets. The current architecture decision is about how to structure this framework.
 
-- delivery registry: register evidence of submission or notification upon identity verification of the sender or recipient;
+To reason about this structure, we adopt the concept of a *package*: an immutable sealed artifact comprising user content, delivery evidence, and relay metadata, as proposed in ETSI [TR 119 520-1](https://www.etsi.org/deliver/etsi_tr/119500_119599/11952001/01.01.01_60/tr_11952001v010101p.pdf). The package is potentially partly or fully end-to-end encrypted.
+
+Three major functional components of the WE BUILD [reference architecture](https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qerds/architecture.md) are:
+
+- delivery agent: register evidence of submission or notification upon identity verification of the sender or recipient;
+- delivery log: ensure retention of this evidence for stakeholders, for example to resolve disputes;
 - delivery relay: between QERDS providers, relay documents, notifications, or evidence.
 
-To simplify the framework, ETSI [TR 119 520-1](https://www.etsi.org/deliver/etsi_tr/119500_119599/11952001/01.01.01_60/tr_11952001v010101p.pdf) proposes to treat these as orthogonal concerns.
-
-The framework defines the concept of a *package*: an immutable sealed artifact comprising user content, delivery evidence, and relay metadata. The package is potentially partly or fully end-to-end encrypted.
-
-In the TR 119 520-1 treatment, the delivery registry (“smart wrap service”) results in dispatch or receipt packages. This means that most security requirements regarding confidentiality and integrity are implemented by QERDS providers upon delivery registry. Delivery relay (“XXTP(S) service”) is about transport protocols for interoperable message exchange between QERDS providers, and is only necessary if the sender uses another provider than the recipient.
+To simplify the framework, TR 119 520-1 proposes to treat the as orthogonal concerns. In this treatment, the delivery agent (“smart wrap service”) results in dispatch or receipt packages. This means that most security requirements regarding confidentiality and integrity are implemented by QERDS providers in their delivery agent role. Delivery relay (“XXTP(S) service”) is about transport protocols for interoperable message exchange between QERDS providers, and is only necessary if the sender uses another provider than the recipient. The delivery log can optionally be supported by tracking technology such as electronic ledgers.
 
 An alternative approach would be to implement QERDS security requirements using the security features of the delivery relay interoperability protocol. For example, eDelivery AS4 applies XML Signature and XML Encryption features for delivery relay. Implementations of QERDS could apply these features to protect not only the relay metadata exchanged between QERDS providers, but also the submission or notification and the QERDS evidence. However, this would increase the complexity of changes to either the security or interoperability specifications.
 
@@ -25,8 +26,9 @@ The ETSI EN 319 522 series have not yet been updated to apply the findings from 
 
 WE BUILD separates the specification of:
 
-- **delivery registry** to produce and consume packages on behalf of authenticated users;
-- **delivery relay** to transport packages between QERDS providers.
+- **delivery agent** to produce, consume, and delivery packages enforcing access control;
+- **delivery log** to make available registered evidence of events the agent records;
+- **delivery relay** to transport packages across QERDS providers.
 
 In the context of delivery registry, the semantics of the packages are defined in ETSI [EN 319 522-2](https://www.etsi.org/deliver/etsi_en/319500_319599/31952202/01.02.01_60/en_31952202v010201p.pdf). Following TR 119 520-1, WE BUILD applies at minimum:
 
@@ -47,4 +49,4 @@ The main risk to manage is divergence with the ongoing ETSI standardisation and 
 
 Once merged, this is our consortium’s decision. This does not mean all participants agree it is the best possible decision. In the decision making process, we have heard the following advice.
 
-- yyyy-mm-dd, Name, Affiliation, Country: OK or summary of advice (to be added)
+- 2026-04-18, Leif Johansson, SIROS, Sweden: OK, but separate into three concerns instead of two (applied) and use “message” instead of “package” (not applied).
