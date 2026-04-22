@@ -8,10 +8,14 @@
 
 To [Deliver business wallet data using QERDS](https://github.com/webuild-consortium/wp4-architecture/blob/main/adr/build-qerds.md), the WP4 QTSP group is specifying an interoperability framework for testing and piloting this Qualified Electronic Registered Delivery Service using WE BUILD Business Wallets. Two major components of its [reference architecture](https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qerds/architecture.md) are:
 
-- delivery registry: upon identity verification of the sender or recipient, register evidence of submission or notification;
+- delivery registry: register evidence of submission or notification upon identity verification of the sender or recipient;
 - delivery relay: between QERDS providers, relay documents, notifications, or evidence.
 
-To simplify the framework, ETSI [TR 119 520-1](https://www.etsi.org/deliver/etsi_tr/119500_119599/11952001/01.01.01_60/tr_11952001v010101p.pdf) proposes to treat these as orthogonal concerns. In this treatment, the delivery registry (“smart wrap service”) results in dispatch or receipt *packages*: value objects including (references to) sealed and timestamped data and delivery metadata, potentially partly or fully end-to-end encrypted. This means that most security requirements regarding confidentiality and integrity are implemented by QERDS providers upon delivery registry. Delivery relay (“XXTP(S) service”) is about profiling transport protocols for technical interoperability between QERDS providers, and is only necessary if the sender uses another provider than the recipient.
+To simplify the framework, ETSI [TR 119 520-1](https://www.etsi.org/deliver/etsi_tr/119500_119599/11952001/01.01.01_60/tr_11952001v010101p.pdf) proposes to treat these as orthogonal concerns.
+
+The framework defines the concept of a *package*: an immutable sealed artifact comprising user content, delivery evidence, and relay metadata. The package is potentially partly or fully end-to-end encrypted.
+
+In the TR 119 520-1 treatment, the delivery registry (“smart wrap service”) results in dispatch or receipt packages. This means that most security requirements regarding confidentiality and integrity are implemented by QERDS providers upon delivery registry. Delivery relay (“XXTP(S) service”) is about transport protocols for interoperable message exchange between QERDS providers, and is only necessary if the sender uses another provider than the recipient.
 
 An alternative approach would be to implement QERDS security requirements using the security features of the delivery relay interoperability protocol. For example, eDelivery AS4 applies XML Signature and XML Encryption features for delivery relay. Implementations of QERDS could apply these features to protect not only the relay metadata exchanged between QERDS providers, but also the submission or notification and the QERDS evidence. However, this would increase the complexity of changes to either the security or interoperability specifications.
 
@@ -24,7 +28,7 @@ WE BUILD separates the specification of:
 - **delivery registry** to produce and consume packages on behalf of authenticated users;
 - **delivery relay** to transport packages between QERDS providers.
 
-For delivery registry, the packages are immutable data with the semantics defined in ETSI [EN 319 522-2](https://www.etsi.org/deliver/etsi_en/319500_319599/31952202/01.02.01_60/en_31952202v010201p.pdf). WE BUILD applies at minimum:
+In the context of delivery registry, the semantics of the packages are defined in ETSI [EN 319 522-2](https://www.etsi.org/deliver/etsi_en/319500_319599/31952202/01.02.01_60/en_31952202v010201p.pdf). Following TR 119 520-1, WE BUILD applies at minimum:
 
 - **dispatch package** (“ERD dispatch”): document submission or procedural notification, along with delivery evidence;
 - **receipt package** (“ERDS receipt”): notification of a delivery event related to an earlier dispatch package.
