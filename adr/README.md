@@ -14,6 +14,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 5. [Wallet Unit Attestation and Lifecycle Management (For European Business Wallet)](wallet-unit-lifecycle-management.md)
 6. [Deliver business wallet data using QERDS](build-qerds.md)
 7. [Attestation Revocation Mechanism](attestation-revocation-mechanism.md)
+8. [Separate QERDS registry from relay](qerds-registry-relay.md)
 
 <!--END INDEX-->
 
