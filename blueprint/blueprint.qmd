@@ -1,0 +1,59 @@
+::: {.shift-headings by=1}
+{{< include 01-executive-summary.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 02-regulatory-alignment.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 03-architecture-overview.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 04-integration-model.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 05-data-and-semantics.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 06-trust-and-security.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 07-governance-and-adr.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 08-test-and-validation.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include 09-roadmap.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include appendix-glossary.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include appendix-history.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include appendix-trust-ecosystem.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include appendix-ebw-definition.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include appendix-wallet-implementation-models.qmd >}}
+:::
+
+::: {.shift-headings by=1}
+{{< include appendix-adr.qmd >}}
+:::

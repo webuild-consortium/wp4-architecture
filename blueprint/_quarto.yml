@@ -1,0 +1,30 @@
+project:
+  title: "WE BUILD — Architecture & Integration Blueprint (D4.1)"
+  type: manuscript
+
+manuscript:
+  article: blueprint.qmd
+
+toc: true
+
+format:
+  html:
+    page-layout: full
+    number-sections: true
+    notebook-links: false
+    theme: cerulean
+    self-contained: true
+    collapse-level: 4
+    toc-location: left
+    toc-depth: 4
+    toc-expand: 4
+    toc-collapse: false
+    search: false
+    mermaid:
+      theme: default
+  # docx:
+    # reference-doc: p20_template_we_build_deliverabl.docx
+
+filters:
+  - shift_headings.lua
+
