@@ -1,46 +1,45 @@
 # WE BUILD - Conformance Specification: Issuance of Relying Party Access and Registration Certificates
 
-Version 0.1 / Draft
+Version 0.2 / First proposal
 Date: 24 April 2026
 
 ## Table of Contents
 
 - [1. Introduction](#1-introduction)
 - [2. Scope](#2-scope)
-- [3. Normative Language](#3-normative-language)
-- [4. Terminology](#4-terminology)
-- [5. Roles and Components](#5-roles-and-components)
-- [6. Protocol Overview](#6-protocol-overview)
-  - [6.1 ACME Resource Model](#61-acme-resource-model)
-  - [6.2 WRPAC Identifier Type](#62-wrpac-identifier-type)
-  - [6.3 Challenge Type: registrar-api-01](#63-challenge-type-registrar-api-01)
-  - [6.4 EBW-based Account Binding](#64-ebw-based-account-binding)
-- [7. High-level Flows](#7-high-level-flows)
-  - [7.1 Directory Discovery](#71-directory-discovery)
-  - [7.2 Account Creation with EBW Authentication](#72-account-creation-with-ebw-authentication)
-  - [7.3 Order Creation](#73-order-creation)
-  - [7.4 Authorization and Challenge Validation](#74-authorization-and-challenge-validation)
-  - [7.5 Order Finalization](#75-order-finalization)
-  - [7.6 Certificate Download](#76-certificate-download)
-  - [7.7 Certificate Revocation](#77-certificate-revocation)
-- [8. Normative Requirements](#8-normative-requirements)
-  - [8.1 Common Requirements](#81-common-requirements)
-  - [8.2 ACME Server (CA / RA)](#82-acme-server-ca--ra)
-  - [8.3 ACME Client (WRP / EBW)](#83-acme-client-wrp--ebw)
-  - [8.4 Certificate Profile](#84-certificate-profile)
-  - [8.5 Certificate Transparency](#85-certificate-transparency)
+- [3. Normative Language and Terminology](#3-normative-language-and-terminology)
+- [4. Roles and Components](#4-roles-and-components)
+- [5. Protocol Overview](#5-protocol-overview)
+  - [5.1 ACME Resource Model](#51-acme-resource-model)
+  - [5.2 WRPAC Identifier Type](#52-wrpac-identifier-type)
+  - [5.3 Challenge Type: registrar-api-01](#53-challenge-type-registrar-api-01)
+  - [5.4 EBW-based Account Binding](#54-ebw-based-account-binding)
+- [6. High-level Flows](#6-high-level-flows)
+  - [6.1 Directory Discovery](#61-directory-discovery)
+  - [6.2 Account Creation with EBW Authentication](#62-account-creation-with-ebw-authentication)
+  - [6.3 Order Creation](#63-order-creation)
+  - [6.4 Authorization and Challenge Validation](#64-authorization-and-challenge-validation)
+  - [6.5 Order Finalization](#65-order-finalization)
+  - [6.6 Certificate Download](#66-certificate-download)
+  - [6.7 Certificate Revocation](#67-certificate-revocation)
+- [7. Normative Requirements](#7-normative-requirements)
+  - [7.1 Common Requirements](#71-common-requirements)
+  - [7.2 ACME Server (CA / RA)](#72-acme-server-ca--ra)
+  - [7.3 ACME Client (WRP / EBW)](#73-acme-client-wrp--ebw)
+  - [7.4 Certificate Profile](#74-certificate-profile)
+  - [7.5 Certificate Transparency](#75-certificate-transparency)
+  - [7.6 Revocation](#76-revocation)
+  - [7.7 Trusted List Integration](#77-trusted-list-integration)
+  - [7.8 WE BUILD RP Lists](#78-we-build-rp-lists)
+  - [7.9 IANA Considerations](#79-iana-considerations)
+- [8. Interface Definitions](#8-interface-definitions)
+  - [8.1 ACME Directory](#81-acme-directory)
+  - [8.2 Account Management with EBW/POA](#82-account-management-with-ebwpoa)
+  - [8.3 Order Lifecycle](#83-order-lifecycle)
+  - [8.4 Authorization and Challenge](#84-authorization-and-challenge)
+  - [8.5 Finalize and Certificate](#85-finalize-and-certificate)
   - [8.6 Revocation](#86-revocation)
-  - [8.7 Trusted List Integration](#87-trusted-list-integration)
-  - [8.8 WE BUILD RP Lists](#88-we-build-rp-lists)
-- [9. Interface Definitions](#9-interface-definitions)
-  - [9.1 ACME Directory](#91-acme-directory)
-  - [9.2 Account Management with EBW/POA](#92-account-management-with-ebwpoa)
-  - [9.3 Order Lifecycle](#93-order-lifecycle)
-  - [9.4 Authorization and Challenge](#94-authorization-and-challenge)
-  - [9.5 Finalize and Certificate](#95-finalize-and-certificate)
-  - [9.6 Revocation](#96-revocation)
-- [10. IANA Considerations](#10-iana-considerations)
-- [11. Conformance](#11-conformance)
+- [9. Conformance](#9-conformance)
 - [References](#references)
 
 ---
@@ -57,7 +56,7 @@ It profiles:
 * WE BUILD WP4 Architecture Blueprint [5] — RPAC/RPRC documentation and issuance process
 * IETF RFC 8555 [1] — Automatic Certificate Management Environment (ACME)
 
-This specification positions the ACME protocol as a **technical implementation** of the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4], as adopted by the WE BUILD Blueprint [5]. Section 11 provides an explicit mapping between the WE BUILD Blueprint issuance workflow and the ACME protocol operations.
+This specification positions the ACME protocol as a **technical implementation** of the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4], as adopted by the WE BUILD Blueprint [5]. Section 9 provides an explicit mapping between the WE BUILD Blueprint issuance workflow and the ACME protocol operations.
 
 This specification focuses **only on direct issuance** of WRPACs to registered Wallet-Relying Parties. The ACME flow is extended with EBW-based authentication and POA verification to align with the Blueprint's requirements for user authentication via European Business Wallets. This document is used to build the WE BUILD Interoperability Test Bed Plus (ITB+) [6].
 
@@ -91,11 +90,9 @@ This specification does **not** cover:
 * Production deployment requirements (conformity assessment, CAB audits, national policy extensions)
 * Proximity use cases for certificate presentation
 
-# 3. Normative Language
+# 3. Normative Language and Terminology
 
 The keywords MUST, MUST NOT, REQUIRED, SHALL, SHOULD, SHOULD NOT, RECOMMENDED, MAY and OPTIONAL are to be interpreted as commonly used in technical specifications.
-
-# 4. Terminology
 
 The following terminology applies throughout this specification:
 
@@ -110,7 +107,7 @@ The following terminology applies throughout this specification:
 * **PID** — Person Identification Data.
 * **EBWOID** — European Business Wallet Organisational Identification Data.
 
-# 5. Roles and Components
+# 4. Roles and Components
 
 This specification uses the following roles, mapped to both the ACME protocol and the WE BUILD Blueprint:
 
@@ -129,27 +126,27 @@ Detailed role descriptions:
 * **Certificate Authority (CA):** The TSP component that generates and signs WRPAC and WRPRC certificates. Implemented as the ACME Server's certificate issuance backend.
 * **Mock Registrar:** In the WE BUILD pilot, participating TSPs acting as mock Registrars establish and maintain the Lists of authorized Relying Parties. These lists serve as the functional equivalent of the national register of wallet-relying parties per the Blueprint [5] MVP governance model. The ACME Server checks these lists during authorization. During ITB+ conformance testing, the WE BUILD RP List is served by the mock Registrar; in production, by the national Registrar of the Member State concerned.
 
-# 6. Protocol Overview
+# 5. Protocol Overview
 
 The WE BUILD WRPAC issuance protocol adapts the ACME framework (RFC 8555) to the EUDI Wallet trust model, implementing the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4] as adopted by the WE BUILD Blueprint [5].
 
 The key adaptations are:
 
 * **Identifier type `wrp-id`**: replaces the `dns` identifier. The value is the WRP's unique identifier as it appears in the WE BUILD RP Lists. For the `wrp-id` identifier type, the only defined challenge is `registrar-api-01`; the standard ACME challenges `http-01` and `dns-01` do not apply to `wrp-id`.
-* **Challenge type `registrar-api-01`**: the ACME Server verifies the WRP's presence in the WE BUILD RP Lists and confirms a token link between the ACME account and the RP entry. The RP List entry supports multiple concurrent challenge tokens to enable multi-instance issuance (see §6.2).
+* **Challenge type `registrar-api-01`**: the ACME Server verifies the WRP's presence in the WE BUILD RP Lists and confirms a token link between the ACME account and the RP entry. The RP List entry supports multiple concurrent challenge tokens to enable multi-instance issuance (see §5.2).
 * **EBW-based External Account Binding (EAB)**: REQUIRED for account creation. The RP representative authenticates via their EBW and presents a POA (EAA). The EAB binds the ACME account to the verified EBW identity and POA.
 * **RA-integrated ACME Server**: the ACME Server combines RA and CA functions. The RA function validates identity, POA, and RP list membership. The CA function generates certificates.
-* **Multi-instance issuance**: a single WRP (`wrp-id`) MAY obtain multiple WRPACs, one per Relying Party Instance. Each instance is identified by an optional `instanceId` in the order (see §6.2).
+* **Multi-instance issuance**: a single WRP (`wrp-id`) MAY obtain multiple WRPACs, one per Relying Party Instance. Each instance is identified by an optional `instanceId` in the order (see §5.2).
 * **Co-issuance of WRPAC + WRPRC**: the ACME order MAY result in both a WRPAC and a WRPRC being issued together, as specified in the Blueprint and in CIR (EU) 2025/848 Annex V [2].
 * **Certificate profile**: the issued certificate is an X.509 v3 WRPAC conforming to CIR 2025/848 Annex IV and ETSI TS 119 411-8 v1.1.1 [3], with attribute content as specified in ETSI TS 119 475 v1.2.1 clause 5 [4].
-* **Certificate Transparency**: the ACME Server logs all issued certificates per RFC 9162 [7] (see §8.5 for deployment guidance).
+* **Certificate Transparency**: the ACME Server logs all issued certificates per RFC 9162 [7] (see §7.5 for deployment guidance).
 
 All ACME messages are JSON payloads signed via JWS (RFC 7515 [8]), using JWK Thumbprints as specified in RFC 7638 [17], transported over HTTPS.
 
 > [!NOTE]
-> CS-RPAC_03: The choice of ACME provides a proven, standardised, and automatable protocol for certificate lifecycle management. It implements the integrated issuance workflow described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 (see Section 11) while enabling interoperability testing with off-the-shelf ACME tooling. The RA and CA functions defined in the Blueprint are encapsulated within the ACME Server.
+> CS-RPAC_03: The choice of ACME provides a proven, standardised, and automatable protocol for certificate lifecycle management. It implements the integrated issuance workflow described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 (see Section 9) while enabling interoperability testing with off-the-shelf ACME tooling. The RA and CA functions defined in the Blueprint are encapsulated within the ACME Server.
 
-## 6.1 ACME Resource Model
+## 5.1 ACME Resource Model
 
 This profile follows the standard ACME resource model defined in RFC 8555 §7.1 [1]:
 
@@ -175,11 +172,11 @@ newAccount  newOrder  revokeCert  keyChange
            challenge
 ```
 
-All standard ACME resource types and state transitions per RFC 8555 apply, with the extensions defined in §6.2, §6.3, and §6.4.
+All standard ACME resource types and state transitions per RFC 8555 apply, with the extensions defined in §5.2, §5.3, and §5.4.
 
-The `registrationCertificate` URL is a WE BUILD extension to the standard RFC 8555 order object. Consistent with the conventions used by RFC 8555 for the `finalize` and `certificate` URLs, `registrationCertificate` is a URL-valued top-level field of the order object and is dereferenced via an authenticated POST-as-GET request. Registration considerations are described in §10 (IANA Considerations).
+The `registrationCertificate` URL is a WE BUILD extension to the standard RFC 8555 order object. Consistent with the conventions used by RFC 8555 for the `finalize` and `certificate` URLs, `registrationCertificate` is a URL-valued top-level field of the order object and is dereferenced via an authenticated POST-as-GET request. Registration considerations are described in §7.9 (IANA Considerations).
 
-## 6.2 WRPAC Identifier Type
+## 5.2 WRPAC Identifier Type
 
 **Type**: `wrp-id`
 
@@ -198,11 +195,11 @@ The `registrationCertificate` URL is a WE BUILD extension to the standard RFC 85
 
 * The ACME Server MUST verify that the `instanceId` is distinct from all other currently valid WRPACs issued to the same `wrp-id`.
 * The issued WRPAC MAY include the `instanceId` in a non-critical Subject Alternative Name extension or in the Subject's Common Name at the CA's discretion.
-* The RP List entry for the `wrp-id` MUST support multiple concurrent `acme-challenge` tokens, keyed by `instanceId` (see §8.8).
+* The RP List entry for the `wrp-id` MUST support multiple concurrent `acme-challenge` tokens, keyed by `instanceId` (see §7.8).
 
-When `instanceId` is omitted, the ACME Server treats the order as targeting a single-instance deployment. If a valid WRPAC already exists for that `wrp-id` without an `instanceId`, the new order replaces the previous certificate; the ACME Server MUST initiate revocation of the superseded certificate upon successful issuance of the replacement (see §8.2 item 13).
+When `instanceId` is omitted, the ACME Server treats the order as targeting a single-instance deployment. If a valid WRPAC already exists for that `wrp-id` without an `instanceId`, the new order replaces the previous certificate; the ACME Server MUST initiate revocation of the superseded certificate upon successful issuance of the replacement (see §7.2 item 12).
 
-## 6.3 Challenge Type: registrar-api-01
+## 5.3 Challenge Type: registrar-api-01
 
 **Type**: `registrar-api-01`
 
@@ -232,7 +229,7 @@ When `instanceId` is omitted, the ACME Server treats the order as targeting a si
 > [!NOTE]
 > CS-RPAC_04: In the WE BUILD pilot, the RP Lists maintained by participating TSPs acting as mock Registrars replace the national register. The `registrar-api-01` challenge verifies presence in these lists (Blueprint step 5). In production, this would query the Registrar's API per EC TS5 [9] and EC TS6 [16].
 
-## 6.4 EBW-based Account Binding
+## 5.4 EBW-based Account Binding
 
 This profile extends ACME External Account Binding (RFC 8555 §7.3.4 [1]) with EBW authentication. This implements Blueprint steps 1-3.
 
@@ -262,14 +259,14 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 > [!NOTE]
 > CS-RPAC_05: **[MVP]** For initial interoperability testing, EBW authentication MAY be simulated. EAB credentials are pre-provisioned by the RA/TSP after out-of-band identity verification. **[MVP+]** Future iterations MUST implement the full EBW-based OID4VP authentication flow for EAB provisioning, including presentation of PID/EBWOID and POA (EAA) via OID4VP. Implementations declaring MVP+ conformance MUST support the full OID4VP-based EBW authentication flow.
 
-# 7. High-level Flows
+# 6. High-level Flows
 
-## 7.1 Directory Discovery
+## 6.1 Directory Discovery
 
 1. The ACME Client fetches the directory document via HTTPS GET.
 2. The directory includes metadata: `externalAccountRequired: true`, `supportedIdentifierTypes: ["wrp-id"]`, `supportedChallengeTypes: ["registrar-api-01"]`.
 
-## 7.2 Account Creation with EBW Authentication
+## 6.2 Account Creation with EBW Authentication
 
 **Pre-ACME phase (Blueprint steps 1-3):**
 
@@ -286,13 +283,13 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 8. The ACME Client sends `newAccount` with the EAB binding.
 9. The ACME Server validates the EAB and creates the account.
 
-## 7.3 Order Creation
+## 6.3 Order Creation
 
 1. The ACME Client sends `newOrder` with one `wrp-id` identifier and an optional `instanceId`.
 2. The ACME Server creates the order in `pending` state and returns authorization URL(s) and `finalize` URL.
 3. For multi-instance issuance: the ACME Server MUST verify that the `instanceId` (if provided) is not already in use by a currently valid WRPAC for the same `wrp-id`.
 
-## 7.4 Authorization and Challenge Validation
+## 6.4 Authorization and Challenge Validation
 
 *Blueprint step 5: RP list check.*
 
@@ -301,18 +298,18 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 3. The ACME Server checks the RP List and validates.
 4. Authorization transitions to `valid`.
 
-## 7.5 Order Finalization
+## 6.5 Order Finalization
 
 *Blueprint steps 6-9: order, issue, transmit, notify.*
 
-1. The ACME Client generates a certificate key pair and CSR. Per §8.3 item 4, the ACME Client MUST generate a distinct key pair for each Relying Party Instance.
+1. The ACME Client generates a certificate key pair and CSR. Per §7.3 item 4, the ACME Client MUST generate a distinct key pair for each Relying Party Instance.
 2. The ACME Client sends the CSR to the `finalize` URL.
 3. The ACME Server (RA) validates; the ACME Server (CA) generates WRPAC (and optionally WRPRC).
 4. The CA submits to CT logs and obtains SCTs.
 5. The order transitions to `valid` with a `certificate` URL (and optionally `registrationCertificate` URL).
 6. The ACME Server MAY send out-of-band notification to the RP representative.
 
-## 7.6 Certificate Download
+## 6.6 Certificate Download
 
 *Blueprint steps 10-11: authenticate + retrieve.*
 
@@ -320,28 +317,28 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 2. The ACME Server returns the PEM certificate chain.
 3. If WRPRC was co-issued, it is available at the `registrationCertificate` URL.
 
-## 7.7 Certificate Revocation
+## 6.7 Certificate Revocation
 
 1. Client-initiated: `revokeCert` request.
 2. Server-initiated: upon RP removal from the RP List, or upon revocation of a specific Relying Party Instance.
 3. For multi-instance deployments: revocation of one instance's WRPAC MUST NOT affect WRPACs issued to other instances of the same WRP.
 
-# 8. Normative Requirements
+# 7. Normative Requirements
 
-## 8.1 Common Requirements
+## 7.1 Common Requirements
 
 Both ACME Client and ACME Server **MUST**:
 
-1. Implement the ACME protocol per RFC 8555 [1] with the extensions in §6.
+1. Implement the ACME protocol per RFC 8555 [1] with the extensions in §5.
 2. Use HTTPS for all communication.
 3. Use JWS (RFC 7515 [8]) for all request payloads, with JWK Thumbprints computed per RFC 7638 [17] where required by ACME.
 4. Implement nonce-based replay protection.
 
-## 8.2 ACME Server (CA / RA)
+## 7.2 ACME Server (CA / RA)
 
 The ACME Server **MUST**:
 
-1. Publish an ACME directory at a well-known URL (see §10 for IANA considerations).
+1. Publish an ACME directory at a well-known URL (see §7.9 for IANA considerations).
 2. Require EAB for all accounts (RFC 8555 §7.3.4 [1]).
 3. Support `wrp-id` identifiers and `registrar-api-01` challenges.
 4. Verify WRP presence in the WE BUILD RP Lists during challenge validation (Blueprint step 5).
@@ -350,9 +347,9 @@ The ACME Server **MUST**:
 7. Support the order state transitions defined in RFC 8555 §7.1.6 "Status Changes" [1].
 8. Support `revokeCert`.
 9. Implement the RA function: POA validation (Blueprint steps 1-3) and RP List check (step 5).
-10. Support multi-instance issuance: accept an optional `instanceId` in orders, verify its uniqueness among active WRPACs for the same `wrp-id`, and issue separate WRPACs per instance (§6.2).
-11. Enforce that each Relying Party Instance receives a distinct WRPAC bound to a distinct key pair (see §8.3 item 4).
-12. Upon successful replacement of a single-instance WRPAC (new order without `instanceId` replacing an existing single-instance WRPAC), MUST initiate revocation of the superseded certificate (see §6.2).
+10. Support multi-instance issuance: accept an optional `instanceId` in orders, verify its uniqueness among active WRPACs for the same `wrp-id`, and issue separate WRPACs per instance (§5.2).
+11. Enforce that each Relying Party Instance receives a distinct WRPAC bound to a distinct key pair (see §7.3 item 4).
+12. Upon successful replacement of a single-instance WRPAC (new order without `instanceId` replacing an existing single-instance WRPAC), MUST initiate revocation of the superseded certificate (see §5.2).
 
 The ACME Server **SHOULD**:
 
@@ -360,14 +357,14 @@ The ACME Server **SHOULD**:
 2. Send out-of-band notification when certificates are ready (Blueprint step 9).
 3. Support `keyChange`.
 
-## 8.3 ACME Client (WRP / EBW)
+## 7.3 ACME Client (WRP / EBW)
 
 The ACME Client **MUST**:
 
 1. Perform directory discovery.
 2. Support EAB using credentials obtained through EBW authentication.
 3. Support `wrp-id` identifiers and `registrar-api-01` challenges.
-4. Generate a distinct key pair per Relying Party Instance and construct valid CSRs per §8.4. For single-instance issuance, a single key pair applies; for multi-instance issuance, a distinct key pair MUST be used for each `instanceId`. This is the single normative key-separation rule applied by both the Client and the Server (see §8.2 item 11).
+4. Generate a distinct key pair per Relying Party Instance and construct valid CSRs per §7.4. For single-instance issuance, a single key pair applies; for multi-instance issuance, a distinct key pair MUST be used for each `instanceId`. This is the single normative key-separation rule applied by both the Client and the Server (see §7.2 item 11).
 5. Validate the returned certificate chain.
 6. Support `revokeCert`.
 
@@ -377,7 +374,7 @@ The ACME Client **SHOULD**:
 2. Include an `instanceId` in orders for multi-instance deployments.
 3. Clean up `acme-challenge` entries from the RP List after successful issuance or upon authorization failure.
 
-## 8.4 Certificate Profile
+## 7.4 Certificate Profile
 
 Issued WRPACs **MUST**:
 
@@ -401,14 +398,14 @@ Issued WRPACs **MUST**:
 > [!NOTE]
 > CS-RPAC_07: WRPACs are X.509 public-key certificates; they are not X.509 Attribute Certificates. Attribute content in WRPACs is expressed through public-key certificate extensions and ETSI-defined Subject DN attributes (ETSI EN 319 412 series [18], ETSI TS 119 475 v1.2.1 clause 5 [4]). The Attribute Certificate profile defined in RFC 5755 is therefore not applicable to WRPACs and is not used in this specification.
 
-## 8.5 Certificate Transparency
+## 7.5 Certificate Transparency
 
 The ACME Server **MUST** log all WRPACs in CT logs and embed SCTs.
 
 > [!NOTE]
 > CS-RPAC_08: RFC 9162 [7] ("Certificate Transparency Version 2.0", Experimental, December 2021) is the current IETF specification for CT and obsoletes RFC 6962. However, virtually all production CT log operators and browser CT policies currently implement RFC 6962. For interoperability testing in WE BUILD ITB+, implementations MAY use test CT logs and MAY rely on RFC 6962 where production tooling is not yet available for RFC 9162. Implementations MUST document which CT specification they implement.
 
-## 8.6 Revocation
+## 7.6 Revocation
 
 The ACME Server **MUST** support client-initiated (`revokeCert`) and server-initiated revocation (RP List removal or instance-specific revocation), and publish status via OCSP and/or CRL.
 
@@ -417,12 +414,12 @@ For multi-instance deployments, revocation of one instance's WRPAC MUST be scope
 > [!NOTE]
 > CS-RPAC_09: For interoperability testing, RP List removal MAY be simulated.
 
-## 8.7 Trusted List Integration
+## 7.7 Trusted List Integration
 
 1. The test environment MUST include a simulated Trusted List containing the trust anchor certificate(s) of the CA(s) participating in the WE BUILD pilot. Individual WRPAC end-entity certificates are NOT listed in the Trusted List; trust is established through the CA trust anchor chain.
 2. Wallet Units MUST verify WRPACs by building and validating the certificate chain up to a CA trust anchor present in the Trusted List.
 
-## 8.8 WE BUILD RP Lists
+## 7.8 WE BUILD RP Lists
 
 In the WE BUILD pilot, participating TSPs acting as mock Registrars establish and maintain the Lists of authorized Relying Parties, in accordance with the Blueprint [5] MVP governance model. This is the functional equivalent of the national register of wallet-relying parties.
 
@@ -457,12 +454,24 @@ For single-instance deployments, the following shorthand form is also valid:
 
 The ACME Server MUST accept both forms and normalize them internally.
 
-# 9. Interface Definitions
+## 7.9 IANA Considerations
 
-## 9.1 ACME Directory
+This specification defines extensions to the ACME protocol that fall within IANA registries established by RFC 8555 and its successors, and introduces a custom URI suffix. For interoperability-testing purposes within WE BUILD ITB+, registration is not a prerequisite; for any future production use, the following registrations would be required.
+
+**ACME Identifier Types registry** (established by RFC 8555): the identifier type `wrp-id` (§5.2) would need to be registered.
+
+**Well-Known URI registry** (RFC 8615 [19]): the URI suffix `acme-eudi-wrpac` (§8.1) would need to be registered if the `/.well-known/` prefix is used. Alternatively, since RFC 8555 does not mandate the use of `/.well-known/` for the ACME directory, a conventional (non-`.well-known/`) path MAY be used, as shown in §8.1. Implementations intending to place the ACME directory under `/.well-known/acme-eudi-wrpac/` MUST complete the RFC 8615 registration process.
+
+**ACME directory metadata extensions**: the metadata fields `rprcCoIssuanceSupported` and `multiInstanceIssuanceSupported` (§8.1) are WE BUILD-specific extensions. The IANA "ACME Directory Metadata Fields" registry (established by RFC 8555) would need to be updated for any production deployment.
+
+**ACME order object extension**: the `registrationCertificate` URL field (§5.1, §8.5) is a WE BUILD-specific extension to the standard ACME order object. For production deployment, a URN-style field name (for example, `urn:webuild:acme:wrprc`) MAY be preferred to avoid conflicts with future IETF extensions.
+
+# 8. Interface Definitions
+
+## 8.1 ACME Directory
 
 * **Method**: `GET`
-* **URL**: `{base}/acme-eudi-wrpac/directory` (see §10 for URI considerations)
+* **URL**: `{base}/acme-eudi-wrpac/directory` (see §7.9 for URI considerations)
 
 ```json
 {
@@ -483,9 +492,9 @@ The ACME Server MUST accept both forms and normalize them internally.
 ```
 
 > [!NOTE]
-> CS-RPAC_10: `rprcCoIssuanceSupported` and `multiInstanceIssuanceSupported` are WE BUILD extensions to the ACME directory metadata. The former indicates the server can co-issue WRPAC and WRPRC; the latter indicates support for per-instance issuance per the ARF v2.8 Relying Party Instance model [15]. Registration considerations for these extensions are described in §10.
+> CS-RPAC_10: `rprcCoIssuanceSupported` and `multiInstanceIssuanceSupported` are WE BUILD extensions to the ACME directory metadata. The former indicates the server can co-issue WRPAC and WRPRC; the latter indicates support for per-instance issuance per the ARF v2.8 Relying Party Instance model [15]. Registration considerations for these extensions are described in §7.9.
 
-## 9.2 Account Management with EBW/POA
+## 8.2 Account Management with EBW/POA
 
 * **Method**: `POST` (JWS-signed)
 
@@ -503,7 +512,7 @@ The ACME Server MUST accept both forms and normalize them internally.
 }
 ```
 
-## 9.3 Order Lifecycle
+## 8.3 Order Lifecycle
 
 **Create order (single instance):**
 
@@ -530,7 +539,7 @@ The `instanceId` value is an opaque string chosen by the ACME Client. It MUST be
 
 **Order states** (per RFC 8555 §7.1.6 "Status Changes" [1]): `pending` → `ready` → `processing` → `valid` (or `invalid`).
 
-## 9.4 Authorization and Challenge
+## 8.4 Authorization and Challenge
 
 **Authorization response:**
 
@@ -551,7 +560,7 @@ The `instanceId` value is an opaque string chosen by the ACME Client. It MUST be
 
 The ACME Client places the computed `key-authorization` in the RP List entry's `acme-challenge` structure under the key matching the `instanceId` of the order (or `"default"` if no `instanceId` was specified), before signalling readiness.
 
-## 9.5 Finalize and Certificate
+## 8.5 Finalize and Certificate
 
 **Finalize:**
 
@@ -579,7 +588,7 @@ The `registrationCertificate` field is a WE BUILD extension to the standard RFC 
 
 **Certificate download**: `application/pem-certificate-chain` per RFC 8555 §7.4.2 [1] (end-entity first).
 
-## 9.6 Revocation
+## 8.6 Revocation
 
 ```json
 { "certificate": "<base64url DER-encoded certificate>", "reason": 0 }
@@ -587,38 +596,26 @@ The `registrationCertificate` field is a WE BUILD extension to the standard RFC 
 
 For multi-instance deployments, revocation targets the specific certificate identified by the DER-encoded value. Other WRPACs issued to the same `wrp-id` are unaffected.
 
-# 10. IANA Considerations
-
-This specification defines extensions to the ACME protocol that fall within IANA registries established by RFC 8555 and its successors, and introduces a custom URI suffix. For interoperability-testing purposes within WE BUILD ITB+, registration is not a prerequisite; for any future production use, the following registrations would be required.
-
-**ACME Identifier Types registry** (established by RFC 8555): the identifier type `wrp-id` (§6.2) would need to be registered.
-
-**Well-Known URI registry** (RFC 8615 [19]): the URI suffix `acme-eudi-wrpac` (§9.1) would need to be registered if the `/.well-known/` prefix is used. Alternatively, since RFC 8555 does not mandate the use of `/.well-known/` for the ACME directory, a conventional (non-`.well-known/`) path MAY be used, as shown in §9.1. Implementations intending to place the ACME directory under `/.well-known/acme-eudi-wrpac/` MUST complete the RFC 8615 registration process.
-
-**ACME directory metadata extensions**: the metadata fields `rprcCoIssuanceSupported` and `multiInstanceIssuanceSupported` (§9.1) are WE BUILD-specific extensions. The IANA "ACME Directory Metadata Fields" registry (established by RFC 8555) would need to be updated for any production deployment.
-
-**ACME order object extension**: the `registrationCertificate` URL field (§6.1, §9.5) is a WE BUILD-specific extension to the standard ACME order object. For production deployment, a URN-style field name (for example, `urn:webuild:acme:wrprc`) MAY be preferred to avoid conflicts with future IETF extensions.
-
-# 11. Conformance
+# 9. Conformance
 
 An implementation **conforms as an ACME Server (TSP: RA + CA)** if it:
 
-1. Implements ACME per RFC 8555 [1] with the extensions in §6.
-2. Publishes an ACME directory per §9.1.
-3. Requires EAB with EBW/POA verification (§6.4).
+1. Implements ACME per RFC 8555 [1] with the extensions in §5.
+2. Publishes an ACME directory per §8.1.
+3. Requires EAB with EBW/POA verification (§5.4).
 4. Supports `wrp-id` identifiers and `registrar-api-01` challenges.
-5. Verifies WRP presence in WE BUILD RP Lists (§8.8).
-6. Issues certificates per §8.4, including compliance with ETSI TS 119 411-8 v1.1.1 [3] and the attribute mapping in ETSI TS 119 475 v1.2.1 clause 5 [4].
-7. Logs to CT logs (§8.5).
-8. Supports revocation (§8.6).
-9. Implements RA function: POA validation + RP List checks (§8.2).
-10. Supports multi-instance issuance per §6.2, §8.2, and §9.3.
-11. Implements interfaces per §9.
+5. Verifies WRP presence in WE BUILD RP Lists (§7.8).
+6. Issues certificates per §7.4, including compliance with ETSI TS 119 411-8 v1.1.1 [3] and the attribute mapping in ETSI TS 119 475 v1.2.1 clause 5 [4].
+7. Logs to CT logs (§7.5).
+8. Supports revocation (§7.6).
+9. Implements RA function: POA validation + RP List checks (§7.2).
+10. Supports multi-instance issuance per §5.2, §7.2, and §8.3.
+11. Implements interfaces per §8.
 
 An implementation **conforms as an ACME Client (WRP / EBW)** if it:
 
-1. Implements ACME per RFC 8555 [1] with the extensions in §6.
-2. Supports EBW-based EAB provisioning (§6.4).
+1. Implements ACME per RFC 8555 [1] with the extensions in §5.
+2. Supports EBW-based EAB provisioning (§5.4).
 3. Creates accounts with EAB, orders with `wrp-id` (and optional `instanceId`), and completes `registrar-api-01` challenges.
 4. Submits valid CSRs with distinct key pairs per instance, and validates certificate chains.
 5. Supports revocation.
@@ -633,7 +630,7 @@ An implementation **conforms as a test environment** if it:
 
 An **MVP+ conformant** implementation additionally:
 
-1. Implements the full OID4VP-based EBW authentication flow for EAB provisioning (§6.4, §7.2).
+1. Implements the full OID4VP-based EBW authentication flow for EAB provisioning (§5.4, §6.2).
 2. Accepts PID/EBWOID and POA (EAA) as presented via the EBW during the pre-ACME authentication phase.
 
 Profiles for specific WE BUILD credential types MUST NOT relax these requirements.
@@ -642,17 +639,17 @@ Profiles for specific WE BUILD credential types MUST NOT relax these requirement
 
 | Blueprint Step | Description | ACME Operation | Section |
 |---|---|---|---|
-| **1** | User authenticates to RA using EBW | EBW authentication → EAB provisioning | §6.4, §9.2 |
-| **2** | RA requests credentials | OID4VP request from RA to EBW [MVP+] | §6.4 |
-| **3** | User supplies EAA (POA) | EBW presents POA to RA | §6.4 |
-| **4** | RA requests additional WRPRC attributes | Collected during EAB provisioning or as order metadata | §9.3 |
-| **5** | RA checks RP in authorized RP lists | `registrar-api-01` challenge validation | §7.4, §9.4 |
-| **6** | RA orders issuance of both certificates | ACME `finalize` (CSR submission) | §9.5 |
-| **7** | CA issues WRPAC and WRPRC | ACME Server generates certificates, order → `valid` | §9.5 |
+| **1** | User authenticates to RA using EBW | EBW authentication → EAB provisioning | §5.4, §8.2 |
+| **2** | RA requests credentials | OID4VP request from RA to EBW [MVP+] | §5.4 |
+| **3** | User supplies EAA (POA) | EBW presents POA to RA | §5.4 |
+| **4** | RA requests additional WRPRC attributes | Collected during EAB provisioning or as order metadata | §8.3 |
+| **5** | RA checks RP in authorized RP lists | `registrar-api-01` challenge validation | §6.4, §8.4 |
+| **6** | RA orders issuance of both certificates | ACME `finalize` (CSR submission) | §8.5 |
+| **7** | CA issues WRPAC and WRPRC | ACME Server generates certificates, order → `valid` | §8.5 |
 | **8** | CA transmits certificates to RA | Internal (ACME Server encapsulates RA+CA) | — |
-| **9** | RA notifies user (e.g. by email) | Order polling: status → `valid`. Optional out-of-band notification. | §9.5 |
-| **10** | User authenticates via EBW | Certificate download authenticated via JWS-signed POST-as-GET (account key bound to EBW via EAB) | §9.6 |
-| **11** | User retrieves WRPAC and WRPRC | ACME certificate download from `certificate` URL | §9.6 |
+| **9** | RA notifies user (e.g. by email) | Order polling: status → `valid`. Optional out-of-band notification. | §8.5 |
+| **10** | User authenticates via EBW | Certificate download authenticated via JWS-signed POST-as-GET (account key bound to EBW via EAB) | §8.6 |
+| **11** | User retrieves WRPAC and WRPRC | ACME certificate download from `certificate` URL | §8.6 |
 
 > [!NOTE]
 > CS-RPAC_11: The table above maps the eleven-step workflow used by the WE BUILD Blueprint [5] — which is derived from the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4] — to the ACME protocol operations defined by this specification. ETSI TS 119 475 Annex D is informative and presents four use cases (D.1 Integrated model, D.2 Registrar-initiated, D.3 RP-initiated, D.4 Provider-assisted); the eleven discrete steps enumerated above are a WE BUILD refinement of the D.1 flow and are not themselves a normative ETSI enumeration.
