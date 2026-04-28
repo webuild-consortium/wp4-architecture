@@ -71,12 +71,14 @@ What becomes more difficult?
 - Interoperability needs cross-group coordination (Wallet Providers, QTSP, Trust Registry Infrastructure, Testing) and conformance testing beyond “pure OpenID” flows.
 - Potential duplication/confusion with existing invocation patterns unless profiles clearly specify when QeRDS is used and what content is transported (payload vs references).
 - If WE BUILD later decides to transport the issued credential payload via QeRDS, additional profiling will be needed to preserve OpenID4VCI guarantees (token binding, confidentiality, replay protection) and to avoid creating a “push credential” variant that wallets/issuers implement inconsistently.
+- Metadata footprint is broaden compared to the direct WU-to-Issuer/Verifier model, potentially making this model less unlinkable. 
 
 How do we address the risks introduced by this change?
 
 - Profile QeRDS usage as an *optional* pattern with clear applicability criteria (e.g. asynchronous/agent flows, registered delivery requirements).
 - Use conformance testing to validate end-to-end behavior (delivery, evidence retrieval, replay protection, request validation, holder consent, response verification).
 - Ensure implementations preserve the CS-01 / CS-02 security properties (e.g. sender-constrained tokens, signed requests, nonce/audience checks) regardless of transport.
+- Use end-to-end encryption to prevent leaking the content being notified.
 
 ## Advice
 
@@ -84,4 +86,5 @@ Once merged, this is our consortium’s decision. This does not mean all
 participants agree it is the best possible decision. In the decision
 making process, we have heard the following advice.
 
-- 2026-mm-dd, Name, Affiliation, Country: TBD
+- 2026-04-28, Sander Dijkhuis, Cleverbase, Netherlands: Pointed out end-to-end encryption as a privacy preserving means for the notified content, aligned with the QeRDS EBW proposal.
+- 2026-04-28, Lal Chandran, iGrant.io, Sweden: "Adding any relay between WU and Issuer/Verifier, QTSP-grade or otherwise, introduces a party that observes the interaction and is obliged to retain evidence about it."
