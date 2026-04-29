@@ -1,6 +1,15 @@
 # WE BUILD - Conformance Specification:  Credential Presentation
 
-Version 1.0
+Version 1.1 / Approved
+Date: 30 April 2026
+
+**Authors / Contributors**: WP4 Architecture
+
+* Lal Chandran, iGrant.io, Sweden
+* Sander Dijkhuis, Cleverbase, Netherlands
+* George J Padayatti, iGrant.io, Sweden
+* Nikolas Triantafyllou, University of Aegean, Greece
+* Malin Norlander, Bolagsverket, Sweden
 
 Table Of Contents
 
