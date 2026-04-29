@@ -77,7 +77,9 @@ The terms MUST, MUST NOT, SHOULD, SHOULD NOT, REQUIRED, RECOMMENDED, MAY and OPT
 
 This specification uses the following roles:
 
-* **Wallet Unit (WU):** A client application or component acting on behalf of the Holder to obtain and store Verifiable Credentials.
+* **Wallet Unit (WU):** A software component on the Holder's device acting on behalf of the Holder to obtain, store and present Verifiable Credentials.
+
+> **NOTE_CSCP_OAUTH_CLIENT** In OpenID4VP terminology, the OAuth Client role is played by the Verifier (Relying Party), not by the Wallet Unit. References to `client_id` in this specification refer to the Verifier.
 * **Holder:** The subject or representative of the subject who controls the Wallet Unit.
 * **Verifier:** Entity requesting verifiable presentations, validating responses and making authorisation decisions.
 
@@ -248,13 +250,15 @@ Wallets MUST NOT:
 
 ## 7.2 Verifier Requirements
 
+Verifier obligations are listed below. Each item is an action performed by the Verifier (Relying Party); the wallet's reciprocal duty for the same protocol step is referenced in parentheses.
+
 Verifiers MUST:
 
-1. Create a signed Presentation Request Object.
-2. Use nonces and audience restrictions.
-3. Support same‑device and cross‑device invocation.
+1. Create a signed Presentation Request Object. (Wallet reciprocal: 7.1.4)
+2. Use nonces and audience restrictions. (Wallet reciprocal: 7.1.8)
+3. Support same‑device and cross‑device invocation. (Wallet reciprocal: 7.1.2, 7.1.3)
 4. Publish Verifier Metadata.
-5. Provide a Presentation Endpoint.
+5. Provide a Presentation Endpoint. (Wallet reciprocal: 7.1.9)
 6. Validate all Presentation Responses, including:
     * Signature of Presentation Proof
     * Credential authenticity
@@ -262,6 +266,8 @@ Verifiers MUST:
     * Holder binding
     * Nonce and audience binding
     * Satisfaction of request constraints
+
+   (Wallet reciprocal: 7.1.5 to 7.1.8)
 
 Verifiers MUST NOT:
 
