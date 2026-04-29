@@ -12,6 +12,7 @@ Date: 29 April 2026
 - Alejandro Nieto, DigitelTS, Spain
 - Hidde Dorhout, Cleverbase, Netherlands
 - Andrew Freund, D-Trust, Germany
+- Michelle Ludovici, DIGG, Sweden
 
 **Table of Contents**
 - [WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units](#we-build---conformance-specification-remote-qualified-signing-with-wallet-units)
