@@ -33,7 +33,7 @@ Table Of Contents
 - [8. Interface Definitions](#8-interface-definitions)
   - [8.1 Wallet Invocation Interface](#81-wallet-invocation-interface)
   - [8.2 Presentation Request Object Interface](#82-presentation-request-object-interface)
-  - [8.3 Presentation Endpoint](#83-presentation-endpoint)
+  - [8.3 Presentation Response Endpoint](#83-presentation-response-endpoint)
   - [8.4 Verifier Metadata Interface](#84-verifier-metadata-interface)
 - [9. Conformance](#9-conformance)
 - [References](#references)
@@ -173,7 +173,7 @@ Upon consent, the Wallet MUST generate:
 
 ### 6.1.6 Presentation Submission
 
-The Wallet MUST POST the Presentation Response to the Verifier’s Presentation Endpoint, including:
+The Wallet MUST POST the Presentation Response to the Verifier’s Presentation Response Endpoint, including:
 
 * `vp_token` containing the JWT‑encoded Presentation
 * format specifying SD‑JWT‑VC
@@ -218,7 +218,7 @@ Same as 6.1.5.
 
 ### 6.2.6 Presentation Submission
 
-WU delivers the Presentation directly to the Verifier’s Presentation Endpoint (back channel). Redirection flow MAY be used if supported.
+WU delivers the Presentation directly to the Verifier’s Presentation Response Endpoint (back channel). Redirection flow MAY be used if supported.
 
 ### 6.2.7 Result Handling
 
@@ -240,7 +240,7 @@ Wallets MUST:
 6. Provide transparent Holder consent.
 7. Generate JWT‑based Presentation Proof.
 8. Bind Presentation Proof to Verifier’s nonce and audience.
-9. Submit Presentation Responses to the Presentation Endpoint.
+9. Submit Presentation Responses to the Presentation Response Endpoint.
 
 Wallets MUST NOT:
 
@@ -258,7 +258,7 @@ Verifiers MUST:
 2. Use nonces and audience restrictions. (Wallet reciprocal: 7.1.8)
 3. Support same‑device and cross‑device invocation. (Wallet reciprocal: 7.1.2, 7.1.3)
 4. Publish Verifier Metadata.
-5. Provide a Presentation Endpoint. (Wallet reciprocal: 7.1.9)
+5. Provide a Presentation Response Endpoint. (Wallet reciprocal: 7.1.9)
 6. Validate all Presentation Responses, including:
     * Signature of Presentation Proof
     * Credential authenticity
@@ -311,7 +311,7 @@ The Presentation Request Object MUST include:
 Wallet Units reject incomplete or invalid request objects.
 
 
-## 8.3 Presentation Endpoint
+## 8.3 Presentation Response Endpoint
 
 Direction: Wallet → Verifier \
 Method: POST \
@@ -362,7 +362,7 @@ An implementation **conforms to this specification as an Issuer** if it:
 
 1. Implements all Verifier requirements in Section 7.2
 2. Publishes required Verifier Metadata
-3. Implements the Presentation Request and Presentation Endpoint interfaces
+3. Implements the Presentation Request and Presentation Response Endpoint interfaces
 4. Supports both same‑device and cross‑device flows
 
 # References
