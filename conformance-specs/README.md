@@ -54,11 +54,15 @@ graph TB
 | -------- | ------------------------------------------------------------------------------------ |
 | CS-001   | [Credential Issuance - v1.0](cs-01-credential-issuance.md)         |
 | CS-002   | [Credential Presentation - v1.0](cs-02-credential-presentation.md) |
+| CS-003   | [Remote Qualified Signing with Wallet Units - v1.0](cs-03-remote-signing-with-wallet-units.md) |
 |          |
 
 ### WBCSs Under Development
 
 | **WBCS #** | **WBCS Title** |
 | -------- | ------------ |
-|          |              |
+| CS-004   | [WUA Individual Wallet Unit Attestation](https://github.com/webuild-consortium/wp4-architecture/issues/176) |
+| CS-005   | [Business Wallet Unit Attestation](https://github.com/webuild-consortium/wp4-architecture/issues/177) |
+| CS-006   | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) | 
+
 
