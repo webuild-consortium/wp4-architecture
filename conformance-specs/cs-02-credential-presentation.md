@@ -8,7 +8,7 @@ Date: 30 April 2026
 * Lal Chandran, iGrant.io, Sweden
 * Sander Dijkhuis, Cleverbase, Netherlands
 * George J Padayatti, iGrant.io, Sweden
-* Nikolas Triantafyllou, University of Aegean, Greece
+* Nikolaos Triantafyllou, University of Aegean, Greece
 * Malin Norlander, Bolagsverket, Sweden
 
 Table Of Contents
