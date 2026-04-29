@@ -21,6 +21,7 @@ Date: 24 April 2026
 - [4. Roles and Components](#4-roles-and-components)
   - [4.1 Wallet-Centric Model](#41-wallet-centric-model)
   - [4.2 QTSP-Centric Model](#42-qtsp-centric-model)
+  - [4.3 Certificate Lifecycle Profiles](#43-certificate-lifecycle-profiles)
 - [5. Protocol Overview](#5-protocol-overview)
   - [5.1 Wallet-Centric Model](#51-wallet-centric-model)
   - [5.2 QTSP-Centric Model](#52-qtsp-centric-model)
@@ -30,6 +31,7 @@ Date: 24 April 2026
     - [6.1.2 Wallet Unit Invocation](#612-wallet-unit-invocation)
     - [6.1.3 Wallet Unit Validation](#613-wallet-unit-validation)
     - [6.1.4 Signer Consent](#614-signer-consent)
+    - [6.1.4a Certificate Provisioning (Short-Lived Credentials)](#614a-certificate-provisioning-short-lived-credentials)
     - [6.1.5 Signature Generation](#615-signature-generation)
     - [6.1.6 Presentation Submission](#616-presentation-submission)
     - [6.1.7 Result Handling](#617-result-handling)
@@ -45,6 +47,7 @@ Date: 24 April 2026
   - [7.1 Wallet Unit Requirements](#71-wallet-unit-requirements)
     - [7.1.1 Wallet-Centric Model](#711-wallet-centric-model)
     - [7.1.2 QTSP-Centric Model](#712-qtsp-centric-model)
+    - [7.1.3 Short-Lived Credential Support (optional)](#713-short-lived-credential-support-optional)
   - [7.2 Relying Party Requirements](#72-relying-party-requirements)
   - [7.3 Remote Signing Service Provider Considerations](#73-remote-signing-service-provider-considerations)
 - [8. Interface Definitions](#8-interface-definitions)
@@ -54,6 +57,7 @@ Date: 24 April 2026
     - [8.3.1 Wallet-Centric Model](#831-wallet-centric-model)
     - [8.3.2 QTSP-Centric Model](#832-qtsp-centric-model)
   - [8.4 Verifier Metadata Interface](#84-verifier-metadata-interface)
+  - [8.5 Certificate Issuance Endpoint (Wallet-Centric, Short-Lived)](#85-certificate-issuance-endpoint-wallet-centric-short-lived)
 - [9. Conformance](#9-conformance)
 - [References](#references)
 
@@ -118,6 +122,12 @@ Out of scope:
 
 As defined in CS-02 [5] Section 3.
 
+The following terms are used in this specification:
+
+- **Long-term certificate**: a signing certificate pre-issued and reused for multiple signatures, whose lifetime is independent of any single signing transaction.
+
+- **Short-lived credential**: a credential whose signing certificate is created during a signing transaction, bound to identity evidence presented in the same transaction, and used for a single qualified electronic signature or seal. Short-lived credentials are referred to in CSC API as "ad-hoc" or "on-the-go" credential signing.
+
 # 4. Roles and Components
 
 This specification uses the roles defined in CS-02 [5] Section 4, with substitutions and additions per model.
@@ -138,6 +148,15 @@ This specification uses the roles defined in CS-02 [5] Section 4, with substitut
 - The Wallet Unit is used by the Signer for identification (via PID or equivalent EAA presentation) and for authorization and activation of the signing operation. Signing keys are not held by the Wallet Unit in this model.
 
 > **NOTE_CSRS_02** Terminology note: CSC-DMB [3] Section 7.3 refers to the QTSP-Centric Model as the "Provider-centric model". The two terms are equivalent.
+
+## 4.3 Certificate Lifecycle Profiles
+
+This specification distinguishes two certificate lifecycles, applicable independently of the signing model (Wallet-Centric §4.1, QTSP-Centric §4.2):
+
+- `long_term`: the signing certificate exists prior to the signing transaction. This is the default lifecycle if not otherwise signalled.
+- `short_lived`: the signing certificate is created during the signing transaction, bound to identity evidence presented in the same transaction, and used for a single signature.
+
+The applicable lifecycle MUST be signalled by the `certificateLifecycle` member in the `qesRequest` (Wallet-Centric) or `qesApprovalRequest` (QTSP-Centric). Permissible values for a given QES profile are governed by the rulebook bound to `signatureQualifier`. If the member is absent, `long_term` MUST be assumed.
 
 # 5. Protocol Overview
 
@@ -277,8 +296,11 @@ The subsections below apply to both the same-device and cross-device variants of
 
 The Relying Party prepares a signed Presentation Request Object as defined in CS-02 [5] Section 6.1.1, with the following additional requirements:
 
-- The DCQL query MUST contain a credential entry with `format: "https://cloudsignatureconsortium.org/2025/x509"` and optionally `certificatePolicies` or `certificateFingerprints` in the `meta` field.
-- `transaction_data` MUST contain a base64url-encoded `qesRequest` specifying `type`, `credential_ids`, `signatureQualifier`, and at least one `signatureRequests` entry.
+- The DCQL query MUST contain a credential entry with `format: "https://cloudsignatureconsortium.org/2025/x509"` and optionally `certificatePolicies` or `certificateFingerprints` in the `meta` field. When `certificateLifecycle = "short_lived"`, this credential entry MAY be omitted.
+- `transaction_data` MUST contain a base64url-encoded `qesRequest` specifying `type`, `signatureQualifier`, and at least one `signatureRequests` entry.
+  - When `certificateLifecycle = "long_term"` (or absent), `credential_ids` MUST be present.
+  - When `certificateLifecycle = "short_lived"`, `credential_ids` MAY be omitted, consistent with CSC API v2 making `credentialID` conditional when `signatureQualifier` is present; `signatureQualifier` carries the binding semantics.
+- When `certificateLifecycle = "short_lived"`, the DCQL query MUST additionally include a credential query for identity evidence (typically a PID), and the `qesRequest` MUST carry a `certificateIssuance` member identifying the issuing CA endpoint as defined in §8.5. The PID query and the signature authorization MUST share the same `nonce`, `audience`, `client_id`, and (where applicable) WU binding key.
 
 ### 6.1.2 Wallet Unit Invocation
 
@@ -290,7 +312,8 @@ As defined in CS-02 [5] Section 6.1.3, with the following additional checks:
 
 - `transaction_data` MUST decode to a valid `qesRequest`.
 - `signatureQualifier` MUST be present and recognised.
-- The available credential MUST be capable of producing a QES with the specified `signatureQualifier`; if not, the Wallet Unit MUST abort.
+- If `certificateLifecycle = "long_term"` (or absent), the available credential MUST be capable of producing a QES with the specified `signatureQualifier`; if not, the Wallet Unit MUST abort.
+- If `certificateLifecycle = "short_lived"`, the Wallet Unit MUST verify that the Authorization Request includes the identity evidence DCQL query and that it shares the same `nonce`, `audience`, `client_id`, and WU binding key as the signature authorization. If the evidence is split across multiple Authorization Requests, the Wallet Unit MUST abort.
 - If both `href` and `checksum` are present in a `signatureRequest`, the Wallet Unit MUST verify document integrity; if verification fails, the Wallet Unit MUST abort.
 
 ### 6.1.4 Signer Consent
@@ -302,8 +325,21 @@ In addition to the consent requirements of CS-02 [5] Section 6.1.4, the Wallet U
 - The label of each document, or a clear indication that no label is provided.
 - Whether document integrity has been automatically verified.
 - The URI to which the signed response will be sent, if `responseURI` is specified.
+- When `certificateLifecycle = "short_lived"`:
+  - A clear statement that a short-lived signing certificate will be created for this signature using the holder's identity attributes presented in the same transaction.
+  - The identity of the issuing CA (Wallet-Centric).
+  - The validity scope of the short-lived certificate (number of signatures permitted, expected lifetime).
 
 The Wallet Unit SHOULD provide a preview or rendering of the to-be-signed document(s) where technically feasible, to allow the Signer to verify the content before approving.
+
+### 6.1.4a Certificate Provisioning (Short-Lived Credentials)
+
+Applies only when `certificateLifecycle = "short_lived"`. The Wallet Unit MUST obtain a short-lived credential prior to Signature Generation (§6.1.5) using one of the following provisioning patterns:
+
+- **Live issuance.** The Wallet Unit MUST generate a fresh key pair in its Wallet Secure Cryptographic Device, build a Certificate Signing Request (CSR) for that key, and submit the CSR together with the identity evidence presented in the Authorization Request to the certificate issuance endpoint identified by `certificateIssuance` in the `qesRequest`, as defined in §8.5. The issuing CA returns a short-lived certificate bound to the fresh key and the presented identity.
+- **Pre-batched pool.** The Wallet Unit MAY draw an unused short-lived certificate from a pool previously provisioned by the issuing CA, where each certificate in the pool corresponds to a fresh key pair already bound by the WSCD. If using this pattern, the Wallet Unit MUST verify that the selected certificate has not previously been used for any signature.
+
+The Wallet Unit MUST refuse provisioning if the issuing CA's policy or the certificate's `signatureQualifier` does not match the `qesRequest`. Once a short-lived certificate has been used in §6.1.5 it MUST NOT be reused.
 
 ### 6.1.5 Signature Generation
 
@@ -334,9 +370,14 @@ The QTSP (directly, or via its Signature Creation Application) prepares a signed
 
 - The `client_id` of the Request Object MUST identify the QTSP and MUST be resolvable to the QTSP's published metadata in the applicable trust framework.
 - The DCQL query MUST request a credential in SD-JWT VC format whose issuance supports the `org.cloudsignatureconsortium.dm.1.qesApproval` claim as defined in CSC-DMB [3] Section 7.2.1.2.
-- `transaction_data` MUST contain a base64url-encoded `qesApprovalRequest` as defined in CSC-DMB [3] Section 7.1, specifying at minimum `type`, `credential_ids`, `signatureQualifier`, `documentInfos`, and `hashAlgorithmOID`.
+- `transaction_data` MUST contain a base64url-encoded `qesApprovalRequest` as defined in CSC-DMB [3] Section 7.1, specifying at minimum `type`, `signatureQualifier`, `documentInfos`, and `hashAlgorithmOID`.
+  - When `certificateLifecycle = "long_term"` (or absent), `credential_ids` MUST be present.
+  - When `certificateLifecycle = "short_lived"`, `credential_ids` MAY be omitted, consistent with CSC API v2 making `credentialID` conditional when `signatureQualifier` is present; `signatureQualifier` carries the binding semantics.
 
-Signer identification (for example via PID presentation) and QES authorization MAY be conveyed in a single OpenID4VP authorization request (multiple DCQL credential queries plus the `qesApprovalRequest`) or in two separate OpenID4VP authorization requests, at the QTSP's discretion. Wallet Units MUST support both patterns.
+Signer identification (for example via PID presentation) and QES authorization MAY be conveyed:
+
+- When `certificateLifecycle = "long_term"`: in a single OpenID4VP authorization request (multiple DCQL credential queries plus the `qesApprovalRequest`) or in two separate OpenID4VP authorization requests, at the QTSP's discretion. Wallet Units MUST support both patterns.
+- When `certificateLifecycle = "short_lived"`: in a single OpenID4VP authorization request only. The identity evidence DCQL query and the `qesApproval`-capable credential query MUST share the same `nonce`, `audience`, `client_id`, and WU binding key. Splitting across two authorization requests is prohibited in this mode.
 
 ### 6.2.2 Wallet Unit Invocation
 
@@ -350,6 +391,7 @@ As defined in CS-02 [5] Section 6.1.3, with the following additional checks:
 - `transaction_data` MUST decode to a valid `qesApprovalRequest`.
 - `signatureQualifier` MUST be present and recognised.
 - The selected SD-JWT VC MUST support the `org.cloudsignatureconsortium.dm.1.qesApproval` claim (typically, by being issued with a type whose rulebook declares the claim); if not, the Wallet Unit MUST abort.
+- If `certificateLifecycle = "short_lived"`, the Wallet Unit MUST verify that the identity evidence query and the `qesApproval`-capable credential query are conveyed in the same Authorization Request and share the same `nonce`, `audience`, `client_id`, and WU binding key. If they are split across multiple Authorization Requests, the Wallet Unit MUST abort.
 - If any `documentInfos` entry contains both a `href` and a `checksum`, the Wallet Unit MUST verify document integrity; if verification fails, the Wallet Unit MUST abort.
 
 ### 6.2.4 Signer Consent
@@ -362,6 +404,9 @@ In addition to the consent requirements of CS-02 [5] Section 6.1.4, the Wallet U
 - The label of each document in `documentInfos`, or a clear indication that no label is provided.
 - The number of signatures authorized, if `numSignatures` is present in the `qesApprovalRequest`.
 - Whether document integrity has been automatically verified.
+- When `certificateLifecycle = "short_lived"`:
+  - A clear statement that a short-lived signing certificate will be created by the QTSP for this signature using the holder's identity attributes presented in the same transaction.
+  - The validity scope of the short-lived certificate (typically single signature, short lifetime).
 
 The Wallet Unit SHOULD provide a preview or rendering of the to-be-signed document(s) where technically feasible.
 
@@ -388,6 +433,8 @@ As defined in CS-02 [5] Section 6.1.7. After the QTSP validates the presentation
 ## 7.1 Wallet Unit Requirements
 
 In addition to all requirements in CS-02 [5] Section 7.1, Wallet Units MUST support the Wallet-Centric Model as defined in Section 7.1.1. Wallet Units that claim QTSP-Centric Model support MUST additionally comply with Section 7.1.2.
+
+Wallet Units MUST support `certificateLifecycle = "long_term"` for any signing model they conform to. Support for `certificateLifecycle = "short_lived"` is OPTIONAL; Wallet Units that claim short-lived support MUST additionally comply with Section 7.1.3.
 
 ### 7.1.1 Wallet-Centric Model
 
@@ -424,6 +471,17 @@ Wallet Units MUST NOT:
 - Proceed if the selected credential does not support the `org.cloudsignatureconsortium.dm.1.qesApproval` claim.
 - Proceed if document integrity verification fails.
 - Return a `qesApproval` claim for credentials not issued with the intention of supporting QES authorization (see CSC-DMB [3] Section 7.2.1.2, Note 22).
+
+### 7.1.3 Short-Lived Credential Support (optional)
+
+Wallet Units MAY support `certificateLifecycle = "short_lived"`. Where supported, the Wallet Unit MUST:
+
+1. Honour the conditional rules for `short_lived` mode in §6.1.1, §6.1.3, §6.1.4 (Wallet-Centric) and/or §6.2.1, §6.2.3, §6.2.4 (QTSP-Centric), depending on which signing model is supported.
+2. Implement the Certificate Provisioning step in §6.1.4a when supporting Wallet-Centric short-lived signing.
+3. Display the additional consent items defined in §6.1.4 / §6.2.4 for `short_lived`.
+4. Bind the short-lived credential's identity attributes to the identity evidence presented in the same OpenID4VP Authorization Request, sharing the same `nonce`, `audience`, `client_id`, and WU binding key.
+5. Refuse to reuse a short-lived credential once it has been used for a signature.
+6. Refuse a `qesRequest` or `qesApprovalRequest` whose `certificateLifecycle` value is not declared as supported for the matching `signatureQualifier`.
 
 ## 7.2 Relying Party Requirements
 
@@ -613,19 +671,59 @@ The Verifier Metadata Interface defined in CS-02 [5] Section 8.4 applies, with t
 
 - A Relying Party supporting the Wallet-Centric Model MUST declare support for the CSC X.509 credential format in `vp_formats_supported`.
 - A QTSP acting as OpenID4VP Verifier in the QTSP-Centric Model MUST declare support for the SD-JWT VC credential format in `vp_formats_supported`, and MUST publish metadata sufficient for the Wallet Unit to resolve its `client_id` and validate the Authorization Request Object signature.
+- A Relying Party or QTSP that supports `certificateLifecycle = "short_lived"` MUST declare the supported lifecycle values per `signatureQualifier` in its published metadata.
+
+## 8.5 Certificate Issuance Endpoint (Wallet-Centric, Short-Lived)
+
+Applies only to the Wallet-Centric Model when `certificateLifecycle = "short_lived"`. The `qesRequest` MUST carry a `certificateIssuance` member identifying the issuing CA endpoint to which the Wallet Unit submits the CSR and identity evidence:
+
+```json
+"certificateIssuance": {
+  "endpoint": "https://ca.example/qes/short-lived",
+  "csrFormat": "PKCS10",
+  "identityBinding": "PID"
+}
+```
+
+The endpoint MUST accept an HTTP POST with a JSON body containing:
+
+- `csr`: base64url-encoded CSR in the format identified by `csrFormat`.
+- `identityEvidence`: the verifiable presentation conveying the identity attributes used for binding (typically the PID presentation extracted from the same Authorization Request).
+- `signatureQualifier`: as conveyed in the `qesRequest`.
+
+The endpoint response MUST be a JSON body containing:
+
+- `certificate`: base64-encoded short-lived certificate, or
+- `error`: a structured error per RFC 9457 Problem Details.
+
+Implementations MAY substitute this endpoint with a "claim-from-pool" call when pre-batched provisioning is in use; the wire shape MUST remain JSON over HTTP POST and the request/response semantics MUST preserve the binding to the identity evidence presented in the Authorization Request.
 
 # 9. Conformance
 
 An implementation conforms to this specification as a **Wallet Unit** if it:
 
 1. Conforms to CS-02 [5] Section 9 as a Wallet Provider.
-2. Implements all Wallet Unit requirements in Section 7.1.1 of this specification (Wallet-Centric Model).
+2. Implements all Wallet Unit requirements in Section 7.1.1 of this specification (Wallet-Centric Model, long-term certificate baseline).
 3. Supports both the same-device and cross-device variants of the Wallet-Centric Signing Flow defined in Section 6.1.
 
 A Wallet Unit that additionally claims QTSP-Centric Model support MUST also:
 
 4. Implement all Wallet Unit requirements in Section 7.1.2 of this specification.
 5. Support both the same-device and cross-device variants of the QTSP-Centric Signing Flow defined in Section 6.2.
+
+A Wallet Unit that additionally claims short-lived credential support MUST also:
+
+6. Implement all Wallet Unit requirements in Section 7.1.3 of this specification.
+7. Support short-lived credential signing in at least one of the signing models it conforms to.
+
+Conformance is declared as a set of profile identifiers covering the (signing model, certificate lifecycle) pairs supported:
+
+- `WC-LT`: Wallet-Centric Model, `long_term`. Mandatory for any implementation claiming Wallet-Centric conformance.
+- `WC-SL`: Wallet-Centric Model, `short_lived`. Optional. If claimed, §6.1.4a and §8.5 are normative.
+- `QC-LT`: QTSP-Centric Model, `long_term`. Mandatory for any implementation claiming QTSP-Centric conformance.
+- `QC-SL`: QTSP-Centric Model, `short_lived`. Optional.
+
+An implementation MAY claim any combination of these profiles. Wallet Units MUST publish their declared profile set in their published capabilities.
 
 An implementation conforms to this specification as a **Relying Party** if it:
 
