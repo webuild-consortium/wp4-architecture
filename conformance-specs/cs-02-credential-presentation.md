@@ -84,6 +84,8 @@ The terms MUST, MUST NOT, SHOULD, SHOULD NOT, REQUIRED, RECOMMENDED, MAY and OPT
 
 # 4. Roles and Components
 
+The role names defined in this specification (Wallet Unit, Holder, Verifier) are **OpenID4VP protocol roles**, not organisational or product roles. A single software product may implement more than one role at different times, and any given role may be fulfilled by software that also performs other functions (for example, a Business Wallet implementing both Holder and Verifier roles in different interactions). The requirements in this specification attach to the role, not to the product or organisation that implements it.
+
 This specification uses the following roles:
 
 * **Wallet Unit (WU):** A software component on the Holder's device acting on behalf of the Holder to obtain, store and present Verifiable Credentials.
@@ -236,6 +238,7 @@ Verifier processes the Presentation and returns the outcome as in 6.1.7.
 
 # 7. Normative Requirements
 
+The requirements in 7.1 and 7.2 attach to the OpenID4VP **roles** of Wallet Unit and Verifier respectively, as defined in chapter 4, not to the products or organisations implementing them. A relying party deploying a multi-role software product (for example a Business Wallet) to implement the Verifier role is a normal and supported pattern; the obligations in 7.2 apply to the Verifier role inside that product.
 
 ## 7.1 Wallet Unit Requirements
 
@@ -259,24 +262,28 @@ Wallets MUST NOT:
 
 ## 7.2 Verifier Requirements
 
-Verifier obligations are listed below. Each item is an action performed by the Verifier (Relying Party); the wallet's reciprocal duty for the same protocol step is referenced in parentheses.
+Verifier obligations are listed below in two groups: per-transaction protocol behaviours, and deployment-time obligations. All items are normative MUSTs. The wallet's reciprocal duty for the same protocol step is referenced in parentheses.
 
-Verifiers MUST:
+**Verifiers MUST ensure, on every transaction, that:**
 
-1. Create a signed Presentation Request Object. (Wallet reciprocal: 7.1.4)
-2. Use nonces and audience restrictions. (Wallet reciprocal: 7.1.8)
-3. Support same‑device and cross‑device invocation. (Wallet reciprocal: 7.1.2, 7.1.3)
-4. Publish Verifier Metadata.
-5. Provide a Presentation Response Endpoint. (Wallet reciprocal: 7.1.9)
-6. Validate all Presentation Responses, including:
+1. The Presentation Request Object is sealed (signed) by the Verifier. (Wallet reciprocal: 7.1.4)
+2. Nonces and audience restrictions are generated and included. (Wallet reciprocal: 7.1.8)
+6. All Presentation Responses are validated, including:
     * Signature of Presentation Proof
     * Credential authenticity
+    * Wallet Unit Attestation validity (per HAIP)
     * SD‑JWT‑VC disclosure integrity
     * Holder binding
     * Nonce and audience binding
     * Satisfaction of request constraints
 
    (Wallet reciprocal: 7.1.5 to 7.1.8)
+
+**Verifiers MUST, at deployment:**
+
+3. Support same‑device and cross‑device invocation. (Wallet reciprocal: 7.1.2, 7.1.3)
+4. Publish Verifier Metadata.
+5. Provide a Presentation Response Endpoint. (Wallet reciprocal: 7.1.9)
 
 Verifiers MUST NOT:
 
