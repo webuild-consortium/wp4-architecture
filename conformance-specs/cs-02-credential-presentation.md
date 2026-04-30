@@ -1,6 +1,15 @@
 # WE BUILD - Conformance Specification:  Credential Presentation
 
-Version 1.0
+Version 1.1 / Approved
+Date: 30 April 2026
+
+**Authors / Contributors**: WP4 Architecture
+
+* Lal Chandran, iGrant.io, Sweden
+* Sander Dijkhuis, Cleverbase, Netherlands
+* George J Padayatti, iGrant.io, Sweden
+* Nikolaos Triantafyllou, University of Aegean, Greece
+* Malin Norlander, Bolagsverket, Sweden
 
 Table Of Contents
 
@@ -33,7 +42,7 @@ Table Of Contents
 - [8. Interface Definitions](#8-interface-definitions)
   - [8.1 Wallet Invocation Interface](#81-wallet-invocation-interface)
   - [8.2 Presentation Request Object Interface](#82-presentation-request-object-interface)
-  - [8.3 Presentation Endpoint](#83-presentation-endpoint)
+  - [8.3 Presentation Response Endpoint](#83-presentation-response-endpoint)
   - [8.4 Verifier Metadata Interface](#84-verifier-metadata-interface)
 - [9. Conformance](#9-conformance)
 - [References](#references)
@@ -75,9 +84,13 @@ The terms MUST, MUST NOT, SHOULD, SHOULD NOT, REQUIRED, RECOMMENDED, MAY and OPT
 
 # 4. Roles and Components
 
+The role names defined in this specification (Wallet Unit, Holder, Verifier) are **OpenID4VP protocol roles**, not organisational or product roles. A single software product may implement more than one role at different times, and any given role may be fulfilled by software that also performs other functions (for example, a Business Wallet implementing both Holder and Verifier roles in different interactions). The requirements in this specification attach to the role, not to the product or organisation that implements it.
+
 This specification uses the following roles:
 
-* **Wallet Unit (WU):** A client application or component acting on behalf of the Holder to obtain and store Verifiable Credentials.
+* **Wallet Unit (WU):** A software component on the Holder's device acting on behalf of the Holder to obtain, store and present Verifiable Credentials.
+
+> **NOTE_CSCP_OAUTH_CLIENT** In OpenID4VP terminology, the OAuth Client role is played by the Verifier (Relying Party), not by the Wallet Unit. References to `client_id` in this specification refer to the Verifier.
 * **Holder:** The subject or representative of the subject who controls the Wallet Unit.
 * **Verifier:** Entity requesting verifiable presentations, validating responses and making authorisation decisions.
 
@@ -171,7 +184,7 @@ Upon consent, the Wallet MUST generate:
 
 ### 6.1.6 Presentation Submission
 
-The Wallet MUST POST the Presentation Response to the Verifier’s Presentation Endpoint, including:
+The Wallet MUST POST the Presentation Response to the Verifier’s Presentation Response Endpoint, including:
 
 * `vp_token` containing the JWT‑encoded Presentation
 * format specifying SD‑JWT‑VC
@@ -216,7 +229,7 @@ Same as 6.1.5.
 
 ### 6.2.6 Presentation Submission
 
-WU delivers the Presentation directly to the Verifier’s Presentation Endpoint (back channel). Redirection flow MAY be used if supported.
+WU delivers the Presentation directly to the Verifier’s Presentation Response Endpoint (back channel). Redirection flow MAY be used if supported.
 
 ### 6.2.7 Result Handling
 
@@ -225,6 +238,7 @@ Verifier processes the Presentation and returns the outcome as in 6.1.7.
 
 # 7. Normative Requirements
 
+The requirements in 7.1 and 7.2 attach to the OpenID4VP **roles** of Wallet Unit and Verifier respectively, as defined in chapter 4, not to the products or organisations implementing them. A relying party deploying a multi-role software product (for example a Business Wallet) to implement the Verifier role is a normal and supported pattern; the obligations in 7.2 apply to the Verifier role inside that product.
 
 ## 7.1 Wallet Unit Requirements
 
@@ -238,7 +252,7 @@ Wallets MUST:
 6. Provide transparent Holder consent.
 7. Generate JWT‑based Presentation Proof.
 8. Bind Presentation Proof to Verifier’s nonce and audience.
-9. Submit Presentation Responses to the Presentation Endpoint.
+9. Submit Presentation Responses to the Presentation Response Endpoint.
 
 Wallets MUST NOT:
 
@@ -248,20 +262,28 @@ Wallets MUST NOT:
 
 ## 7.2 Verifier Requirements
 
-Verifiers MUST:
+Verifier obligations are listed below in two groups: per-transaction protocol behaviours, and deployment-time obligations. All items are normative MUSTs. The wallet's reciprocal duty for the same protocol step is referenced in parentheses.
 
-1. Create a signed Presentation Request Object.
-2. Use nonces and audience restrictions.
-3. Support same‑device and cross‑device invocation.
-4. Publish Verifier Metadata.
-5. Provide a Presentation Endpoint.
-6. Validate all Presentation Responses, including:
+**Verifiers MUST ensure, on every transaction, that:**
+
+1. The Presentation Request Object is sealed (signed) by the Verifier. (Wallet reciprocal: 7.1.4)
+2. Nonces and audience restrictions are generated and included. (Wallet reciprocal: 7.1.8)
+6. All Presentation Responses are validated, including:
     * Signature of Presentation Proof
     * Credential authenticity
+    * Wallet Unit Attestation validity (per HAIP)
     * SD‑JWT‑VC disclosure integrity
     * Holder binding
     * Nonce and audience binding
     * Satisfaction of request constraints
+
+   (Wallet reciprocal: 7.1.5 to 7.1.8)
+
+**Verifiers MUST, at deployment:**
+
+3. Support same‑device and cross‑device invocation. (Wallet reciprocal: 7.1.2, 7.1.3)
+4. Publish Verifier Metadata.
+5. Provide a Presentation Response Endpoint. (Wallet reciprocal: 7.1.9)
 
 Verifiers MUST NOT:
 
@@ -305,7 +327,7 @@ The Presentation Request Object MUST include:
 Wallet Units reject incomplete or invalid request objects.
 
 
-## 8.3 Presentation Endpoint
+## 8.3 Presentation Response Endpoint
 
 Direction: Wallet → Verifier \
 Method: POST \
@@ -356,7 +378,7 @@ An implementation **conforms to this specification as an Issuer** if it:
 
 1. Implements all Verifier requirements in Section 7.2
 2. Publishes required Verifier Metadata
-3. Implements the Presentation Request and Presentation Endpoint interfaces
+3. Implements the Presentation Request and Presentation Response Endpoint interfaces
 4. Supports both same‑device and cross‑device flows
 
 # References
