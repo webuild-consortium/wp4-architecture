@@ -433,7 +433,12 @@ As defined in CS-02 [5] Section 6.1.7. After the QTSP validates the presentation
 
 ## 7.1 Wallet Unit Requirements
 
-In addition to all requirements in CS-02 [5] Section 7.1, Wallet Units MUST support the Wallet-Centric Model as defined in Section 7.1.1. Wallet Units that claim QTSP-Centric Model support MUST additionally comply with Section 7.1.2.
+In addition to all requirements in CS-02 [5] Section 7.1, Wallet Units MUST support at least one of the following models:
+
+- the Wallet-Centric Model, as defined in Section 7.1.1, or
+- the QTSP-Centric Model, as defined in Section 7.1.2.
+
+Wallet Units MAY support both models. A Wallet Unit that supports a given model MUST comply with all requirements specified for that model.
 
 Wallet Units MUST support `certificateLifecycle = "long_term"` for any signing model they conform to. Support for `certificateLifecycle = "short_lived"` is OPTIONAL; Wallet Units that claim short-lived support MUST additionally comply with Section 7.1.3.
 
