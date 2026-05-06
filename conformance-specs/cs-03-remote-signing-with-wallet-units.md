@@ -704,18 +704,17 @@ Implementations MAY substitute this endpoint with a "claim-from-pool" call when 
 An implementation conforms to this specification as a **Wallet Unit** if it:
 
 1. Conforms to CS-02 [5] Section 9 as a Wallet Provider.
-2. Implements all Wallet Unit requirements in Section 7.1.1 of this specification (Wallet-Centric Model, long-term certificate baseline).
-3. Supports both the same-device and cross-device variants of the Wallet-Centric Signing Flow defined in Section 6.1.
-
-A Wallet Unit that additionally claims QTSP-Centric Model support MUST also:
-
-4. Implement all Wallet Unit requirements in Section 7.1.2 of this specification.
-5. Support both the same-device and cross-device variants of the QTSP-Centric Signing Flow defined in Section 6.2.
+2. Implements all Wallet Unit requirements in at least one of the following sections:
+	2.1. Section 7.1.1 of this specification (Wallet-Centric Model, long-term certificate baseline) to claim Wallet-Centric Model support.
+	2.2. Section 7.1.2 of this specification (QTSP-Centric Model, long-term certificate baseline) to claim QTSP-Centric Model support).
+3. Supports both the same-device and cross-device variants of the signing flow corresponding to each supported model:
+	3.1. Section 6.1 for the Wallet-Centric Model.
+	3.2. Section 6.2 for the QTSP-Centric Model.
 
 A Wallet Unit that additionally claims short-lived credential support MUST also:
 
-6. Implement all Wallet Unit requirements in Section 7.1.3 of this specification.
-7. Support short-lived credential signing in at least one of the signing models it conforms to.
+4. Implement all Wallet Unit requirements in Section 7.1.3 of this specification.
+5. Support short-lived credential signing in at least one of the signing models it conforms to.
 
 Conformance is declared as a set of profile identifiers covering the (signing model, certificate lifecycle) pairs supported:
 
