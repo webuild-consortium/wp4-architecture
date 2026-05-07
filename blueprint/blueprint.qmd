@@ -57,3 +57,8 @@
 ::: {.shift-headings by=1}
 {{< include appendix-adr.qmd >}}
 :::
+
+::: {.shift-headings by=1}
+{{< include appendix-cs.qmd >}}
+:::
+
