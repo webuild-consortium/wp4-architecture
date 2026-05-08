@@ -6,7 +6,7 @@
 
 ## Context
 
-The EBW proposal [COM(2025) 838 final](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0838) distinguishes three wallet content types: **data**, **documents**, and **attestations** (Recitals 14, 24, 27). Recital 27 explicitly introduces a **reference attestation** (a pointer and cryptographic hash to a sealed document) as a first-class wallet capability, distinct from embedding a full document payload in a credential.
+The EBW proposal [COM(2025) 838 final](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52025PC0838) establishes a framework covering electronic attestations of attributes, submissions, and the exchange of documents and notifications (Articles 3 and 5). Recital 27 explicitly introduces a **reference attestation** (a pointer and cryptographic hash to a sealed document) as a first-class wallet capability, distinct from embedding a full document payload in a credential.
 
 In practice, WE BUILD use cases (notably SC1 eCMR and SC5 Scenario 4) have modelled complex business documents as full-payload wallet attestations. This conflicts with the [eFTI Regulation (EU) 2020/1056](https://eur-lex.europa.eu/eli/reg/2020/1056/oj), which requires freight transport information to remain authoritative on certified platforms, and with the non-repudiation and audit-trail requirements that Peppol and QERDS are designed to provide.
 
@@ -18,15 +18,11 @@ The root cause of the observed conflation is a specification gap: Recital 27 des
 
 ## Decision
 
-WE BUILD adopts a strict separation between attestations, documents, and data:
+WE BUILD adopts the following rule on the use of attestations in relation to business document exchange:
 
-**Attestations of attributes** SHALL convey identity attributes, status claims, and authorisation claims. They MAY also include links to submissions as per EBW Recital 27, as a document reference in the form of a cryptographic hash without embedding document payload. This submissions can be other attribute attestations or other documents.
-
-**Business documents** (e.g. eCMR, EN 16931 invoice) SHALL NOT be stored as full-payload wallet attestations. They SHALL be exchanged as EBW submissions. In case the owner of a copy needs to prove the authenticity of the attributes in these submissions, they can use an attribute attestation linked to such a submission.
-
-**Data** MAY be stored in the wallet and shared with relying parties within the applicable data model and access control constraints.
-
-Full-payload document attestations are **rejected** for complex business documents. Where a wallet interaction is required at a point of control, the reference attestation pattern SHALL be applied: the wallet presents the reference; the relying party retrieves the document via an authenticated channel.
+*Attestations SHALL NOT be used as a substitute for business document exchange.* 
+Attestations SHALL convey identity attributes, status claims, and authorisation claims. They MAY also serve as reference attestations per EBW Recital 27, carrying a document reference in the form of a cryptographic hash without embedding the document payload. The full payload of complex business documents (e.g. eCMR, EN 16931 invoice) SHALL be exchanged as EBW submissions via (Q)ERDS or equivalent certified channels, and remain authoritative at their source platform. Where a wallet interaction is required at a point of control, the reference attestation pattern SHALL be applied: the wallet presents the reference; the relying party retrieves the document via an authenticated channel.
+This restriction applies to attestation issuance and presentation flows. It does not limit what data or documents the wallet holder may store or access for their own purposes.
 
 ## Consequences
 
