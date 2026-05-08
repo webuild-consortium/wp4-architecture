@@ -22,7 +22,7 @@ WE BUILD adopts a strict separation between attestations, documents, and data:
 
 **Attestations of attributes** SHALL convey identity attributes, status claims, and authorisation claims. They MAY also include links to submissions as per EBW Recital 27, as a document reference in the form of a cryptographic hash without embedding document payload. This submissions can be other attribute attestations or other documents.
 
-**Documents** (e.g. eCMR, EN 16931 invoice) SHALL NOT be stored as full-payload wallet attestations. They SHALL be exchanged via QERDS, Peppol, or certified eFTI platforms, and retrieved on demand using a reference attestation.
+**Business documents** (e.g. eCMR, EN 16931 invoice) SHALL NOT be stored as full-payload wallet attestations. They SHALL be exchanged as EBW submissions. In case the owner of a copy needs to prove the authenticity of the attributes in these submissions, they can use an attribute attestation linked to such a submission.
 
 **Data** MAY be stored in the wallet and shared with relying parties within the applicable data model and access control constraints.
 
