@@ -20,7 +20,7 @@ The root cause of the observed conflation is a specification gap: Recital 27 des
 
 WE BUILD adopts a strict separation between attestations, documents, and data:
 
-**Attestations** SHALL convey identity attributes, status claims, and authorisation claims. They MAY also function as **reference attestations** per EBW Recital 27, carrying a document reference and cryptographic hash without embedding document payload.
+**Attestations of attributes** SHALL convey identity attributes, status claims, and authorisation claims. They MAY also include links to submissions as per EBW Recital 27, as a document reference in the form of a cryptographic hash without embedding document payload. This submissions can be other attribute attestations or other documents.
 
 **Documents** (e.g. eCMR, EN 16931 invoice) SHALL NOT be stored as full-payload wallet attestations. They SHALL be exchanged via QERDS, Peppol, or certified eFTI platforms, and retrieved on demand using a reference attestation.
 
