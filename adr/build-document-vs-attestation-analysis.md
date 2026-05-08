@@ -26,9 +26,8 @@ SC5's MVP Scenarios 1–3 use wallet attestations correctly to convey *relations
 
 These are not business documents. Using attestations here is architecturally sound.
 
-The risk is **Scenario 4**: Direct eInvoicing using Business Wallets, in which the supplier issues the eInvoice as a verifiable attestation and transmits it directly to the buyer's wallet. An EN 16931 / Peppol BIS Invoice is a structured legal and fiscal document, not an identity or status claim. Its exchange must be non-repudiable, auditable, and in many jurisdictions tax-compliant. Peppol and (Q)ERDS exist precisely for this.
+The risk is illustrated in **Scenario 4** that uses a reference attestation to submit an eInvoice directly between two wallet instances. For the attestation to make sense it should contain enough information to allow the reciever to decide whether or not to retrieve the referenced invoice or not, which fast leads to the notion that the whole invoice can be embedded in the attestation. 
 
-**Scenario 5** (Peppol enhancements using qualified trust services including (Q)ERDS) correctly identifies the right direction for improving trust in Peppol-connected flows and should be treated as the preferred architecture for document-carrying scenarios and progressed as MVP.
 
 ---
 
