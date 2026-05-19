@@ -1,0 +1,106 @@
+---
+- name: ACME end-to-end smoke test
+  hosts: all
+  gather_facts: false
+  vars:
+    acme_dir: "https://{{ ca_fqdn }}:8443/acme/directory"
+    smoke_home: /root/acme-smoke
+    smoke_email: "smoke@{{ ca_fqdn }}"
+    smoke_identifier: "{{ ca_fqdn }}"
+
+  tasks:
+
+    - name: Open port 80 for http-01 challenge listener
+      ansible.posix.firewalld:
+        port: 80/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Sanity-check ACME directory responds
+      ansible.builtin.uri:
+        url: "{{ acme_dir }}"
+        validate_certs: false
+        return_content: true
+      register: smoke_directory
+
+    - name: Assert directory has the expected endpoints
+      ansible.builtin.assert:
+        that:
+          - smoke_directory.json.newNonce is defined
+          - smoke_directory.json.newAccount is defined
+          - smoke_directory.json.newOrder is defined
+        fail_msg: "ACME directory is missing required endpoints"
+
+    - name: Ensure acme.sh is installed
+      ansible.builtin.command: "/root/.acme.sh/acme.sh --version"
+      register: acme_sh_check
+      changed_when: false
+      failed_when: false
+
+    - name: Install acme.sh via curl bootstrap
+      when: acme_sh_check.rc != 0
+      block:
+        - name: Install acme.sh dependencies
+          ansible.builtin.dnf:
+            name:
+              - curl
+              - socat
+              - openssl
+            state: present
+
+        - name: Ensure acme.sh source dir
+          ansible.builtin.file:
+            path: /root/acme.sh-src
+            state: directory
+            mode: "0700"
+
+        - name: Download acme.sh installer
+          ansible.builtin.get_url:
+            url: "https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh"
+            dest: /root/acme.sh-src/acme.sh
+            mode: "0700"
+            validate_certs: true
+
+        - name: Run acme.sh installer
+          ansible.builtin.command: "./acme.sh --install -m {{ smoke_email }}"
+          args:
+            chdir: /root/acme.sh-src
+            creates: /root/.acme.sh/acme.sh
+
+    - name: Register ACME account (idempotent — acme.sh skips if already registered)
+      ansible.builtin.command: >
+        /root/.acme.sh/acme.sh
+        --server {{ acme_dir }}
+        --register-account
+        --insecure
+        -m {{ smoke_email }}
+      register: acme_register
+      changed_when: "'Already registered' not in acme_register.stdout"
+
+    - name: Issue a certificate via standalone http-01 (RSA-2048 — see acmeServerCert profile)
+      ansible.builtin.command: >
+        /root/.acme.sh/acme.sh
+        --server {{ acme_dir }}
+        --issue
+        --standalone
+        --insecure
+        --keylength 2048
+        -d {{ smoke_identifier }}
+        --force
+      register: acme_issue
+      changed_when: true
+
+    - name: Show issued certificate path
+      ansible.builtin.command: "ls /root/.acme.sh/{{ smoke_identifier }}_ecc/ /root/.acme.sh/{{ smoke_identifier }}/"
+      register: cert_dir
+      changed_when: false
+      failed_when: false
+
+    - name: Print smoke-test summary
+      ansible.builtin.debug:
+        msg:
+          - "ACME directory:    {{ acme_dir }}"
+          - "Test identifier:   {{ smoke_identifier }}"
+          - "Issued cert dir:   {{ cert_dir.stdout_lines | default([]) }}"
+          - "Last acme.sh exit: {{ acme_issue.rc }}"

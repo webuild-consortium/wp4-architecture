@@ -1,0 +1,111 @@
+---
+# Test 08 — CS-06 façade state survives wrpac-acme-facade restart.
+#
+# 1. Issue a cert via Phase 3 client → creates account + order + cert rows
+# 2. Snapshot SQLite row counts before restart
+# 3. Restart wrpac-acme-facade
+# 4. Snapshot SQLite row counts after restart
+# 5. Assert: counts > 0 and unchanged
+
+- name: "Test 08: façade persistence — state survives wrpac-acme-facade restart"
+  hosts: all
+  gather_facts: false
+  vars:
+    db: /var/lib/wrpac-acme/facade.sqlite3
+    rp_db: /var/lib/wrpac-acme/rp_list.sqlite3
+    acme_dir: "http://{{ ca_fqdn }}:{{ wrpac_facade_port }}/acme-eudi-wrpac/directory"
+    rp_list_url: "http://{{ ca_fqdn }}:{{ wrpac_rp_list_port }}"
+
+  tasks:
+
+    - name: Ensure sqlite3 CLI is available
+      ansible.builtin.dnf:
+        name: sqlite
+        state: present
+
+    - name: Issue a fresh cert via Phase 3 client (populates SQLite)
+      ansible.builtin.command: >
+        {{ wrpac_facade_root }}/.venv/bin/python -m wrpac_acme.client
+        --directory {{ acme_dir }}
+        --rp-list   {{ rp_list_url }}
+        --wrp-id    {{ wrpac_test_wrp_id }}
+        --legal-name "{{ wrpac_test_organisation_name }}"
+        --org-id     {{ wrpac_test_organisation_identifier }}
+        --country    {{ wrpac_test_country }}
+        --friendly-name "Test 08 persistence"
+        --out-cert /tmp/test_08.pem
+      changed_when: true
+
+    - name: Snapshot row counts before restart
+      ansible.builtin.shell: |
+        set -e
+        echo "accounts=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM accounts')"
+        echo "orders=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM orders')"
+        echo "authzs=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM authzs')"
+        echo "challenges=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM challenges')"
+        echo "certs=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM certs')"
+        echo "rp_entries=$(sqlite3 {{ rp_db }} 'SELECT COUNT(*) FROM entries')"
+      args:
+        executable: /bin/bash
+      register: before
+      changed_when: false
+
+    - name: Show pre-restart snapshot
+      ansible.builtin.debug:
+        msg: "{{ before.stdout_lines }}"
+
+    - name: Restart wrpac-acme-facade + wrpac-rp-list
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: restarted
+      loop:
+        - wrpac-rp-list
+        - wrpac-acme-facade
+
+    - name: Wait for façade to come back
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: "{{ wrpac_facade_port }}"
+        timeout: 30
+
+    - name: Snapshot row counts after restart
+      ansible.builtin.shell: |
+        set -e
+        echo "accounts=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM accounts')"
+        echo "orders=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM orders')"
+        echo "authzs=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM authzs')"
+        echo "challenges=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM challenges')"
+        echo "certs=$(sqlite3 {{ db }} 'SELECT COUNT(*) FROM certs')"
+        echo "rp_entries=$(sqlite3 {{ rp_db }} 'SELECT COUNT(*) FROM entries')"
+      args:
+        executable: /bin/bash
+      register: after
+      changed_when: false
+
+    - name: Show post-restart snapshot
+      ansible.builtin.debug:
+        msg: "{{ after.stdout_lines }}"
+
+    - name: Assert row counts non-zero and unchanged
+      ansible.builtin.assert:
+        that:
+          - after.stdout == before.stdout
+          - "'accounts=0' not in after.stdout"
+          - "'orders=0' not in after.stdout"
+          - "'certs=0' not in after.stdout"
+          - "'rp_entries=0' not in after.stdout"
+        fail_msg: |
+          State did NOT survive restart.
+          before:
+          {{ before.stdout }}
+          after:
+          {{ after.stdout }}
+
+    - name: Sanity-check we can still GET the directory (façade is healthy)
+      ansible.builtin.uri:
+        url: "{{ acme_dir }}"
+      register: post_restart_dir
+
+    - name: "Test 08 passed — accounts/orders/certs survived restart"
+      ansible.builtin.debug:
+        msg: "Façade persistence verified."

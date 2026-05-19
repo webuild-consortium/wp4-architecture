@@ -1,0 +1,177 @@
+---
+# Switch the Dogtag ACME subsystem from the in-memory backend to the 389-DS
+# backend so that accounts, orders, authz, challenges, and certificates
+# survive pki-tomcatd restarts.
+#
+# Safe to run on a deployment that already has the in-memory backend running.
+#
+# What this playbook does:
+#   1. Ensure DS schema for ACME attribute / object types is loaded
+#   2. Create the ACME subtree (ou=acme,...) and child OUs (accounts, orders, ...)
+#   3. Apply DS indexes the ACME engine queries on
+#   4. Rewrite /var/lib/pki/pki-tomcat/conf/acme/database.conf to use DSDatabase
+#   5. Restart pki-tomcatd and wait for /acme/directory to respond
+
+- name: Switch Dogtag ACME persistence to 389-DS
+  hosts: all
+  gather_facts: false
+  vars:
+    acme_db_url: "ldap://{{ ca_fqdn }}:389"
+    acme_db_bind_dn: "cn=Directory Manager"
+    acme_db_bind_password: "{{ ds_dm_password }}"
+    schema_src: /usr/share/pki/acme/database/ds/schema.ldif
+    index_src: /usr/share/pki/acme/database/ds/index.ldif
+    indextask_src: /usr/share/pki/acme/database/ds/indextask.ldif
+
+  tasks:
+
+    - name: Sanity-check we want the ds backend
+      ansible.builtin.assert:
+        that: acme_database_backend == "ds"
+        fail_msg: >-
+          acme_database_backend is {{ acme_database_backend }}.
+          Set it to "ds" in group_vars/all.yml before running this playbook.
+
+    - name: Load ACME schema into 389-DS (continue-on-error; tolerate "already exists")
+      ansible.builtin.command:
+        argv:
+          - ldapmodify
+          - -c
+          - -H
+          - "{{ acme_db_url }}"
+          - -D
+          - "{{ acme_db_bind_dn }}"
+          - -w
+          - "{{ acme_db_bind_password }}"
+          - -f
+          - "{{ schema_src }}"
+      register: schema_apply
+      changed_when: "'modifying entry' in schema_apply.stdout"
+      failed_when: >-
+        schema_apply.rc != 0
+        and 'Already exists' not in (schema_apply.stderr | default(''))
+        and 'Type or value exists' not in (schema_apply.stderr | default(''))
+
+    - name: Write per-deployment create.ldif (root suffix + ACME subtree + child OUs)
+      ansible.builtin.copy:
+        dest: /root/acme-create.ldif
+        owner: root
+        group: root
+        mode: "0600"
+        content: |
+          dn: {{ ds_suffix }}
+          objectClass: top
+          objectClass: domain
+          dc: {{ ds_suffix.split(',')[0].split('=')[1] }}
+
+          dn: {{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          objectClass: extensibleObject
+          ou: acme
+
+          dn: ou=config,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          objectClass: extensibleObject
+          ou: config
+
+          dn: ou=nonces,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          ou: nonces
+
+          dn: ou=accounts,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          ou: accounts
+
+          dn: ou=orders,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          ou: orders
+
+          dn: ou=authorizations,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          ou: authorizations
+
+          dn: ou=challenges,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          ou: challenges
+
+          dn: ou=certificates,{{ acme_db_basedn }}
+          objectClass: organizationalUnit
+          ou: certificates
+
+    - name: Create root suffix + ACME subtree (tolerate already-exists)
+      ansible.builtin.command:
+        argv:
+          - ldapadd
+          - -c
+          - -H
+          - "{{ acme_db_url }}"
+          - -D
+          - "{{ acme_db_bind_dn }}"
+          - -w
+          - "{{ acme_db_bind_password }}"
+          - -f
+          - /root/acme-create.ldif
+      register: subtree_create
+      changed_when: "'adding new entry' in subtree_create.stdout"
+      # ldapadd -c returns rc=68 if every entry already exists, rc=0 if all new.
+      # Tolerate "Already exists" lines but fail on anything else.
+      failed_when: >-
+        subtree_create.rc != 0
+        and ('No such object' in (subtree_create.stderr | default(''))
+             or 'Invalid' in (subtree_create.stderr | default(''))
+             or ('Already exists' not in (subtree_create.stderr | default(''))
+                 and 'Already exists' not in (subtree_create.stdout | default(''))))
+
+    - name: Apply ACME indexes
+      ansible.builtin.command: >
+        ldapadd -c -H {{ acme_db_url }}
+        -D "{{ acme_db_bind_dn }}" -w "{{ acme_db_bind_password }}"
+        -f {{ index_src }}
+      register: index_apply
+      failed_when: index_apply.rc != 0 and 'Already exists' not in (index_apply.stderr | default('') + index_apply.stdout | default(''))
+      changed_when: "'adding new entry' in (index_apply.stdout | default(''))"
+
+    - name: Trigger ACME index task (one-shot reindex)
+      ansible.builtin.command: >
+        ldapadd -c -H {{ acme_db_url }}
+        -D "{{ acme_db_bind_dn }}" -w "{{ acme_db_bind_password }}"
+        -f {{ indextask_src }}
+      register: indextask_apply
+      failed_when: indextask_apply.rc != 0 and 'Already exists' not in (indextask_apply.stderr | default('') + indextask_apply.stdout | default(''))
+      changed_when: "'adding new entry' in (indextask_apply.stdout | default(''))"
+
+    - name: Rewrite ACME database.conf to use DSDatabase
+      ansible.builtin.copy:
+        dest: "/var/lib/pki/{{ pki_instance_name }}/conf/acme/database.conf"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+        content: |
+          class=org.dogtagpki.acme.database.DSDatabase
+          url={{ acme_db_url }}
+          authType=BasicAuth
+          bindDN={{ acme_db_bind_dn }}
+          bindPassword={{ acme_db_bind_password }}
+          baseDN={{ acme_db_basedn }}
+      register: db_conf
+
+    - name: Restart pki-tomcatd
+      ansible.builtin.systemd:
+        name: "pki-tomcatd@{{ pki_instance_name }}"
+        state: restarted
+      when: db_conf is changed
+
+    - name: Wait for ACME directory to respond
+      ansible.builtin.uri:
+        url: "https://{{ ca_fqdn }}:8443/acme/directory"
+        validate_certs: false
+      register: acme_dir
+      retries: 12
+      delay: 5
+      until: acme_dir.status == 200
+
+    - name: Phase 4 done — ACME persistence on 389-DS
+      ansible.builtin.debug:
+        msg:
+          - "ACME baseDN: {{ acme_db_basedn }}"
+          - "directory:   https://{{ ca_fqdn }}:8443/acme/directory"

@@ -1,0 +1,120 @@
+---
+# Test 06 — CS-06 §7.4 attribute assertions on a freshly-issued WRPAC.
+#
+# Issues one cert via the Phase 3 client (against either local or public URL)
+# and asserts every §7.4 attribute. This is the most useful single test for
+# verifying the cert profile end-to-end.
+
+- name: "Test 06: CS-06 §7.4 attributes"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    test_acme_directory: "http://{{ ca_fqdn }}:{{ wrpac_facade_port }}/acme-eudi-wrpac/directory"
+    test_rp_list: "http://{{ ca_fqdn }}:{{ wrpac_rp_list_port }}"
+    test_python_bin: "{{ playbook_dir }}/../.venv/bin/python"
+    test_out_dir: "{{ playbook_dir }}/../test-out"
+    cert_path: "{{ test_out_dir }}/profile-check.pem"
+    ca_root_path: "{{ test_out_dir }}/dogtag-ca-root.pem"
+
+  tasks:
+
+    - name: Ensure output dir
+      ansible.builtin.file:
+        path: "{{ test_out_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Fetch the Dogtag CA root via SSH (needed for chain verification)
+      ansible.builtin.shell: |
+        ssh cbadmin@{{ ca_fqdn }} 'sudo cat /root/wrpac-smoke/ca_signing.crt' > {{ ca_root_path }}
+        test -s {{ ca_root_path }}
+      args:
+        creates: "{{ ca_root_path }}"
+
+    - name: Issue a fresh cert via the Phase 3 client
+      ansible.builtin.command: >
+        {{ test_python_bin }} -m wrpac_acme.client
+        --directory {{ test_acme_directory }}
+        --rp-list   {{ test_rp_list }}
+        --wrp-id    {{ wrpac_test_wrp_id }}
+        --legal-name "{{ wrpac_test_organisation_name }}"
+        --org-id     {{ wrpac_test_organisation_identifier }}
+        --country    {{ wrpac_test_country }}
+        --friendly-name "CS-06 §7.4 check"
+        --out-cert  {{ cert_path }}
+      changed_when: true
+
+    - name: Dump cert (text + extensions)
+      ansible.builtin.command: >
+        openssl x509 -in {{ cert_path }} -noout -text -nameopt RFC2253
+      register: cert_text
+      changed_when: false
+
+    - name: "§7.4 #1 — X.509 v3"
+      ansible.builtin.assert:
+        that: "'Version: 3' in cert_text.stdout"
+
+    - name: "§7.4 #3 — legal name in Subject (O=)"
+      ansible.builtin.assert:
+        that: "'O=' + wrpac_test_organisation_name in cert_text.stdout"
+
+    - name: "§7.4 #5 — unique WRP identifier (organizationIdentifier / 2.5.4.97)"
+      ansible.builtin.assert:
+        that:
+          - "'organizationIdentifier=' + wrpac_test_organisation_identifier in cert_text.stdout or '2.5.4.97=' + wrpac_test_organisation_identifier in cert_text.stdout"
+
+    - name: "§7.4 #6 — certificate policy OID present"
+      ansible.builtin.assert:
+        that: wrpac_policy_oid_legal in cert_text.stdout
+
+    - name: "§7.4 #7 — certification path info URI (AIA)"
+      ansible.builtin.assert:
+        that: "'Authority Information Access' in cert_text.stdout"
+
+    - name: "§7.4 #8 — SAN with DNS or URI"
+      ansible.builtin.assert:
+        that:
+          - "'Subject Alternative Name' in cert_text.stdout"
+          - "'DNS:' in cert_text.stdout or 'URI:' in cert_text.stdout"
+
+    - name: "§7.4 #12 — SHA-256+ signature, RSA-3072+ or ECDSA P-256/384"
+      ansible.builtin.assert:
+        that:
+          - "'sha256' in cert_text.stdout or 'sha384' in cert_text.stdout or 'sha512' in cert_text.stdout"
+          - "'Public-Key: (3072 bit)' in cert_text.stdout or 'Public-Key: (4096 bit)' in cert_text.stdout or 'NIST CURVE: P-256' in cert_text.stdout or 'NIST CURVE: P-384' in cert_text.stdout"
+
+    - name: "§7.4 #13 — 1-year validity"
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        not_before=$(openssl x509 -in {{ cert_path }} -noout -startdate | cut -d= -f2)
+        not_after=$(openssl x509 -in {{ cert_path }} -noout -enddate   | cut -d= -f2)
+        nb_epoch=$(date -d "$not_before" +%s)
+        na_epoch=$(date -d "$not_after"  +%s)
+        days=$(( (na_epoch - nb_epoch) / 86400 ))
+        echo "validity days: $days"
+        test "$days" -ge 360 && test "$days" -le 366
+      args:
+        executable: /bin/bash
+      register: validity_check
+      changed_when: false
+
+    - name: "Show validity check"
+      ansible.builtin.debug:
+        msg: "{{ validity_check.stdout }}"
+
+    - name: "Chain verifies against the Dogtag root"
+      ansible.builtin.command: >
+        openssl verify -CAfile {{ ca_root_path }} {{ cert_path }}
+      register: chain
+      changed_when: false
+
+    - name: "Assert chain OK"
+      ansible.builtin.assert:
+        that: "'OK' in chain.stdout"
+
+    - name: "Test 06 passed — cert at {{ cert_path }} meets CS-06 §7.4"
+      ansible.builtin.debug:
+        msg:
+          - "{{ chain.stdout }}"
+          - "{{ validity_check.stdout }}"

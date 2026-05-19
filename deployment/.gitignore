@@ -1,0 +1,5 @@
+.venv/
+*.retry
+collections/
+roles/galaxy/
+__pycache__/

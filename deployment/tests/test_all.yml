@@ -1,0 +1,12 @@
+---
+# Master test playbook — runs every test in order. Pass URL overrides via -e
+# to target the public deployment instead of the local one. See tests/README.md.
+
+- import_playbook: test_01_directory.yml
+- import_playbook: test_02_phase1_acme.yml
+- import_playbook: test_03_phase2_direct.yml
+- import_playbook: test_04_phase3_happy.yml
+- import_playbook: test_05_phase3_negative.yml
+- import_playbook: test_06_cert_profile.yml
+- import_playbook: test_07_persistence.yml
+- import_playbook: test_08_facade_persistence.yml
