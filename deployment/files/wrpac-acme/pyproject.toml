@@ -1,0 +1,21 @@
+[project]
+name = "wrpac-acme"
+version = "0.1.0"
+description = "WE BUILD CS-06 ACME façade + mock RP List service for Dogtag PKI"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.110,<0.116",
+    "uvicorn[standard]>=0.27,<0.32",
+    "pydantic>=2.5,<3",
+    "cryptography>=42,<44",
+    "jwcrypto>=1.5,<2",
+    "httpx>=0.26,<0.28",
+]
+
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["wrpac_acme*"]

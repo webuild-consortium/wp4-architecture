@@ -1,0 +1,10 @@
+---
+- import_playbook: playbooks/00-prereqs.yml
+- import_playbook: playbooks/10-dogtag-ca.yml
+- import_playbook: playbooks/20-dogtag-acme.yml
+- import_playbook: playbooks/21-acme-persistence.yml
+  when: acme_database_backend | default('in-memory') == 'ds'
+- import_playbook: playbooks/30-wrpac-profile.yml
+- import_playbook: playbooks/31-wrpac-smoke-direct.yml
+- import_playbook: playbooks/40-wrpac-facade.yml
+- import_playbook: playbooks/99-smoke-test.yml

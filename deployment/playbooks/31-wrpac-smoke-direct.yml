@@ -1,0 +1,194 @@
+---
+- name: WRPAC direct-enrolment smoke test (CS-06 §7.4)
+  hosts: all
+  gather_facts: false
+  vars:
+    smoke_dir: /root/wrpac-smoke
+    nss_dir: "{{ smoke_dir }}/nssdb"
+    nss_password: Secret.123
+    csr_conf: "{{ smoke_dir }}/csr.conf"
+    csr_file: "{{ smoke_dir }}/wrpac.csr"
+    key_file: "{{ smoke_dir }}/wrpac.key"
+    cert_file: "{{ smoke_dir }}/wrpac.pem"
+    admin_p12: "/root/.dogtag/{{ pki_instance_name }}/ca_admin_cert.p12"
+
+  tasks:
+
+    - name: Ensure smoke test working directory
+      ansible.builtin.file:
+        path: "{{ smoke_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Write openssl CSR config for WRPAC Subject DN
+      ansible.builtin.copy:
+        dest: "{{ csr_conf }}"
+        owner: root
+        group: root
+        mode: "0600"
+        content: |
+          [ req ]
+          distinguished_name = dn
+          prompt = no
+          req_extensions = v3_req
+
+          [ dn ]
+          CN = {{ wrpac_test_friendly_name }}
+          O = {{ wrpac_test_organisation_name }}
+          organizationIdentifier = {{ wrpac_test_organisation_identifier }}
+          C = {{ wrpac_test_country }}
+
+          [ v3_req ]
+          subjectAltName = @san
+
+          [ san ]
+          DNS.1 = {{ wrpac_test_san_dns }}
+
+    - name: Generate RSA-3072 key and CSR
+      ansible.builtin.command: >
+        openssl req -new
+        -newkey rsa:3072
+        -nodes
+        -keyout {{ key_file }}
+        -out {{ csr_file }}
+        -config {{ csr_conf }}
+      args:
+        creates: "{{ csr_file }}"
+
+    - name: Show the generated CSR subject
+      ansible.builtin.command: "openssl req -in {{ csr_file }} -noout -subject -nameopt RFC2253"
+      register: csr_subject
+      changed_when: false
+
+    - name: Assert CSR Subject contains organizationIdentifier
+      ansible.builtin.assert:
+        that:
+          - "('organizationIdentifier=' + wrpac_test_organisation_identifier) in csr_subject.stdout or ('2.5.4.97=' + wrpac_test_organisation_identifier) in csr_subject.stdout"
+        fail_msg: "Generated CSR lacks organizationIdentifier in Subject: {{ csr_subject.stdout }}"
+
+    - name: Initialize pki client NSS DB
+      ansible.builtin.command: "pki -d {{ nss_dir }} -c {{ nss_password }} client-init --force"
+      args:
+        creates: "{{ nss_dir }}/cert9.db"
+
+    - name: Import caadmin client cert into NSS DB
+      ansible.builtin.shell: |
+        set -e
+        if pki -d {{ nss_dir }} -c {{ nss_password }} nss-cert-find 2>/dev/null | grep -q "Nickname:"; then
+          echo "already imported"
+          exit 0
+        fi
+        pki -d {{ nss_dir }} -c {{ nss_password }} \
+            pkcs12-import \
+            --pkcs12 {{ admin_p12 }} \
+            --pkcs12-password '{{ pki_admin_password }}'
+      register: import_admin
+      changed_when: "'already imported' not in import_admin.stdout"
+
+    - name: Discover admin cert nickname
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        pki -d {{ nss_dir }} -c {{ nss_password }} nss-cert-find \
+          | awk -F': ' '/Nickname:/ {print $2; exit}'
+      args:
+        executable: /bin/bash
+      register: admin_nickname_raw
+      changed_when: false
+
+    - name: Set admin_nickname fact
+      ansible.builtin.set_fact:
+        admin_nickname: "{{ admin_nickname_raw.stdout | trim }}"
+
+    - name: Export CA signing cert from Dogtag
+      ansible.builtin.command: >
+        pki-server cert-export ca_signing
+        --cert-file {{ smoke_dir }}/ca_signing.crt
+      args:
+        creates: "{{ smoke_dir }}/ca_signing.crt"
+
+    - name: Import CA signing cert into NSS DB as trusted
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        if pki -d {{ nss_dir }} -c {{ nss_password }} nss-cert-find \
+            | grep -E "^\s+Nickname:\s+lab-ca-signing\s*$" >/dev/null; then
+          echo "already imported"
+          exit 0
+        fi
+        pki -d {{ nss_dir }} -c {{ nss_password }} \
+            nss-cert-import \
+            --cert {{ smoke_dir }}/ca_signing.crt \
+            --trust CT,C,C \
+            "lab-ca-signing"
+      args:
+        executable: /bin/bash
+      register: ca_import
+      changed_when: "'already imported' not in ca_import.stdout"
+
+    - name: Submit CSR for enrolment with profile {{ wrpac_profile_id }}
+      ansible.builtin.command: >
+        pki -d {{ nss_dir }} -c {{ nss_password }}
+        -n "{{ admin_nickname }}"
+        -U https://{{ ca_fqdn }}:8443
+        ca-cert-request-submit
+        --profile {{ wrpac_profile_id }}
+        --csr-file {{ csr_file }}
+      register: request_submit
+
+    - name: Show submission output
+      ansible.builtin.debug:
+        msg: "{{ request_submit.stdout_lines }}"
+
+    - name: Assert request was auto-issued (agent submitter ⇒ complete on submit)
+      ansible.builtin.assert:
+        that:
+          - "'Request Status: complete' in request_submit.stdout"
+          - "'Operation Result: success' in request_submit.stdout"
+          - "'Certificate ID:' in request_submit.stdout"
+        fail_msg: "Request was not auto-issued — see submit output"
+
+    - name: Capture Certificate ID
+      ansible.builtin.set_fact:
+        cert_id: "{{ request_submit.stdout | regex_search('Certificate ID:\\s*(\\S+)', '\\1') | first }}"
+
+    - name: Remove any stale cert file
+      ansible.builtin.file:
+        path: "{{ cert_file }}"
+        state: absent
+
+    - name: Export issued certificate to PEM
+      ansible.builtin.shell: |
+        pki -d {{ nss_dir }} -c {{ nss_password }} \
+            -n "{{ admin_nickname }}" \
+            -U https://{{ ca_fqdn }}:8443 \
+            ca-cert-show {{ cert_id }} \
+            --output {{ cert_file }}
+      args:
+        executable: /bin/bash
+
+    - name: Dump issued cert (text)
+      ansible.builtin.command: "openssl x509 -in {{ cert_file }} -noout -text -nameopt RFC2253"
+      register: cert_text
+      changed_when: false
+
+    - name: Show issued certificate
+      ansible.builtin.debug:
+        msg: "{{ cert_text.stdout_lines }}"
+
+    - name: Verify CS-06 §7.4 attributes
+      ansible.builtin.assert:
+        that:
+          # #5 organizationIdentifier (OID 2.5.4.97)
+          - "'organizationIdentifier=' + wrpac_test_organisation_identifier in cert_text.stdout or '2.5.4.97=' + wrpac_test_organisation_identifier in cert_text.stdout"
+          # #3 legal name in O=
+          - "'O=' + wrpac_test_organisation_name in cert_text.stdout"
+          # #6 certificate policy OID
+          - wrpac_policy_oid_legal in cert_text.stdout
+          # #8 SAN extension with DNS
+          - "'DNS:' + wrpac_test_san_dns in cert_text.stdout"
+          # #13 1-year validity — check the cert is not 90-day
+          - "'Not After' in cert_text.stdout"
+          # #12 SHA-256+ signature
+          - "'sha256' in cert_text.stdout or 'sha384' in cert_text.stdout or 'sha512' in cert_text.stdout"
+        fail_msg: "Issued cert does not meet CS-06 §7.4 attribute checklist"

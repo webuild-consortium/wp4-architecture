@@ -1,0 +1,184 @@
+---
+- name: Deploy WRPAC ACME façade + mock RP List service (CS-06 Phase 3)
+  hosts: all
+  gather_facts: false
+  vars:
+    src_root: "{{ playbook_dir }}/../files/wrpac-acme"
+
+  tasks:
+
+    - name: Ensure firewalld ports are open (façade + RP List)
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - "{{ wrpac_facade_port }}/tcp"
+        - "{{ wrpac_rp_list_port }}/tcp"
+
+    - name: Ensure target install directory
+      ansible.builtin.file:
+        path: "{{ wrpac_facade_root }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Ensure persistent state directory
+      ansible.builtin.file:
+        path: /var/lib/wrpac-acme
+        state: directory
+        owner: root
+        group: root
+        mode: "0700"
+
+    - name: Remove any stale WRPAC_BASE_URL override (now derived from request)
+      ansible.builtin.file:
+        path: /etc/systemd/system/wrpac-acme-facade.service.d
+        state: absent
+      register: stale_override
+
+    - name: Sync wrpac-acme source tree
+      ansible.builtin.copy:
+        src: "{{ src_root }}/"
+        dest: "{{ wrpac_facade_root }}/"
+        owner: root
+        group: root
+        mode: preserve
+        directory_mode: "0755"
+      register: src_sync
+
+    - name: Create venv
+      ansible.builtin.command: "python3 -m venv {{ wrpac_facade_root }}/.venv"
+      args:
+        creates: "{{ wrpac_facade_root }}/.venv/bin/python"
+
+    - name: Install Python dependencies into venv
+      ansible.builtin.pip:
+        name:
+          - "fastapi>=0.110,<0.116"
+          - "uvicorn[standard]>=0.27,<0.32"
+          - "pydantic>=2.5,<3"
+          - "cryptography>=42,<44"
+          - "jwcrypto>=1.5,<2"
+          - "httpx>=0.26,<0.28"
+        virtualenv: "{{ wrpac_facade_root }}/.venv"
+        state: present
+
+    - name: Install wrpac-acme package itself (editable)
+      ansible.builtin.command:
+        cmd: "{{ wrpac_facade_root }}/.venv/bin/pip install -e ."
+        chdir: "{{ wrpac_facade_root }}"
+      register: pip_install_self
+      changed_when: "'Successfully installed' in pip_install_self.stdout"
+
+    - name: Write systemd unit — RP List service
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/wrpac-rp-list.service
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=WE BUILD mock RP List service
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=root
+          Environment="WRPAC_SEED_WRP_ID={{ wrpac_test_wrp_id }}"
+          Environment="WRPAC_SEED_LEGAL_NAME={{ wrpac_test_organisation_name }}"
+          Environment="WRPAC_SEED_ORG_ID={{ wrpac_test_organisation_identifier }}"
+          Environment="WRPAC_SEED_COUNTRY={{ wrpac_test_country }}"
+          Environment="WRPAC_RP_LIST_DB_PATH=/var/lib/wrpac-acme/rp_list.sqlite3"
+          ExecStart={{ wrpac_facade_root }}/.venv/bin/uvicorn wrpac_acme.rp_list:app \
+              --host 0.0.0.0 --port {{ wrpac_rp_list_port }}
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+      register: rp_list_unit
+      notify: Reload systemd
+
+    - name: Write systemd unit — ACME façade
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/wrpac-acme-facade.service
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Unit]
+          Description=WE BUILD CS-06 ACME façade
+          After=network.target wrpac-rp-list.service
+          Wants=wrpac-rp-list.service
+
+          [Service]
+          Type=simple
+          User=root
+          Environment="WRPAC_BASE_URL=http://{{ ca_fqdn }}:{{ wrpac_facade_port }}"
+          Environment="WRPAC_RP_LIST_URL=http://localhost:{{ wrpac_rp_list_port }}"
+          Environment="WRPAC_NSS_DIR=/root/wrpac-smoke/nssdb"
+          Environment="WRPAC_NSS_PASSWORD={{ pki_admin_password }}"
+          Environment="WRPAC_ADMIN_NICKNAME=PKI Administrator for lab"
+          Environment="WRPAC_CA_URL=https://{{ ca_fqdn }}:8443"
+          Environment="WRPAC_PROFILE_ID={{ wrpac_profile_id }}"
+          Environment="WRPAC_DB_PATH=/var/lib/wrpac-acme/facade.sqlite3"
+          ExecStart={{ wrpac_facade_root }}/.venv/bin/uvicorn wrpac_acme.facade:app \
+              --host 0.0.0.0 --port {{ wrpac_facade_port }} \
+              --proxy-headers --forwarded-allow-ips '*'
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+      register: facade_unit
+      notify: Reload systemd
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Ensure RP List service running + restart if code or unit changed
+      ansible.builtin.systemd:
+        name: wrpac-rp-list
+        enabled: true
+        state: "{{ 'restarted' if (src_sync is changed or rp_list_unit is changed) else 'started' }}"
+
+    - name: Ensure ACME façade running + restart if code or unit changed
+      ansible.builtin.systemd:
+        name: wrpac-acme-facade
+        enabled: true
+        state: "{{ 'restarted' if (src_sync is changed or facade_unit is changed) else 'started' }}"
+
+    - name: Wait for RP List port
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: "{{ wrpac_rp_list_port }}"
+        timeout: 30
+
+    - name: Wait for façade port
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: "{{ wrpac_facade_port }}"
+        timeout: 30
+
+    - name: Sanity-check façade directory
+      ansible.builtin.uri:
+        url: "http://{{ ca_fqdn }}:{{ wrpac_facade_port }}/acme-eudi-wrpac/directory"
+        return_content: true
+      register: facade_directory
+
+    - name: Assert directory advertises CS-06 extensions
+      ansible.builtin.assert:
+        that:
+          - "'wrp-id' in facade_directory.json.meta.supportedIdentifierTypes"
+          - "'registrar-api-01' in facade_directory.json.meta.supportedChallengeTypes"
+          - facade_directory.json.meta.externalAccountRequired
+
+    # End-to-end smoke is covered by tests/test_04 (which runs from the
+    # control machine so it isn't affected by hairpin NAT when the directory
+    # advertises public URLs). The deploy playbook only verifies the directory.
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true

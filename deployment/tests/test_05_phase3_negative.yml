@@ -1,0 +1,31 @@
+---
+# Test 05 — CS-06 §7.2 negative-test battery against the Phase 3 façade.
+
+- name: "Test 05: Phase 3 negative tests"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    test_acme_directory: "http://{{ ca_fqdn }}:{{ wrpac_facade_port }}/acme-eudi-wrpac/directory"
+    test_rp_list: "http://{{ ca_fqdn }}:{{ wrpac_rp_list_port }}"
+    test_python_bin: "{{ playbook_dir }}/../.venv/bin/python"
+
+  tasks:
+    - name: Run the negative-test battery
+      ansible.builtin.command: >
+        {{ test_python_bin }} -m wrpac_acme.negative_tests
+        --directory {{ test_acme_directory }}
+        --rp-list   {{ test_rp_list }}
+      register: neg
+      changed_when: false
+
+    - name: Show negative-test report
+      ansible.builtin.debug:
+        msg: "{{ neg.stdout_lines }}"
+
+    - name: Assert all negative tests passed
+      ansible.builtin.assert:
+        that:
+          - "'failed' in neg.stdout"
+          - "'0 failed' in neg.stdout"
+        fail_msg: "Negative-test battery reports failures — see output above"

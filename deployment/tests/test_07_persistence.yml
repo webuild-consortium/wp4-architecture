@@ -1,0 +1,86 @@
+---
+# Test 07 — ACME state survives pki-tomcatd restart.
+#
+# 1. Clear acme.sh's local account cache so we start fresh
+# 2. Register an account by issuing a cert (acme.sh)
+# 3. Restart pki-tomcatd
+# 4. Issue another cert with the SAME local account state
+#
+# With the in-memory backend, step 4 fails (accountDoesNotExist).
+# With the ds backend, step 4 succeeds.
+
+- name: "Test 07: persistence — ACME state survives pki-tomcatd restart"
+  hosts: all
+  gather_facts: false
+  vars:
+    acme_dir: "https://{{ ca_fqdn }}:8443/acme/directory"
+
+  tasks:
+
+    - name: Skip if acme.sh isn't installed
+      ansible.builtin.stat:
+        path: /root/.acme.sh/acme.sh
+      register: acme_sh
+
+    - name: Skip play
+      ansible.builtin.meta: end_play
+      when: not acme_sh.stat.exists
+
+    - name: Clear acme.sh state for a clean baseline
+      ansible.builtin.shell: |
+        rm -rf /root/.acme.sh/ca/* /root/.acme.sh/account.key 2>/dev/null || true
+      changed_when: false
+
+    - name: Issue baseline cert (registers account)
+      ansible.builtin.command: >
+        /root/.acme.sh/acme.sh
+        --server {{ acme_dir }}
+        --issue --standalone --insecure --keylength 2048
+        -d {{ ca_fqdn }} --force
+      register: baseline_issue
+      changed_when: true
+
+    - name: Assert baseline issuance succeeded
+      ansible.builtin.assert:
+        that:
+          - baseline_issue.rc == 0
+          - "'Success' in baseline_issue.stdout"
+
+    - name: Restart pki-tomcatd to test state persistence
+      ansible.builtin.systemd:
+        name: "pki-tomcatd@{{ pki_instance_name }}"
+        state: restarted
+
+    - name: Wait for ACME directory after restart
+      ansible.builtin.uri:
+        url: "{{ acme_dir }}"
+        validate_certs: false
+      register: post_restart_dir
+      retries: 12
+      delay: 5
+      until: post_restart_dir.status == 200
+
+    - name: Re-issue cert with the SAME account (should work iff state persisted)
+      ansible.builtin.command: >
+        /root/.acme.sh/acme.sh
+        --server {{ acme_dir }}
+        --issue --standalone --insecure --keylength 2048
+        -d {{ ca_fqdn }} --force
+      register: post_restart_issue
+      changed_when: true
+
+    - name: Assert post-restart issuance succeeded (proves persistence)
+      ansible.builtin.assert:
+        that:
+          - post_restart_issue.rc == 0
+          - "'Success' in post_restart_issue.stdout"
+          - "'accountDoesNotExist' not in post_restart_issue.stderr"
+          - "'accountDoesNotExist' not in post_restart_issue.stdout"
+        fail_msg: |
+          ACME state did not survive pki-tomcatd restart.
+          stderr: {{ post_restart_issue.stderr | default('(empty)') }}
+          stdout tail: {{ post_restart_issue.stdout_lines[-5:] | default([]) }}
+
+    - name: "Test 07 passed — account survived restart with backend {{ acme_database_backend }}"
+      ansible.builtin.debug:
+        msg: "Account persistence verified"

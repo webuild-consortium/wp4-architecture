@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: wrpac-acme
+Version: 0.1.0
+Summary: WE BUILD CS-06 ACME façade + mock RP List service for Dogtag PKI
+Requires-Python: >=3.9
+Requires-Dist: fastapi<0.116,>=0.110
+Requires-Dist: uvicorn[standard]<0.32,>=0.27
+Requires-Dist: pydantic<3,>=2.5
+Requires-Dist: cryptography<44,>=42
+Requires-Dist: jwcrypto<2,>=1.5
+Requires-Dist: httpx<0.28,>=0.26

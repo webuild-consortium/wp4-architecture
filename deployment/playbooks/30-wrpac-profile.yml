@@ -1,0 +1,75 @@
+---
+- name: Deploy WRPAC certificate profile (CS-06 §7.4)
+  hosts: all
+  gather_facts: false
+  vars:
+    ca_cs_cfg: "/var/lib/pki/{{ pki_instance_name }}/conf/ca/CS.cfg"
+    profile_dir: "/var/lib/pki/{{ pki_instance_name }}/conf/ca/profiles/ca"
+    profile_file: "{{ profile_dir }}/{{ wrpac_profile_id }}.cfg"
+
+  tasks:
+
+    - name: Render WRPAC profile in place
+      ansible.builtin.template:
+        src: "../files/{{ wrpac_profile_id }}.cfg.j2"
+        dest: "{{ profile_file }}"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+      register: profile_rendered
+
+    - name: Register WRPAC profile class_id in CS.cfg
+      ansible.builtin.lineinfile:
+        path: "{{ ca_cs_cfg }}"
+        regexp: "^profile\\.{{ wrpac_profile_id }}\\.class_id="
+        line: "profile.{{ wrpac_profile_id }}.class_id=caEnrollImpl"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+      register: classid_registered
+
+    - name: Read current profile.list
+      ansible.builtin.command: "grep -E '^profile.list=' {{ ca_cs_cfg }}"
+      register: profile_list_line
+      changed_when: false
+
+    - name: Append WRPAC to profile.list if missing
+      ansible.builtin.lineinfile:
+        path: "{{ ca_cs_cfg }}"
+        regexp: "^profile\\.list="
+        line: "{{ profile_list_line.stdout }},{{ wrpac_profile_id }}"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+      when: wrpac_profile_id not in profile_list_line.stdout
+      register: list_registered
+
+    - name: Restart pki-tomcatd to load profile
+      ansible.builtin.systemd:
+        name: "pki-tomcatd@{{ pki_instance_name }}"
+        state: restarted
+      when: profile_rendered is changed or classid_registered is changed or (list_registered is defined and list_registered is changed)
+
+    - name: Wait for CA endpoint after restart
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 8443
+        timeout: 60
+
+    - name: Verify WRPAC profile is loaded via EE profileSelect
+      ansible.builtin.uri:
+        url: "https://{{ ca_fqdn }}:8443/ca/ee/ca/profileSelect?profileId={{ wrpac_profile_id }}"
+        validate_certs: false
+        return_content: true
+      register: profile_select
+      retries: 6
+      delay: 5
+      until: "profile_select.status == 200 and 'inputPluginListSet' in profile_select.content"
+
+    - name: Assert profileSelect returned an EE form for the profile
+      ansible.builtin.assert:
+        that:
+          - profile_select.status == 200
+          - "'wrpacCert' in profile_select.url or wrpac_profile_id in profile_select.url"
+          - "'Error' not in profile_select.content[:2000]"
+        fail_msg: "WRPAC profile EE form did not render — profile may not be loaded"

@@ -1,0 +1,53 @@
+---
+ca_fqdn: mw-vm-ca01.lab
+
+ds_instance_name: pki
+ds_suffix: dc=ca,dc=lab
+ds_base_dn_ca: ou=ca,dc=ca,dc=lab
+
+pki_instance_name: pki-tomcat
+
+# Test-only passwords. CS-06 §1 marks this spec as interoperability-testing only,
+# not production. Override via ansible-vault for any non-test environment.
+ds_dm_password: Secret.123
+pki_admin_password: Secret.123
+pki_ds_password: Secret.123
+pki_security_domain_password: Secret.123
+pki_admin_uid: caadmin
+pki_admin_email: "caadmin@{{ ca_fqdn }}"
+
+acme_realm_type: in-memory
+
+# Dogtag ACME database backend. "in-memory" wipes state on pki-tomcatd restart
+# (fine for throwaway smoke tests); "ds" persists into the 389-DS instance.
+acme_database_backend: ds
+
+# 389-DS subtree where the ACME data lives when acme_database_backend == ds.
+acme_db_basedn: "ou=acme,{{ ds_suffix }}"
+
+# WRPAC profile (CS-06 §7.4).
+wrpac_profile_id: wrpacCert
+wrpac_validity_days: 365
+
+# WRPAC policy OIDs from ETSI TS 119 411-8 v1.1.1.
+# Values below are PLACEHOLDERS in the ETSI test arc — replace with the
+# OIDs assigned by the published TS 119 411-8 document for production use.
+# CS-06 §7.4 #2 references NCP-l-eudiwrp (legal person) and NCP-n-eudiwrp
+# (natural person).
+wrpac_policy_oid_legal: "0.4.0.194112.1.99.1"
+wrpac_policy_oid_natural: "0.4.0.194112.1.99.2"
+
+# Test WRP identity used by the direct-enrolment smoke test.
+wrpac_test_organisation_name: "ACME Test Organisation B.V."
+wrpac_test_organisation_identifier: "VATNL-000000000B01"
+wrpac_test_country: "NL"
+wrpac_test_friendly_name: "ACME RP Smoke Test"
+wrpac_test_san_dns: "rp.test.lab"
+
+# CS-06 wrp-id identifier value used in Phase 3 (matches a seeded RP List entry).
+wrpac_test_wrp_id: "NLKVK.12345678"
+
+# Phase 3 façade / RP List service config.
+wrpac_facade_root: /opt/wrpac-acme
+wrpac_facade_port: 9080
+wrpac_rp_list_port: 9000
