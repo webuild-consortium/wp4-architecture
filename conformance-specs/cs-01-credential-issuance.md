@@ -249,7 +249,7 @@ The Wallet sends a Credential Request (or Batch Request) to the Credential Endpo
 
 If issuance cannot be completed immediately, the Issuer returns:
 
-* `acceptance_token`
+* `transaction_id`
 * optional `interval` (retry hint)
 
 Batch requests may contain both immediate and deferred items.
@@ -261,16 +261,16 @@ Deferred issuance applies to both wallet-initiated and issuer-initiated flows.
 When the Credential Issuer cannot immediately produce one or more credentials:
 
 1. The Issuer returns:
-    * `acceptance_token`
+    * `transaction_id`
     * optional `interval` (retry hint) \
 
-2. The WU MUST store the acceptance_token associated with the pending credential(s). \
+2. The WU MUST store the `transaction_id` associated with the pending credential(s). \
 
-3. The WU periodically retries using the acceptance_token until:
+3. The WU periodically retries the Deferred Credential Endpoint with the `transaction_id` until:
     * the credential is successfully issued, or
-    * The Issuer signals an unrecoverable error. \
+    * the Issuer signals an unrecoverable error. \
 
-4. Batch requests may contain a mix of immediate and deferred items. Each deferred item receives its own acceptance_token and can be polled independently.
+4. Batch requests may contain a mix of immediate and deferred items. Each deferred item receives its own `transaction_id` and can be polled independently.
 
 # 7. Normative Requirements
 
@@ -318,7 +318,7 @@ WUs **MUST**:
 
 WUs **MUST**:
 
-1. Perform client authentication at the Token Endpoint using wallet attestation as defined in Annexe E of the OpenID4VCI specification.
+1. Perform client authentication at the Token Endpoint using wallet attestation as defined in Appendix E of the OpenID4VCI specification.
 2. Include the public key, and optionally a trust chain, used to validate the Wallet attestation in the `x5c` JOSE header of the attestation JWT.
 3. Ensure the `sub` claim in the Wallet attestation JWT equals the `client_id` used in PAR and token requests.
 
@@ -346,19 +346,19 @@ Wallets **MUST**:
 Issuers **MUST**:
 
 * Support a `deferred_credential_endpoint`.
-* Return `acceptance_token` when issuance is delayed.
-* Validate `acceptance_token` and ensure proper lifetime and binding.
+* Return a `transaction_id` (as defined in OpenID4VCI v1.0 §8.3) when issuance is delayed.
+* Validate `transaction_id` and ensure proper lifetime and binding to the issuance session.
 * Publish endpoint in metadata.
 
 Issuers **SHOULD**:
 
-* Provide clear retry guidance.
-* Return explicit errors when expired or failed.
+* Provide clear retry guidance via the `interval` parameter.
+* Return explicit errors when the `transaction_id` is expired or the credential cannot be issued.
 
 Wallets **MUST**:
 
-* Recognise deferred responses and store the `acceptance_token`.
-* Call the Deferred Credential Endpoint until the credential is ready or the transaction ends.
+* Recognise deferred responses and store the `transaction_id`.
+* Call the Deferred Credential Endpoint with the `transaction_id` until the credential is ready or the transaction ends.
 * Distinguish *pending* vs *failed* issuance in UI.
 
 Wallets **SHOULD**:
@@ -482,7 +482,7 @@ All PAR requests MUST be client-authenticated according to Section 7.4.
 **Request (logical fields)**
 
 * HTTP header:
-    * `Authorization: Bearer {token}`
+    * `Authorization: Bearer {access_token}`
     * `Content-Type: application/json`
 * Body parameters:
 * `transaction_id`
@@ -541,7 +541,7 @@ Profiles may define additional constraints for specific WE BUILD credential type
 
 # References
 
-[1]	OpenID Foundation (2025) OpenID for Verifiable Presentations 1.0. OpenID Foundation. Available at: [https://openid.net/specs/openid-4-verifiable-presentations-1_0.html](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) (Accessed: 24 November 2025).
+[1]	OpenID Foundation (2025) OpenID for Verifiable Credential Issuance 1.0. OpenID Foundation. Available at: [https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html) (Accessed: 24 November 2025).
 
 [2]	OpenID Foundation (2025) OpenID4VC High Assurance Interoperability Profile – draft 03. OpenID Foundation. Available at: [https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-ID1.html](https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-ID1.html)  (Accessed: 24 November 2025)
 
