@@ -1,6 +1,15 @@
 # WE BUILD - Conformance Specification:  Credential Issuance
 
 Version 1.0
+Date: 28 November 2025
+
+**Authors / Contributors**: WP4 Architecture
+
+* Lal Chandran, iGrant.io, Sweden
+* Sander Dijkhuis, Cleverbase, Netherlands
+* George J Padayatti, iGrant.io, Sweden
+* Nikolaos Triantafyllou, University of Aegean, Greece
+* Malin Norlander, Bolagsverket, Sweden
 
 Table Of Contents
 
