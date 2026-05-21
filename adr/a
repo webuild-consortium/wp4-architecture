@@ -1,0 +1,38 @@
+### Context
+
+What is forcing us to make this decision? What was the tradeoff?
+
+Perspective of the EBW owner in the Holder role:
+An EBW Owner in the Holder role stores für the KyC use case highly confidential data in his EBW (e.g. UBO, Control Structure,...) that need to protected. Therefore a EBW Relying Party request for confidential data will be answered by the holder EBW only after the requesters identity and authorization and also the requesting software authenticity and validity (e.g. based on the WUA, if the request is made by an EBW) was validated by the owners EBW.  
+According to EU Business Wallet regulation Article 14/2/b"...Wallet units shall enable authentication and validation of the wallet unit components by presenting the wallet unit attestations…". 
+The wallet unit attestations therefore increases trust in the integrity of the requesting software and significantly reduces the risk of impersonation of the requesting Relying Party.
+From an holder security perspective the requesters identification should be based on the EBWOID   and the requesting software authenticity and components validity should be based on the WUA. Currently an EBWOID and a WUA are issued only to EBWs. Therefore a request made by a “EBW Relying Party Component software” used to request attestations from EUDI wallets asking for confidential data will be ignored by EBW owners due to confidentiality concerns. A Relying Party software component is less secure than an EBW. 
+Perspective of the EBW Relying Party role:
+Legal entities that already use a Relying Party component software (as defined by eIDAS2.0) for transactions with the EUDI wallet for natural person are interested that also EBW owners answer requests made to an EBW by a Relying Party component.  These legal entities are also interested to use the same component as a “EBW Relying Party component”
+
+2. Currently it is not defined how mutual identification between EBWs is performed and the "OpenID for Verifiable Presentations (OID4VP) Specification" needs the following extensions to enable mutual identification:
+    • "The verifier_Info parameter allows the verifier to provide additional context or metadata as part of the authorization request. The Verifier_Info parameter is optional. Wallets MAY use them to make authorization decisions or to enhance the user experience, but they SHOULD ignore any unrecognized or unsupported Verifier Info types."
+We need a new verifier_info type that includes at least the EBWOID and the WUA. The corresponding verifier_info parameter MUST be made mandatory to avoid unnecessary denies from holder EBWs due to missing verifier_info objects.
+    • 2. We need a interaction specification between relying party and holder EBW backends during a presentation request that does not require human interaction and that includes mutual authentication based on the above new verifier_info object
+
+A rulebook proposal for mutual identification and consent handshake referencing also the rulebook for basic attestation verification is : https://github.com/flo0x/webuild-attestations/blob/main/rulebooks/rb-base/holder-authorization-handshake.md
+
+We propose the following decision:
+What change did we agree to?
+1. A new verifier_Info type will be defined [Where?]. The new type MUST contain an EBWOID and a WUA  attestations. The corresponding verifier_info parameter in an authorization request MUST be a mandatory parameter.
+An authorization request for confidential attestations from a Relying Party software MAY be answered or denied by the EBW owner based on his internal policies.
+2. The Wallet Provider group will update the corresponding conformance specification between relying party and holder EBW backends during a presentation request. Key requirements and goals are that a presentation can be performed without  human interaction and that includes mutual authentication based on the above new verifier_info object and the above rulebook.
+
+
+Consequences
+What becomes easier?
+
+EBW owner will accept to present requested attestations if the request is received from an EBW wallet with the new verfier_info object according to their internal policies. They will not deny a request simply because the request is made via a Relying Party software.
+
+What becomes more difficult?
+Legal entities that use a Relying Party component will not be able to create the new verifier_info object because they do not have the EBWOID, the WUA and also no wallet bound attestations. As a consequence several EBW owner will deny requests for confidential data made through the Relying Party software due to security concerns (e.g. impersonation risk). The same EBW owner probably will answer a request made through an EBW by the same legal entity.
+Without an agreement between for example banks and their customers the kyc and also PA3 use case can not be scaled.
+
+How do we address the risks introduced by this change?
+    • The “EBW Relying Party component” is enabled by their providers to receive and store “EBW Relying Party component “ bound attestations like EBWOID and WUA and therefore able to create the verifierInfo object during a request for confidential data. 
+    • The thesis that the use of an EBW wallet for requesting confidential data reduces the risk for the EBW holder must be explained and actively communicated.
