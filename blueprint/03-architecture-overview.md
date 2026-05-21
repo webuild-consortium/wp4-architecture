@@ -19,7 +19,7 @@ The following diagram illustrates the ecosystem at a glance.
 
 ![Ecosystem overview](../images/ecosystem-overview.png)
 
-The Issuers will use the European Business Wallet to issue attestations to the Holder. The Holder will use the EUDI Wallet to present attestations to the Verifier. The Verifier will use the European Business Wallet to validate the attestations presented by the Holder. The foundation of the ecosystem is the Trust framework where Issuers will publish keys, identifiers and schemas while Verifier have to register as Relying Party.
+The Issuers will use the European Business Wallet to issue attestations to the Holder. The Holder will use the EUDI Wallet, or European Business Wallet, to present attestations to the Verifier. The Verifier will use the European Business Wallet to validate the attestations presented by the Holder. The foundation of the ecosystem is the Trust framework where Issuers will publish keys, identifiers and schemas while Verifier have to register as Relying Party.
 
 ## System Landscape
 The diagram below illustrates the baseline trust topology of the EU wallet ecosystem. Issuers provide attestations to holders, holders present them to verifiers, and all actors validate trust relationships using the trusted lists.
