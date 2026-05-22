@@ -18,7 +18,8 @@ We may need additional verifierInfo types based on x.509 certificates that can b
 The  verifierInfo parameter MUST be made mandatory to avoid unnecessary denies from holder EBWs due to missing verifierInfo objects. 
     • 2. We need a interaction specification between relying party and holder EBW backends during a presentation request that does not require human interaction and that includes mutual authentication based on the above new verifierInfo object
 
-A rulebook for mutual identification and consent handshake referencing also the rulebook for basic attestation verification is : [https://github.com/flo0x/webuild-attestations/blob/main/rulebooks/rb-base/holder-authorization-handshake.md].
+The rulebook for mutual identification and consent handshake referencing also the rulebook for basic attestation verification describes the proposed solution: [https://github.com/flo0x/webuild-attestations/blob/main/rulebooks/rb-base/holder-authorization-handshake.md]
+Note: The version available under the above link contains BU1 feedback and will replace the released version currently available under [https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/rb-base/holder-authorization-handshake.md].
 The two rulebooks describe mutual identification steps and basic verification steps required for all attestations and are part of the BU1 rulebooks.
 
 # Decision:
