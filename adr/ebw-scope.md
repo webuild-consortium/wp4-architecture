@@ -14,18 +14,19 @@ This ADR documents an explicit architectural scoping assumption for the WE BUILD
 
 ## Decision
 
-Within the scope of the WE BUILD consortium architecture, the European Business Wallet is assumed to function primarily as an **identity, trust, and authorisation component,** and not as an operational business system or as an ERP‑level data exchange platform. This may include limited issuer capabilities for mandates, delegations, or other trust-related attestations within an organisation’s own trust domain, where such issuance is anchored in the broader trust infrastructure. Within this architecture, the EBW serves as an entry and anchoring point into a broader trust infrastructure, rather than constituting the trust layer itself. 
+Within the scope of the WE BUILD consortium architecture, the European Business Wallet is assumed to function primarily as **a set of standardised identity, trust, and authorisation services**, used by enterprise systems to participate in trust-based interactions within the broader trust infrastructure, rather than as an operational business system or as an ERP‑level data exchange platform. This may include limited issuer capabilities for mandates, delegations, or other trust-related attestations within an organisation’s own trust domain, where such issuance is anchored in the broader trust infrastructure. Within this architecture, the EBW serves as an entry and anchoring point into a broader trust infrastructure, rather than constituting the trust layer itself. 
 
 Accordingly, within the WE BUILD consortium, the EBW is assumed to support: 
 - Organisational identity representation 
 - Mandates, delegations, and representation rights 
 - Trust anchors and verifiable attestations issuance and verification 
-- Presentation of legally signed or sealed artefacts as evidentiary objects 
+- Presentation of legally signed or sealed artefacts as evidentiary objects
+- Trust-based interactions requiring legal assurance, such as proof of delivery or receipt (e.g. via QERDS) 
 
 Within the WE BUILD consortium architectural scope, the EBW is not assumed to: 
 - Act as a system of record for operational business data 
 - Orchestrate or execute business processes 
-- Serve as a continuous ERP‑to‑ERP or CRM‑to‑CRM transaction or integration channel 
+- Act as a general-purpose system integration or data exchange channel (e.g. ERP‑to‑ERP or CRM‑to‑CRM)
 
 Transactional business data and operational workflows are assumed to remain within existing enterprise systems and their established integrations. 
 
