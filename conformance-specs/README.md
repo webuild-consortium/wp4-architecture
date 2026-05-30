@@ -61,8 +61,8 @@ graph TB
 
 | **WBCS #** | **WBCS Title** |
 | -------- | ------------ |
-| CS-004   | [WUA Individual Wallet Unit Attestation](https://github.com/webuild-consortium/wp4-architecture/issues/176) |
-| CS-005   | [Business Wallet Unit Attestation](https://github.com/webuild-consortium/wp4-architecture/issues/177) |
+| CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle](cs-04-wua-lifecycle.md) |
+| CS-005   | [European Business Wallet Unit Attestation (BWUA) Lifecycle](https://github.com/webuild-consortium/wp4-architecture/issues/177) |
 | CS-006   | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) | 
 
 
