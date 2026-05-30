@@ -93,7 +93,7 @@ The WUA is the evidence that lets a PID Provider or Attestation Provider trust a
 
 The Wallet Provider issues and signs the attestations and publishes their revocation status; the Wallet Unit presents them; relying parties verify the signature and check revocation status (TS-03 [3], clause 2.5), as illustrated below:
 
-![alt text](wua-actors-interatctions.png)*Figure 1: Actors and the High-level WUA Issuance and Verification*
+![alt text](../images/wua-actors-interatctions.png)*Figure 1: Actors and the High-level WUA Issuance and Verification*
 
 ## 5.2 WUA lifecycle
 
@@ -114,7 +114,7 @@ Because WUAs are short-lived and single-use, the Wallet Provider issues fresh WU
 
 A WUA exists only while the Wallet Unit is **Operational** or **Valid** in the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4); revoking the WUA is what moves the Wallet Unit to **Revoked**. The Operational/Valid distinction (whether a PID is present) and the Installed/Uninstalled states are Wallet Unit lifecycle matters outside this specification.
 
-![WUA attestation lifecycle](wua-lifecycle-states.png)
+![WUA attestation lifecycle](../images/wua-lifecycle-states.png)
 
 *Figure 2: WUA (WIA/KA) attestation lifecycle, from the Wallet Provider's perspective. Re-issuance produces a new WUA, i.e. a new run of this lifecycle. The Wallet Unit lifecycle (Installed, Operational, Valid, Revoked, Uninstalled) is defined separately in ARF 2.9.0 [1], section 4.6.4.*
 
