@@ -1,6 +1,6 @@
 # WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle
 
-Version 0.2 / Draft
+Version 0.5 / Draft
 Date: 30 May 2026
 
 **Authors / Contributors**: WP4 Architecture
@@ -17,20 +17,17 @@ Date: 30 May 2026
 - [5. Protocol Overview](#5-protocol-overview)
   - [5.1 Actors and information flows](#51-actors-and-information-flows)
   - [5.2 WUA lifecycle](#52-wua-lifecycle)
-  - [5.3 Key binding](#53-key-binding)
-  - [5.4 Signing](#54-signing)
-  - [5.5 Wallet Provider responsibilities](#55-wallet-provider-responsibilities)
+  - [5.3 Signing and key binding](#53-signing-and-key-binding)
+  - [5.4 Wallet Provider responsibilities](#54-wallet-provider-responsibilities)
 - [6. High-level Flows](#6-high-level-flows)
   - [6.1 Activation and WUA provisioning](#61-activation-and-wua-provisioning)
   - [6.2 Lifecycle and revocation](#62-lifecycle-and-revocation)
   - [6.3 Rotation / re-issuance](#63-rotation--re-issuance)
   - [6.4 Binding](#64-binding)
-  - [6.5 Signing (by reference)](#65-signing-by-reference)
 - [7. Normative Requirements](#7-normative-requirements)
   - [7.1 WUA structure and validity](#71-wua-structure-and-validity)
   - [7.2 Lifecycle, revocation and unlinkability](#72-lifecycle-revocation-and-unlinkability)
   - [7.3 Binding](#73-binding)
-  - [7.4 Signing model](#74-signing-model)
 - [8. Interface Definitions](#8-interface-definitions)
   - [8.1 WUA format](#81-wua-format)
   - [8.2 Status / revocation interface](#82-status--revocation-interface)
@@ -49,7 +46,7 @@ It profiles and aligns with:
 - The EUDI Wallet Technical Specification TS-03 [3]
 - ETSI TS 119 472-3 [4], and OpenID4VCI [5], OpenID4VP [6] and HAIP [7] where relevant
 
-It should be read together with CS-01 [10], CS-02 [11] and CS-03 [12]. The companion specification CS-05 covers the European Business Wallet (BWUA).
+It should be read together with CS-01 [10] and CS-02 [11]. The companion specification CS-05 covers the European Business Wallet (BWUA).
 
 The WUA is an infrastructure attestation, not a user-facing credential. The WIA is a *client attestation* (OAuth attestation-based client authentication) and the KA is a *key attestation*; both are used by the Wallet Unit during issuance (the WIA for client authentication, the KA in the Credential Request) and are not presented to verifiers as credentials. Consequently, unlike user-facing attestation types such as PID or (Q)EAA, which are registered in the attestation catalogue and follow an attestation rulebook, the WUA has **no attestation rulebook**; its data model is defined normatively by TS-03 [3].
 
@@ -64,12 +61,11 @@ In scope:
 - WUA structure and role (WIA and KA) at the level needed to express lifecycle behaviour, based on TS-03 [3]
 - **Lifecycle**: activation, validity, revocation and status maintenance, rotation / re-issuance, as defined in TS-03 [3] and ARF Topic C [2] (Proposal 4, revocation maintenance period)
 - **Binding**: key binding, holder binding and attestation-to-session binding, as defined in TS-03 [3] (see also ARF Topic C [2], Proposal 7)
-- The **signing model**, by reference to CS-03 [12]
+- Signing of the WUA by the Wallet Provider (the signature over the WIA and KA), per TS-03 [3]
 
 Out of scope (handled elsewhere):
 - The issuance protocol itself (CS-01 [10])
 - The presentation protocol itself (CS-02 [11])
-- Remote qualified signing mechanics (CS-03 [12])
 - Trust anchoring and discovery, including trusted-list and metadata discovery (handled separately)
 - European Business Wallet / BWUA specifics (CS-05)
 
@@ -87,7 +83,7 @@ The role names are protocol/functional roles, not products. One product may impl
 - **Issuer / Attestation Provider:** consumes the WUA when issuing PID / (Q)EAA.
 - **Verifier / Relying Party:** consumes attestation-related evidence at presentation, as profiled in CS-02 [11].
 - **Authorization Server (AS):** issues tokens during issuance.
-- **WSCD / WSCA:** secure device/application protecting the keys.
+- **WSCD / WSCA:** Wallet Secure Cryptographic Device or Application, a secure device/application protecting the keys.
 
 # 5. Protocol Overview
 
@@ -97,11 +93,11 @@ The WUA is the evidence that lets a PID Provider or Attestation Provider trust a
 
 The Wallet Provider issues and signs the attestations and publishes their revocation status; the Wallet Unit presents them; relying parties verify the signature and check revocation status (TS-03 [3], clause 2.5), as illustrated below:
 
-![alt text](../images/wua-actors-interatctions.png)*Figure 1: Actors and the High-level WUA Issuance and Verification*
+![alt text](wua-actors-interatctions.png)*Figure 1: Actors and the High-level WUA Issuance and Verification*
 
 ## 5.2 WUA lifecycle
 
-This lifecycle is described from the **Wallet Provider's perspective**, as the authority over the attestation's state: the Wallet Provider issues each WUA, sets its validity, maintains its revocation status, and revokes it. The Wallet Unit holds and presents the WUA; relying parties (PID or and attestation providers) read and re-check its status.
+This lifecycle is described from the **Wallet Provider's perspective**, as the authority over the attestation's state: the Wallet Provider issues each WUA, sets its validity, maintains its revocation status, and revokes it. The Wallet Unit holds and presents the WUA; relying parties (PID or Attestation Providers) read and re-check its status.
 
 The WUA lifecycle is independent of two things the Wallet Provider does not track for it:
 - whether the Wallet Unit is **installed or uninstalled** (a Wallet Unit lifecycle matter, ARF 2.9.0 §6.5; the Wallet Provider is generally not notified of uninstallation and does not rely on it here); and
@@ -110,67 +106,139 @@ The WUA lifecycle is independent of two things the Wallet Provider does not trac
 The Wallet Provider tracks only the WUAs it has issued, their status-list entries, and the events that trigger revocation.
 
 From the Wallet Provider's perspective a WUA has three states:
-- **Issued** — the Wallet Provider has signed and issued the WIA/KA to the Wallet Unit; it remains in use until it expires or is revoked. The WIA is deliberately short-lived, with a time-to-live under 24 hours so a stale one cannot be reused (TS-03 [3], clause 2.2.1.1).
-- **Expired** — the WIA's time-to-live has elapsed (TS-03 [3], clause 2.2.1.1).
-- **Revoked** — the Wallet Provider has set the WUA's status-list entry to revoked (TS-03 [3], clause 2.5.1).
+- **Issued**: the Wallet Provider has signed and issued the WIA/KA to the Wallet Unit; it remains in use until it expires or is revoked. The WIA is deliberately short-lived, with a time-to-live under 24 hours so a stale one cannot be reused (TS-03 [3], clause 2.2.1.1).
+- **Expired**: the WIA's time-to-live has elapsed (TS-03 [3], clause 2.2.1.1).
+- **Revoked**: the Wallet Provider has set the WUA's status-list entry to revoked (TS-03 [3], clause 2.5.1).
 
 Because WUAs are short-lived and single-use, the Wallet Provider issues fresh WUAs to the Wallet Unit as needed; each fresh WUA is a **new instance** of this lifecycle, not a reactivation of an expired one. Independently of any single WUA's time-to-live, the Wallet Provider maintains the revocation status entry until its `client_status.exp` (kept at least 31 days ahead at presentation, TS-03 [3], clause 2.4.2; ARF Topic C [2], Proposal 4), so that relying parties can re-check it throughout the life of any credential issued against it (TS-03 [3], clause 2.4.3).
 
 A WUA exists only while the Wallet Unit is **Operational** or **Valid** in the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4); revoking the WUA is what moves the Wallet Unit to **Revoked**. The Operational/Valid distinction (whether a PID is present) and the Installed/Uninstalled states are Wallet Unit lifecycle matters outside this specification.
 
-![WUA attestation lifecycle](../images/wua-lifecycle-states.png)
+![WUA attestation lifecycle](wua-lifecycle-states.png)
 
 *Figure 2: WUA (WIA/KA) attestation lifecycle, from the Wallet Provider's perspective. Re-issuance produces a new WUA, i.e. a new run of this lifecycle. The Wallet Unit lifecycle (Installed, Operational, Valid, Revoked, Uninstalled) is defined separately in ARF 2.9.0 [1], section 4.6.4.*
 
-## 5.3 Key binding
+## 5.3 Signing and key binding
 
-Key binding ties the attestation, the wallet's keys and the issuance session together. Within an issuance session the Wallet Unit uses the WIA `cnf` key as its DPoP key and verifies that the issued Access Token's `cnf.jkt` matches that key, aborting on mismatch (TS-03 [3], clause 2.2.1.1; ARF Topic C [2], Proposal 7). When a KA is presented as a `jwt` proof, the Wallet Unit signs with the key at index 0 of `attested_keys`, proving possession (TS-03 [3], clause 2.2.2.1). The issuance transport that carries these messages is profiled in CS-01 [10]; CS-04 owns only the binding obligations (section 7.3).
+The Wallet Provider signs each WIA and KA as a JWT, using ES256, ES384 or ES512 (TS-03 [3], clause 2.6; see the requirement in section 7.1). A credential issuer verifies this signature against the Wallet Provider's key before trusting the attestation.
+
+Key binding links an issued credential to a key that the Wallet Unit controls in the WSCD. It is required whenever a credential must be cryptographically bound to such a key, for example a PID, or a (Q)EAA such as a Strong Customer Authentication (SCA) attestation.
+
+Within a single issuance session, binding happens in two stages, shown in Figure 3 below.
 
 ```mermaid
 sequenceDiagram
   participant WU as Wallet Unit
   participant AS as Authorization Server
   participant CI as Credential Issuer
-  WU->>AS: Token request, DPoP using WIA cnf key
-  AS-->>WU: Access Token carrying cnf.jkt
-  Note over WU: Verify cnf.jkt equals WIA cnf thumbprint, else abort
-  WU->>CI: Credential request, KA as jwt proof signed with attested_keys index 0
-  CI-->>WU: Credential bound to the attested key
+  rect rgb(227, 242, 253)
+  Note over WU,AS: Stage A: token bound to WIA<br/>(attestation-to-session binding)
+  WU->>AS: 1. Token request<br/>(DPoP = WIA cnf key)
+  AS-->>WU: 2. Access Token<br/>(carries cnf.jkt)
+  Note over WU: 3. Verify cnf.jkt = WIA cnf,<br/>else abort
+  end
+  rect rgb(232, 245, 233)
+  Note over WU,CI: Stage B: credential bound to KA key<br/>(key binding)
+  WU->>CI: 4. Credential request<br/>(KA jwt proof, signed<br/>with attested_keys[0])
+  CI-->>WU: 5. Credential bound<br/>to attested key
+  end
 ```
 
-*Figure 3: High-level attestation-to-session and key binding (transport profiled in CS-01 [10]).*
+*Figure 3: Key binding during issuance, in two stages (transport profiled in CS-01 [10]).*
 
-## 5.4 Signing
+**Stage A - attestation-to-session binding: the Access Token is bound to the WIA.**
 
-Where the wallet is used to create signatures, the signing mechanism is defined by CS-03 [12]; the WUA evidences the wallet's eligibility. CS-04 adds no signing requirements of its own.
+1. **Token request (Wallet Unit -> Authorization Server).** The Wallet Unit requests an Access Token, authenticating with the WIA and using the WIA `cnf` key as its Demonstration of Proof-of-Possession (DPoP) key. By verifying the WIA (its Wallet Provider signature, that it has not expired, and its revocation status), the Authorization Server issues a token only to a genuine, non-revoked Wallet Unit, that is one in the Operational or Valid state of the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4; TS-03 [3], clause 2.2.1.1).
+2. **Access Token returned (Authorization Server -> Wallet Unit).** The Access Token carries `cnf.jkt`.
+3. **Session-binding check (Wallet Unit).** The Wallet Unit verifies that the Access Token's `cnf.jkt` matches the JWK thumbprint of the WIA `cnf` key, and aborts the session on any mismatch (TS-03 [3], clause 2.2.1.1; ARF Topic C [2], Proposal 7).
 
-## 5.5 Wallet Provider responsibilities
+**Stage B - key binding: the issued credential is bound to a key attested by the KA.**
+
+4. **Credential Request (Wallet Unit -> Credential Issuer).** The Wallet Unit sends the KA as a `jwt` proof, signed with the key at index 0 of `attested_keys`, proving possession (TS-03 [3], clause 2.2.2.1). See the example below.
+5. **Credential issued (Credential Issuer -> Wallet Unit).** The Credential Issuer binds the issued credential to the attested key.
+
+The issuance transport that carries these messages is profiled in CS-01 [10]; CS-04 owns only the binding obligations (section 7.3).
+
+Example Credential Request for step 4 (from TS-03 [3], illustrative):
+
+```json
+{
+  "credential_configuration_id": "org.iso.18013.5.1.mDL",
+  "proofs": {
+    "jwt": [
+      "eyJraWQiOiJkaWQ6ZXhhbXBsZSIsImFsZyI6IkVTMjU2IiwidHlwIjoib3BlbmlkNHZjaS1wcm9vZitqd3QifQ..."
+    ]
+  }
+}
+```
+
+Decoded JOSE header of the `jwt` proof sent in step 4 (the `key_attestation` parameter carries the KA; TS-03 [3], clause 2.2.2):
+
+```json
+{
+  "typ": "openid4vci-proof+jwt",
+  "alg": "ES256",
+  "key_attestation": "<the KA JWT>"
+}
+```
+
+Decoded payload of the `jwt` proof sent in step 4 (the `nonce`, `aud` and `iat` provide the proof of possession the Credential Issuer verifies in step 5; TS-03 [3], clause 2.2.2):
+
+```json
+{
+  "aud": "https://credential-issuer.example.com",
+  "iat": 1701960444,
+  "nonce": "LarRGSbmUPYtRYO6BQ4yn8"
+}
+```
+
+## 5.4 Wallet Provider responsibilities
 
 This overview is non-normative; the binding requirements are in sections 7.1 and 7.2. Per TS-03 [3], the Wallet Provider:
 - Creates and signs each WIA and KA (ES256, ES384 or ES512) with the required claims (TS-03 [3], clauses 2.6, 2.3.1, 2.3.2);
 - Ensures the Wallet Unit has WIAs available **as needed** for issuance (TS-03 [3], clause 2.2.1.1);
 - Keeps each WIA **short-lived** (under 24 hours) and **single-use per relying party**, for freshness and unlinkability (TS-03 [3], clauses 2.2.1.1, 2.2.2.1);
-- **maintains revocation status** via Token Status List [9], kept at least 31 days ahead at presentation and live until each entry's `exp` (TS-03 [3], clauses 2.5, 2.4.2);
-- **revokes** all `client_status` entries for a Wallet Unit on revocation, triggered by a detected security vulnerability or a user request such as loss or theft (TS-03 [3], clauses 2.4.2, 2.5.1).
+- **Maintains revocation status** via Token Status List [9], kept at least 31 days ahead at presentation and live until each entry's `exp` (TS-03 [3], clauses 2.5, 2.4.2);
+- **Revokes** all `client_status` entries for a Wallet Unit on revocation, triggered by a detected security vulnerability or a user request such as loss or theft (TS-03 [3], clauses 2.4.2, 2.5.1).
 
 # 6. High-level Flows
 
-Each flow is a step-by-step sequence. *To draft* during the workshop.
+This section describes the main WUA flows as step-by-step sequences, from the Wallet Provider's perspective, consistent with the lifecycle in section 5.2 and the requirements in section 7.
 
 ## 6.1 Activation and WUA provisioning
-*To draft:* actors (Wallet Provider, WU, WSCD); steps for key creation in the WSCD and first WIA and KA issuance.
+
+Actors: Wallet Provider, Wallet Unit, WSCD.
+
+1. The Wallet Unit is activated and the Wallet Provider verifies its integrity (a Wallet Unit lifecycle step, ARF 2.9.0 [1], section 4.6.4; out of scope here).
+2. Cryptographic keys are created in the WSCD.
+3. The Wallet Provider issues the first WIA(s) and KA(s) to the Wallet Unit, each signed as a JWT (section 7.1).
+4. The Wallet Provider records the association between each WUA and the Wallet Unit, together with the status-list entries it will maintain (ARF Topic C [2], Proposal 7).
+
+**Outcome**: the Wallet Unit holds valid (Issued) WUAs and is Operational in the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4).
 
 ## 6.2 Lifecycle and revocation
-*To draft:* actors (Wallet Provider, relying parties); steps for freshness, status publication, revocation triggers and the re-checking cadence.
+
+Actors: Wallet Provider, PID or Attestation Providers (relying parties).
+
+1. The Wallet Provider publishes and maintains the revocation status of each WUA using a Token Status List [9], keeping `client_status.exp` and `key_storage_status.exp` at least 31 days ahead at the time of presentation (section 7.2).
+2. On a revocation trigger (a security vulnerability detected by the Wallet Provider, or a user request such as loss or theft), the Wallet Provider sets all `client_status` entries for that Wallet Unit to revoked; the Wallet Unit moves to Revoked (section 7.2; ARF 2.9.0 [1], section 4.6.4).
+3. Relying parties re-check the WUA revocation status at least once every 24 hours for the validity period of the credential, and stop relying on a credential bound to a revoked Wallet Unit (section 7.2).
+
+**Outcome**: revocation of a Wallet Unit propagates to every relying party still holding a credential issued against it.
 
 ## 6.3 Rotation / re-issuance
-*To draft:* steps for replacing keys and attestations and handling single-use.
+
+Actors: Wallet Provider, Wallet Unit.
+
+1. A WIA or KA approaches expiry, has been used (single-use), or its remaining maintenance period is insufficient for a forthcoming issuance.
+2. The Wallet Unit requests fresh WUAs from the Wallet Provider as needed (section 7.2).
+3. The Wallet Provider re-verifies the Wallet Unit's integrity and issues fresh, single-use WIA(s) and KA(s) (sections 7.1 and 7.2).
+
+**Outcome**: the Wallet Unit continuously holds usable WUAs while staying unlinkable; each fresh WUA is a new instance of the lifecycle in section 5.2, and the previous one simply expires.
 
 ## 6.4 Binding
-*To draft:* steps for key binding, holder binding at presentation, and `cnf`/DPoP session binding.
 
-## 6.5 Signing (by reference)
-*To draft:* point to CS-03 [12]; describe only how the WUA underpins the right to sign.
+The binding of the Access Token and of the issued credential during issuance is described as a step-by-step sequence in section 5.3 (Stage A and Stage B, Figure 3) and is not repeated here. Holder binding at presentation is out of scope and is profiled in CS-02 [11].
 
 # 7. Normative Requirements
 
@@ -234,10 +302,6 @@ Relying parties **MUST**:
 1. Verify that the signature of the `jwt` proof element verifies under the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.2).
 2. [DRAFT] Validate holder binding (key-binding JWT, nonce, audience) at presentation, as profiled in HAIP [7], Section 5, and CS-02 [11], section 7.2. (To be confirmed that CS-04 only references, and does not restate, this.)
 
-## 7.4 Signing model
-Implementations **MUST**:
-1. Where signing is offered, conform to CS-03 [12]; the WUA evidences the wallet's eligibility. CS-04 adds no signing requirements of its own. (To be confirmed.)
-
 # 8. Interface Definitions
 
 Logical interfaces; exact paths are deployment-specific.
@@ -250,7 +314,7 @@ Token Status List [9] retrieval (TS-03 [3], clause 2.5): the Wallet Instance via
 
 # 9. Conformance
 
-An implementation **conforms as a Wallet Provider** if it: implements the requirements in 7.1 to 7.4 applicable to the Wallet Provider role and the interfaces in section 8.
+An implementation **conforms as a Wallet Provider** if it: implements the requirements in 7.1 to 7.3 applicable to the Wallet Provider role and the interfaces in section 8.
 
 An implementation **conforms as a Wallet Unit** if it: implements the WU requirements in section 7 and the relevant flows in section 6.
 
@@ -281,8 +345,6 @@ Profiles MUST NOT weaken the mandatory requirements in this specification.
 [10] WE BUILD (2025) Conformance Specification CS-01: Credential Issuance, version 1.0.
 
 [11] WE BUILD (2026) Conformance Specification CS-02: Credential Presentation, version 1.1.
-
-[12] WE BUILD (2025) Conformance Specification CS-03: Remote Qualified Signing with Wallet Units, version 1.0.
 
 # Annex A (informative): Example WUA
 
