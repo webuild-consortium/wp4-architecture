@@ -36,6 +36,10 @@ Date: 30 May 2026
 - [Annex A (informative): Example WUA](#annex-a-informative-example-wua)
   - [A.1 Example WIA (decoded JWT)](#a1-example-wia-decoded-jwt)
   - [A.2 Example KA (decoded JWT)](#a2-example-ka-decoded-jwt)
+- [Annex B (informative): Key binding and holder binding](#annex-b-informative-key-binding-and-holder-binding)
+  - [B.1 Key binding at issuance](#b1-key-binding-at-issuance)
+  - [B.2 Holder binding at presentation](#b2-holder-binding-at-presentation)
+  - [B.3 The sequence](#b3-the-sequence)
 
 # 1. Introduction
 
@@ -324,27 +328,31 @@ Profiles MUST NOT weaken the mandatory requirements in this specification.
 
 # References
 
-[1] European Commission (2025) The European Digital Identity Wallet Architecture and Reference Framework, version 2.9.0. Available at: https://eudi.dev/2.9.0/architecture-and-reference-framework-main/ (Accessed: 30 May 2026).
+[1] European Commission (2025) The European Digital Identity Wallet Architecture and Reference Framework, version 2.9.0. Available at: https://eudi.dev/2.9.0/architecture-and-reference-framework-main/ (Accessed: 30 May 2026)
 
-[2] European Commission (2025) ARF Discussion Topic C: Wallet Unit Attestations. Available at: https://eudi.dev/2.9.0/discussion-topics/c-rr-wallet-unit-attestations/ (Accessed: 30 May 2026).
+[2] European Commission (2025) ARF Discussion Topic C: Wallet Unit Attestations. Available at: https://eudi.dev/2.9.0/discussion-topics/c-rr-wallet-unit-attestations/ (Accessed: 30 May 2026)
 
-[3] European Commission (2025) EUDI Wallet Technical Specification TS-03: Wallet Unit Attestations (WUA) used in issuance of PID and Attestations. Available at: https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md (Accessed: 30 May 2026).
+[3] European Commission (2025) EUDI Wallet Technical Specification TS-03: Wallet Unit Attestations (WUA) used in issuance of PID and Attestations. Available at: https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md (Accessed: 30 May 2026)
 
-[4] ETSI (2026) ETSI TS 119 472-3 V1.1.1: Electronic Signatures and Trust Infrastructures (ESI); Profiles for Electronic Attestation of Attributes; Part 3: Profiles for issuance of EAA or PID.
+[4] ETSI (2026) ETSI TS 119 472-3 V1.1.1: Electronic Signatures and Trust Infrastructures (ESI); Profiles for Electronic Attestation of Attributes; Part 3: Profiles for issuance of EAA or PID
 
-[5] OpenID Foundation (2025) OpenID for Verifiable Credential Issuance 1.0. Available at: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html (Accessed: 30 May 2026).
+[5] OpenID Foundation (2025) OpenID for Verifiable Credential Issuance 1.0. Available at: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html (Accessed: 30 May 2026)
 
-[6] OpenID Foundation (2025) OpenID for Verifiable Presentations 1.0. Available at: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html (Accessed: 30 May 2026).
+[6] OpenID Foundation (2025) OpenID for Verifiable Presentations 1.0. Available at: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html (Accessed: 30 May 2026)
 
-[7] OpenID Foundation (2025) OpenID4VC High Assurance Interoperability Profile (HAIP) 1.0. Available at: https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-ID1.html (Accessed: 30 May 2026).
+[7] OpenID Foundation (2025) OpenID4VC High Assurance Interoperability Profile (HAIP) 1.0. Available at: https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-ID1.html (Accessed: 30 May 2026)
 
-[8] IETF (1997) RFC 2119: Key words for use in RFCs to Indicate Requirement Levels. Available at: https://datatracker.ietf.org/doc/html/rfc2119 (Accessed: 30 May 2026).
+[8] IETF (1997) RFC 2119: Key words for use in RFCs to Indicate Requirement Levels. Available at: https://datatracker.ietf.org/doc/html/rfc2119 (Accessed: 30 May 2026)
 
 [9] IETF (2026) OAuth Token Status List, draft-ietf-oauth-status-list-20, 20 April 2026 (Internet-Draft, OAuth WG). Available at: https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/20/ (Accessed: 30 May 2026). CS-04 pins this revision (see issue CS04-I8); TS-03 [3] references the mechanism non-specifically.
 
-[10] WE BUILD (2025) Conformance Specification CS-01: Credential Issuance, version 1.0.
+[10] WE BUILD (2025) Conformance Specification CS-01: Credential Issuance, version 1.0
 
-[11] WE BUILD (2026) Conformance Specification CS-02: Credential Presentation, version 1.1.
+[11] WE BUILD (2026) Conformance Specification CS-02: Credential Presentation, version 1.1
+
+[12] IETF (2025) SD-JWT-based Verifiable Credentials (SD-JWT-VC). Available at: https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/ (Accessed: 30 May 2026)
+
+[13] IETF (2013) RFC 7800: Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs). Available at: https://datatracker.ietf.org/doc/html/rfc7800 (Accessed: 30 May 2026)
 
 # Annex A (informative): Example WUA
 
@@ -420,3 +428,69 @@ Where each element comes from:
 - `key_storage_status.status` (type-shared or per-KA index) - TS-03 [3], clause 2.5.2, using the IETF Token Status List [9].
 
 > Note: the header `typ` values and the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by TS-03 [3] and OpenID4VCI [5]; reproduce TS-03's own examples for the authoritative form.
+
+# Annex B (informative): Key binding and holder binding
+
+This annex is **informative**. It summarises how a credential becomes bound to a key that the KA attests (key binding, at issuance) and how the holder proves control of that key at presentation (holder binding). The issuance transport is profiled in CS-01 [10] and the presentation protocol in CS-02 [11]; the normative WUA requirements are in section 7. Formats follow OpenID4VCI [5], OpenID4VP [6], SD-JWT-VC [12] and RFC 7800 [13].
+
+## B.1 Key binding at issuance
+
+1. The Wallet Unit generates the key pair inside the WSCD; the private key never leaves it.
+2. In the Credential Request, the `jwt` proof carries the KA in its `key_attestation` header and is signed by the key at index 0 of `attested_keys` (TS-03 [3], clause 2.2.2.1), presenting the public key and proving possession in one step.
+3. The issuer verifies the KA against the trusted list, reads `key_storage` / `certification` (WSCD level) and `user_authentication` (TS-03 [3], clause 2.3.2), and verifies the proof of possession (TS-03 [3], clause 2.2.2.2).
+4. The issuer embeds the holder's public key in the credential's `cnf` claim (RFC 7800 [13]) and signs the credential (for example an SD-JWT-VC [12]). The credential is now bound to that key.
+
+The credential's `cnf` claim (illustrative):
+
+```json
+"cnf": { "jwk": { "kty": "EC", "crv": "P-256", "x": "...", "y": "..." } }
+```
+
+## B.2 Holder binding at presentation
+
+Profiled in CS-02 [11]; summarised here for context.
+
+1. The verifier sends a request carrying a `nonce` and its identifier `aud` (OpenID4VP [6]).
+2. The Wallet Unit signs a Key Binding JWT with the bound private key; the WSCD requires user authentication (PIN or biometric) before the key can be used.
+3. The verifier verifies the KB-JWT against the `cnf` key inside the credential, checks `nonce` (anti-replay) and `aud` (intended verifier), and verifies the issuer's signature and the credential's revocation status. The WUA is not presented.
+
+The KB-JWT (illustrative, SD-JWT-VC [12]):
+
+```json
+{ "typ": "kb+jwt", "alg": "ES256" }
+```
+
+```json
+{ "nonce": "n-0S6_WzA2Mj", "aud": "https://verifier.example", "iat": 1777000000, "sd_hash": "..." }
+```
+
+For ISO mdoc, the device signature over the session transcript is the equivalent of the KB-JWT.
+
+## B.3 The sequence
+
+```mermaid
+sequenceDiagram
+  participant S as WSCD
+  participant W as Wallet Unit
+  participant I as Issuer
+  participant V as Verifier
+  rect rgb(255, 243, 224)
+  Note over S,I: Key binding (issuance)
+  S->>W: public key<br/>(private key never leaves the WSCD)
+  W->>I: Credential Request, proof signed<br/>by attested_keys index 0, plus the KA
+  Note over I: verify KA on trusted list,<br/>key in WSCD and user-auth level,<br/>verify proof of possession
+  I->>W: Credential with cnf as the public key,<br/>signed by the issuer
+  end
+  rect rgb(227, 242, 253)
+  Note over W,V: Holder binding (presentation)
+  V->>W: request with nonce and audience
+  Note over S,W: user authenticates (PIN or biometric),<br/>WSCD signs a KB-JWT
+  W->>V: Credential and KB-JWT<br/>(nonce, audience, iat, sd_hash)
+  Note over V: verify KB-JWT against the cnf key,<br/>check nonce and audience,<br/>verify issuer signature and revocation
+  end
+```
+
+*Figure B.1: Key binding (issuance) and holder binding (presentation). The KA assures the issuer that the `cnf` key is hardware-held; the verifier later checks the KB-JWT against that same key in the credential, not against the WUA.*
+
+> Note: the two `cnf` uses are different. In the WIA, `cnf` is the DPoP key that binds the issuance session (section 7.3). In the issued credential, `cnf` is the holder key the credential is bound to (this annex).
+
