@@ -306,7 +306,8 @@ Wallet Unit **MUST**:
 
 Relying parties **MUST**:
 1. Verify that the signature of the `jwt` proof element verifies under the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.2).
-2. [DRAFT] Validate holder binding (key-binding JWT, nonce, audience) at presentation, as profiled in HAIP [7], Section 5, and CS-02 [11], section 7.2. (To be confirmed that CS-04 only references, and does not restate, this.)
+
+> Note: Presentation-time holder binding is specified normatively in CS-02 [11]. CS-04 imposes no direct WIA or KA validation obligations on Relying Parties at presentation, because the WIA and KA are not presented to Relying Parties (section 4); CS-04 specifies only how the issued credential becomes bound, during issuance, to a key attested by the KA.
 
 # 8. Interface Definitions
 
