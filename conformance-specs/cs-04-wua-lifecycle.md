@@ -85,7 +85,7 @@ The role names are protocol/functional roles, not products. One product may impl
 - **Wallet Unit (WU):** the natural person's wallet; presents the WUA.
 - **Holder:** the natural person controlling the WU.
 - **Issuer / Attestation Provider:** consumes the WUA when issuing PID / (Q)EAA.
-- **Verifier / Relying Party:** consumes attestation-related evidence at presentation, as profiled in CS-02 [11].
+- **Verifier / Relying Party:** verifies PIDs or attestations and holder/device-binding evidence during presentation, as profiled in CS-02 [11]. The Verifier does not receive or validate the WIA or KA directly.
 - **Authorization Server (AS):** issues tokens during issuance.
 - **WSCD / WSCA:** Wallet Secure Cryptographic Device or Application, a secure device/application protecting the keys.
 
@@ -116,7 +116,7 @@ From the Wallet Provider's perspective a WUA has three states:
 
 Because WUAs are short-lived and single-use, the Wallet Provider issues fresh WUAs to the Wallet Unit as needed; each fresh WUA is a **new instance** of this lifecycle, not a reactivation of an expired one. Independently of any single WUA's time-to-live, the Wallet Provider maintains the revocation status entry until its `client_status.exp` (kept at least 31 days ahead at presentation, TS-03 [3], clause 2.4.2; ARF Topic C [2], Proposal 4), so that relying parties can re-check it throughout the life of any credential issued against it (TS-03 [3], clause 2.4.3).
 
-A WUA exists only while the Wallet Unit is **Operational** or **Valid** in the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4); revoking the WUA is what moves the Wallet Unit to **Revoked**. The Operational/Valid distinction (whether a PID is present) and the Installed/Uninstalled states are Wallet Unit lifecycle matters outside this specification.
+A WUA exists only while the Wallet Unit is **Operational** or **Valid** in the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4). Revocation of the WIA `client_status.status` entry signals revocation of the Wallet Instance, which moves the Wallet Unit to **Revoked** (TS-03 [3], clause 2.5.1). Revocation of the KA `key_storage_status.status` entry signals that the WSCD or keystore referenced by the KA is no longer trusted (TS-03 [3], clause 2.5.2). If the breach affects the Wallet Instance as a whole, the Wallet Provider revokes the Wallet Instance and, where relevant, the corresponding KAs. The Operational/Valid distinction (whether a PID is present) and the Installed/Uninstalled states are Wallet Unit lifecycle matters outside this specification.
 
 ![WUA attestation lifecycle](../images/wua-lifecycle-states.png)
 
