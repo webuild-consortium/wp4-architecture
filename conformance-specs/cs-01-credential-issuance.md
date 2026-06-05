@@ -111,7 +111,7 @@ The WE BUILD issuance profile is based on the OAuth 2.0 Authorisation Code Flow 
 * Sender-constrained tokens, for example, using Demonstration of Proof of Possession (DPoP) or mutual TLS
 * PKCE with `S256` code challenge method
 * Pushed Authorisation Requests (PAR) for all authorisation requests
-* *Wallet Unit Attestation (WUA) for client authentication as defined in OpenID4VCI-based ADR XX (To be written).*
+* Wallet Unit Attestation (WUA = WIA + KA), per ARF 2.9 [6] and TS-03 [5] and profiled in CS-04 [7]: the WIA is used for client authentication and session binding at the PAR and Token endpoints, and the KA for key binding at the Credential Endpoint
 
 Issuance can be:
 
@@ -294,6 +294,7 @@ Both WU and Issuer **MUST**:
 3. Support sender-constrained tokens, for example, using DPoP or mutual TLS.
 4. Support PKCE with the `S256` code challenge method for all authorisation requests.
 5. Support Wallet-initiated and Issuer-initiated issuance.
+6. Use the WUA (WIA and KA) as defined in CS-04 [7]; CS-04 is authoritative for WUA structure, validity, revocation and binding, and this specification references it rather than restating those rules.
 
 ## 7.2 Credential Offer
 
@@ -316,24 +317,34 @@ Issuers **MUST**:
 
 1. Require Pushed Authorisation Requests (PAR) for all authorisation requests. Direct front-channel authorisation requests without PAR MUST NOT be used.
 2. Ensure that the Wallet authenticates at the PAR endpoint using the same method as used for client authentication at the Token Endpoint.
+3. Verify the WIA presented at the PAR endpoint as at the Token Endpoint, including that its `x5c` signing certificate chains to a trust anchor on the Trusted List for Wallet Providers (see section 7.4; TS-03 [5], clause 2.2.1.1; CS-04 [7]).
 
 WUs **MUST**:
 
 1. Use PAR for all authorisation requests.
 2. Use the `scope` parameter to indicate the credential type to be issued. Each `scope` value MUST map to a specific credential type that is known from Issuer metadata or from the Credential Offer.
 3. Ensure that the `client_id` in the PAR request matches the `sub` claim in the Wallet attestation JWT used for client authentication.
+4. [DECISION] Include `dpop_jkt` (the JWK Thumbprint of the WIA `cnf` key) in the PAR request to bind the issued authorisation code to the DPoP key (RFC 9449 [8], Section 10), so that the sender-constraint holds from PAR through to the Access Token. TS-03 [5] mandates the `cnf.jkt` check at the Token Request (section 7.4); binding the code at PAR is the OpenID4VCI / RFC 9449 mechanism and is to be confirmed for this profile.
 
 ## 7.4 Token Endpoint and Wallet Attestation
 
 WUs **MUST**:
 
-1. Perform client authentication at the Token Endpoint using wallet attestation as defined in Appendix E of the OpenID4VCI specification.
-2. Include the public key, and optionally a trust chain, used to validate the Wallet attestation in the `x5c` JOSE header of the attestation JWT.
-3. Ensure the `sub` claim in the Wallet attestation JWT equals the `client_id` used in PAR and token requests.
+1. Authenticate at the Token Endpoint using the WIA, a Wallet Attestation per OpenID4VCI [1] v1.0 Appendix E (`typ: oauth-client-attestation+jwt`), sent with its Proof-of-Possession (`oauth-client-attestation-pop+jwt`) in the PAR and Token Request. The WIA is profiled in CS-04 [7] (TS-03 [5], clause 2.2.1.1).
+2. Convey the Wallet Provider signing certificate in the `x5c` JOSE header of the WIA, with intermediate certificates as needed. The Wallet Provider identity is inferred from this certificate; `iss` is not used (TS-03 [5], clause 2.2.1).
+3. Use the WIA `cnf` key as the DPoP key when requesting the Access Token, and on receipt verify that the Access Token's `cnf.jkt` matches the JWK Thumbprint of that `cnf` key, aborting the issuance session on mismatch. This session binding is the obligation profiled in CS-04 [7], section 7.3 (TS-03 [5], clause 2.2.1.1).
+4. Ensure the `sub` claim in the WIA equals the `client_id` used in PAR and Token Requests.
+
+Issuers **MUST**:
+
+1. Verify the WIA signature under the signing certificate in the `x5c` JOSE header, and verify that this certificate chains to a trust anchor on the Trusted List for Wallet Providers, using `x5c` intermediate certificates as needed (TS-03 [5], clause 2.2.1.1).
+2. Verify the WIA Proof-of-Possession under the `cnf` key (TS-03 [5], clause 2.2.1.1).
 
 Issuers **SHOULD**:
 
 1. Support refresh tokens for credential refresh, following OpenID4VCI guidance on refresh usage and lifetime.
+
+> Note: because the WIA `cnf` key is used as the DPoP key (WUs item 3 above), for WUA-based issuance the Access Token is DPoP-bound; the sender-constraining choice in section 7.1 ("DPoP or mutual TLS") therefore resolves to DPoP for this binding.
 
 ## 7.5 Credential Endpoint
 
@@ -341,6 +352,9 @@ Issuers **MUST**:
 
 1. Support the `JWT` proof type in the Credential Endpoint.
 2. Support the SD-JWT-VC credential format and validate the proof binding between the Wallet subject and credential.
+3. Where a Key Attestation (KA) is required, accept the KA in the `key_attestation` header of the `jwt` proof, verify the KA (its signature under the `x5c` signing certificate, chaining to a trust anchor on the Trusted List for Wallet Providers) and verify the proof of possession under the key at index 0 of `attested_keys` (TS-03 [5], clauses 2.2.2.1 and 2.2.2.2; CS-04 [7], section 7.3).
+4. Where `key_attestations_required` is published, verify the KA's `key_storage` and `user_authentication` against the required levels and decide acceptability per issuance policy. The KA claims are defined in CS-04 [7] / TS-03 [5], clause 2.3.2.
+5. Re-check the revocation status of the WIA and KA during the credential's validity period as specified in CS-04 [7], section 7.2 (TS-03 [5], clause 2.4.3).
 
 Wallets **MUST**:
 
@@ -349,6 +363,8 @@ Wallets **MUST**:
     * signature
     * Issuer identifier
     * key binding and any status information, according to the SD-JWT-VC profile
+3. Where the Issuer requires a Key Attestation, include the KA in the `key_attestation` header of the `jwt` proof, signed by the key at index 0 of `attested_keys` (TS-03 [5], clause 2.2.2.1; CS-04 [7]).
+4. Where the Issuer requires key-attestation levels, present a KA whose `key_storage` and `user_authentication` meet or exceed the required levels; a higher level satisfies the requirement, and a lower level MUST NOT be used.
 
 ## 7.6 Deferred Credential Endpoint
 
@@ -389,6 +405,10 @@ Wallets **MUST**:
 
 1. Retrieve and process Issuer metadata, including the mapping from credential type to `scope`.
 2. Use this mapping when constructing authorisation requests and when interpreting Credential Offers.
+
+Issuers **MAY**:
+
+1. Publish a `key_attestations_required` object in Credential Issuer metadata stating the minimum acceptable `key_storage` and `user_authentication` levels (ISO 18045 AVA_VAN), per OpenID4VCI [1] Appendix D. The KA claims are defined in CS-04 [7] / TS-03 [5], clause 2.3.2.
 
 # 8. Interface Definitions
 
@@ -557,3 +577,11 @@ Profiles may define additional constraints for specific WE BUILD credential type
 [3] IETF (2025) SD‑JWT‑based Verifiable Credentials. IETF. Available at: https://www.ietf.org/archive/id/draft-ietf-oauth-sd-jwt-vc-09.html (Accessed: 24 November 2025).
 
 [4]	WE BUILD (2025) Interoperability Test Bed - Reference Specification, 12 November, Available at: [https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md) (Accessed: 24 November 2025).
+
+[5] European Commission (2026) Wallet Unit Attestation (TS3). eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications. Available at: [https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md) (Accessed: 5 June 2026).
+
+[6] European Commission (2026) The European Digital Identity Wallet Architecture and Reference Framework, version 2.9.0. Available at: [https://eudi.dev/2.9.0/architecture-and-reference-framework-main/](https://eudi.dev/2.9.0/architecture-and-reference-framework-main/) (Accessed: 5 June 2026).
+
+[7] WE BUILD (2026) Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle. webuild-consortium/wp4-architecture.
+
+[8] IETF (2023) RFC 9449: OAuth 2.0 Demonstrating Proof of Possession (DPoP). Available at: [https://www.rfc-editor.org/rfc/rfc9449](https://www.rfc-editor.org/rfc/rfc9449) (Accessed: 5 June 2026).

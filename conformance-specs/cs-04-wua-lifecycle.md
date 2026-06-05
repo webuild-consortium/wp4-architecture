@@ -50,7 +50,7 @@ It profiles and aligns with:
 - The EUDI Wallet Technical Specification TS-03 [3]
 - ETSI TS 119 472-3 [4], and OpenID4VCI [5], OpenID4VP [6] and HAIP [7] where relevant
 
-It should be read together with CS-01 [10] and CS-02 [11]. The companion specification CS-05 covers the European Business Wallet (BWUA).
+It should be read together with CS-01 [10] and CS-02 [11]; CS-01 profiles the issuance transport and references this specification for the WUA (WIA and KA). The companion specification CS-05 covers the European Business Wallet (BWUA).
 
 The WUA is an infrastructure attestation, not a user-facing credential. The WIA is a *client attestation* (OAuth attestation-based client authentication) and the KA is a *key attestation*; both are used by the Wallet Unit during issuance (the WIA for client authentication, the KA in the Credential Request) and are not presented to verifiers as credentials. Consequently, unlike user-facing attestation types such as PID or (Q)EAA, which are registered in the attestation catalogue and follow an attestation rulebook, the WUA has **no attestation rulebook**; its data model is defined normatively by TS-03 [3].
 
@@ -262,6 +262,8 @@ Wallet Provider **SHOULD**:
 Wallet Unit **MUST**:
 1. Present a WIA whose time-to-live has not expired, together with a KA, where the consuming process requires it (TS-03 [3], clause 2.2.1.1).
 
+> **Note (security levels).** `key_storage` and `user_authentication` (KA) carry the attested security levels of the keystore/WSCD and of user authentication, expressed on the ISO 18045 AVA_VAN scale (OpenID4VCI [5], Appendix D, as referenced by TS-03 [3], clause 2.3.2). An issuer may require minimum levels via the `key_attestations_required` object in Credential Issuer Metadata. The Wallet Unit's matching behaviour (provide a KA meeting the required level or a higher one, never lower) and the issuer's acceptance decision on a discrepancy are profiled in CS-01 [10]; this specification defines only the claims.
+
 ## 7.2 Lifecycle, revocation and unlinkability
 
 Wallet Provider **MUST**:
@@ -370,7 +372,6 @@ Payload:
 
 ```json
 {
-  "iss": "https://wallet-provider.example",
   "sub": "https://wallet-provider.example/instances/3f9a...c1",
   "iat": 1777000000,
   "exp": 1777040000,
@@ -406,7 +407,6 @@ Payload:
 
 ```json
 {
-  "iss": "https://wallet-provider.example",
   "iat": 1777000000,
   "exp": 1777040000,
   "attested_keys": [ { "kty": "EC", "crv": "P-256", "x": "...", "y": "..." } ],
@@ -427,7 +427,7 @@ Where each element comes from:
 - Signing a `jwt` proof with the key at index 0 of `attested_keys` - TS-03 [3], clause 2.2.2.1.
 - `key_storage_status.status` (type-shared or per-KA index) - TS-03 [3], clause 2.5.2, using the IETF Token Status List [9].
 
-> Note: the header `typ` values and the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by TS-03 [3] and OpenID4VCI [5]; reproduce TS-03's own examples for the authoritative form.
+> Note: the header `typ` values and the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by TS-03 [3] and OpenID4VCI [5]; reproduce TS-03's own examples for the authoritative form. The `key_storage` and `user_authentication` values are ISO 18045 AVA_VAN levels; the mechanism by which an issuer requires minimum levels is profiled in CS-01 [10]. `iss` is intentionally omitted from both the WIA and the KA: the Wallet Provider identity is inferred from the signing certificate in the `x5c` JOSE header (TS-03 [3], clause 2.2.1).
 
 # Annex B (informative): Key binding and holder binding
 
