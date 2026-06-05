@@ -4,7 +4,11 @@ Version 0.5 / Draft
 Date: 30 May 2026
 
 **Authors / Contributors**: WP4 Architecture
-- «add contributors»
+- Lal Chandran, iGrant.io, Sweden
+- George J Padayatti, iGrant.io, Sweden
+- Filip Hladky, BankID, Czech Republic
+- Nikolaos Triantafyllou, University of Aegean, Greece
+- Erik Eriksson, DIGG, Sweden
 
 ## Table of Contents
 
