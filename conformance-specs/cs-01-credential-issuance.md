@@ -344,7 +344,7 @@ Issuers **SHOULD**:
 
 1. Support refresh tokens for credential refresh, following OpenID4VCI guidance on refresh usage and lifetime.
 
-> Note: because the WIA `cnf` key is used as the DPoP key (WUs item 3 above), for WUA-based issuance the Access Token is DPoP-bound; the sender-constraining choice in section 7.1 ("DPoP") therefore resolves to DPoP for this binding.
+> Note: because the WIA `cnf` key is used as the DPoP key (WUs item 3 above), for WUA-based issuance the Access Token is DPoP-bound (section 7.1).
 
 ## 7.5 Credential Endpoint
 
