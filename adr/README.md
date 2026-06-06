@@ -12,9 +12,12 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 3. [Specify PID and eAA formats](document-formats.md)
 4. [Provide EBWOID as a stable minimal basis](basic-lpid.md)
 5. [Wallet Unit Attestation and Lifecycle Management (For European Business Wallet)](wallet-unit-lifecycle-management.md)
-6. [Deliver business wallet data using QERDS](build-qerds.md)
-7. [Attestation Revocation Mechanism](attestation-revocation-mechanism.md)
-8. [Separate QERDS registry from relay](qerds-registry-relay.md)
+6. [Replace LPID with EBWOID](001-replace-lpid-with-ebwoid.md)
+7. [Deliver business wallet data using QERDS](build-qerds.md)
+8. [Attestation Revocation Mechanism](attestation-revocation-mechanism.md)
+9. [Separate QERDS registry from relay](qerds-registry-relay.md)
+10. [Structure the European Digital Directory as identification, discovery, and connection](build-edd-identification-discovery-connection.md)
+11. [Separate attestations, documents, and data in EBW](build-document-vs-attestation.md)
 
 <!--END INDEX-->
 
