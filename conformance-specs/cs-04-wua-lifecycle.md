@@ -101,7 +101,7 @@ The WUA is the evidence that lets a PID Provider or Attestation Provider trust a
 
 The Wallet Provider issues and signs the attestations and publishes their revocation status; the Wallet Unit presents them; relying parties verify the signature and check revocation status (TS-03 [3], clause 2.5), as illustrated below:
 
-![alt text](../images/wua-actors-interatctions.png)*Figure 1: Actors and the High-level WUA Issuance and Verification*
+![WUA actors and interactions](../images/wua-actors-interatctions.png) *Figure 1: Actors and the High-level WUA Issuance and Verification*
 
 ## 5.2 WUA lifecycle
 
