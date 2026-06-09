@@ -323,7 +323,7 @@ WUs **MUST**:
 
 1. Use PAR for all authorisation requests.
 2. Use the `scope` parameter to indicate the credential type to be issued. Each `scope` value MUST map to a specific credential type that is known from Issuer metadata or from the Credential Offer.
-3. Ensure that the `client_id` in the PAR request matches the `sub` claim in the Wallet attestation JWT used for client authentication.
+3. Ensure that the `client_id` in the PAR request matches the `sub` claim in the WIA (Wallet Instance Attestation) JWT used for client authentication.
 4. Include `dpop_jkt` (the JWK Thumbprint of the WIA `cnf` key) in the PAR request to bind the issued authorisation code to the DPoP key (RFC 9449 [8], Section 10), so that the sender-constraint holds from PAR through to the Access Token. TS-03 [5] mandates the `cnf.jkt` check at the Token Request (section 7.4); binding the code at PAR is the OpenID4VCI / RFC 9449 mechanism and is to be confirmed for this profile.
 
 ## 7.4 Token Endpoint and Wallet Attestation
