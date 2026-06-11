@@ -61,6 +61,6 @@ Conversely, the combination of the two mechanisms is where the value lies: attes
 - Edge cases exist where classification requires judgment (e.g., a certificate of conformity attached to a delivery). The decisive test is lifecycle semantics: if validity is managed at the source after issuance, it is an attestation; if the content is final at issuance, it is a document.
 
 **Open points**
-
+- Decision tree to be contributed to the Blueprint by the authors
 - Specification of the binding pattern between attestations and business documents (reference vs. embedding) is addressed in a separate ADR.
 - The boundary between (Q)ERDS and non-qualified but established delivery networks is treated in the MLS/ERDS analysis and is out of scope here.
