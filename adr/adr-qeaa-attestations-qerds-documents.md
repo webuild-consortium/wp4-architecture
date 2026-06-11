@@ -62,5 +62,4 @@ Conversely, the combination of the two mechanisms is where the value lies: attes
 
 **Open points**
 - Decision tree to be contributed to the Blueprint by the authors
-- Specification of the binding pattern between attestations and business documents (reference vs. embedding) is addressed in a separate ADR.
-- The boundary between (Q)ERDS and non-qualified but established delivery networks is treated in the MLS/ERDS analysis and is out of scope here.
+- Specification of the binding pattern between attestations and business documents (reference vs. embedding) to be contributed to the Blueprint by the authors.
