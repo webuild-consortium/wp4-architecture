@@ -4,7 +4,8 @@
 |---|---|
 | **Status** | Proposed |
 | **Date** | 2026-06-11 |
-| **Context** | WE BUILD WP4 — Architecture |
+| **Context** | WE BUILD WS Amsterdam track 3 |
+| **Authors:** | Toennis Jonas, Puria Dyne, Rune Kjørlaug, Angel, Ssander Dijkhuis, Evmorfili Bbairamidou, Ivan faltus@bankid.cz, Felix Rosenberg-Gruszczynski, Martin Westerkamp, Nklomp@sphereon.com, filippo@dyne.org, lld@netsmart.gr, Filip Hladky, ANDRIANA PRENTZA, Muhamed Turkanović |
 
 ## Context
 
