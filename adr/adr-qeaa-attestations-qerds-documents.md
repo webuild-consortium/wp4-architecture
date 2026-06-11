@@ -8,7 +8,9 @@
 
 ## Context
 
-Neither eIDAS (as amended by Regulation (EU) 2024/1183) nor the proposed EU Business Wallet regulation (COM(2025) 838) provides a definition of an attestation beyond it being a structured piece of data that is signed or sealed by its issuer. In the EUDI Wallet context this under-specification is workable: the holder is a natural person, scoped by the device in use, and the wallet is in practice the system of record for the credentials it holds.
+This decision builds upon the earlier decision to [Separate attestations, documents, and data in EBW](build-document-vs-attestation.md).
+
+Neither eIDAS (as amended by Regulation (EU) 2024/1183) nor the proposed EU Business Wallet regulation (COM(2025) 838) provides technical criteria for choosing electronic attestation of attributes (EAA) and/or an qualified electronic registered delivery service (QERDS) beyond legal definitions. In the EUDI Wallet context this under-specification is workable: the holder is a natural person, scoped by the device in use, and the wallet is in practice the system of record for the credentials it holds; and QERDS is not a mandatory feature for natural persons using EUDI Wallets.
 
 In the business wallet ecosystem this assumption does not hold. The wallet of an Economic Operator (EO) is connected to a broader suite of business systems — ERP, invoicing, procurement, archiving — that already act as systems of record for business transactions. If "anything signed and structured" can be carried as an attestation, the attestation mechanism becomes a de facto data transfer channel, duplicating and competing with established document exchange infrastructures rather than complementing them.
 
