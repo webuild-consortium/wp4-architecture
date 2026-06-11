@@ -5,7 +5,6 @@
 | **Status** | Proposed |
 | **Date** | 2026-06-11 |
 | **Context** | WE BUILD WP4 — Architecture |
-| **Related** | EDD three-layer model ADR; SC5 eInvoicing scenario specifications |
 
 ## Context
 
