@@ -18,7 +18,7 @@ In the business wallet ecosystem this assumption does not hold. The wallet of an
 
 Within WE BUILD we adopt the following definitions and assign each concept to a distinct mechanism:
 
-**Attestations (EAA)** are verifiable claims about an entity whose validity is lifecycle-managed at the source. While the claim content itself is integrity-protected and tamper-evident, its validity is mutable: the issuer can suspend or revoke it at any time, and relying parties are expected to check current status, not just signature validity.
+**Electronic attestations of attributes (EAA)** provide verifiable claims about an entity whose validity is lifecycle-managed at the source. While the claim content itself is integrity-protected and tamper-evident, its validity is mutable: the issuer can suspend or revoke it at any time, and relying parties are expected to check current status, not just signature validity.
 
 **Business documents** are self-contained, structured or unstructured data artifacts that represent a business fact or transaction at a specific point in time. Once issued by its source, a business document is immutable. Its content is finalized, and any subsequent change is expressed as a new document (e.g., a correction, amendment, or credit note), never as a modification of the original.
 
