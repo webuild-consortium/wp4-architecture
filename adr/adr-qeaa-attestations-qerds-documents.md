@@ -1,4 +1,4 @@
-# ADR: (Q)EAA for verifiable claims (attestations), (Q)ERDS for data transfer (business documents)
+# ADR: EAA for verifiable claims (attestations), (Q)ERDS for data transfer (business documents)
 
 | | |
 |---|---|
@@ -12,19 +12,17 @@ Neither eIDAS (as amended by Regulation (EU) 2024/1183) nor the proposed EU Busi
 
 In the business wallet ecosystem this assumption does not hold. The wallet of an Economic Operator (EO) is connected to a broader suite of business systems — ERP, invoicing, procurement, archiving — that already act as systems of record for business transactions. If "anything signed and structured" can be carried as an attestation, the attestation mechanism becomes a de facto data transfer channel, duplicating and competing with established document exchange infrastructures rather than complementing them.
 
-The stated aim of WE BUILD is that the EUBW should **complement, not replace, existing systems**. This requires a clear architectural boundary between what is conveyed as an attestation and what is exchanged as a business document.
-
 ## Decision
 
 Within WE BUILD we adopt the following definitions and assign each concept to a distinct mechanism:
 
-**Attestations ((Q)EAA)** are verifiable claims about an Economic Operator whose validity is lifecycle-managed at the source. While the claim content itself is integrity-protected and tamper-evident, its validity is mutable: the issuer can suspend or revoke it at any time, and relying parties are expected to check current status, not just signature validity.
+**Attestations (EAA)** are verifiable claims about an entity whose validity is lifecycle-managed at the source. While the claim content itself is integrity-protected and tamper-evident, its validity is mutable: the issuer can suspend or revoke it at any time, and relying parties are expected to check current status, not just signature validity.
 
-**Business documents** are self-contained, structured or unstructured data artifacts that represent a business fact or transaction at a specific point in time. Once issued by its source, a business document is immutable — its content is finalized, and any subsequent change is expressed as a new document (e.g., a correction, amendment, or credit note), never as a modification of the original.
+**Business documents** are self-contained, structured or unstructured data artifacts that represent a business fact or transaction at a specific point in time. Once issued by its source, a business document is immutable. Its content is finalized, and any subsequent change is expressed as a new document (e.g., a correction, amendment, or credit note), never as a modification of the original.
 
 From these definitions follows the central rule of this ADR:
 
-> **Business documents are not to be transferred as attestations.** Attestations are conveyed and presented via the (Q)EAA mechanisms of the wallet ecosystem; business documents are exchanged via electronic registered delivery services ((Q)ERDS) or other established document exchange infrastructures.
+> **Business documents are not to be transferred as attestations.** Attestations are conveyed and presented via the EAA mechanisms of the wallet ecosystem; business documents are exchanged via electronic registered delivery services ((Q)ERDS) or other established document exchange infrastructures.
 
 ## Rationale
 
