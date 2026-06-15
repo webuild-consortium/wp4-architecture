@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle
 
-Version 0.5 / Draft
-Date: 30 May 2026
+Version 1.0
+Date: 15-June-2026
 
 **Authors / Contributors**: WP4 Architecture
 - Lal Chandran, iGrant.io, Sweden
@@ -10,10 +10,10 @@ Date: 30 May 2026
 - Nikolaos Triantafyllou, University of Aegean, Greece
 - Erik Eriksson, DIGG, Sweden
 
-## Table of Contents
+# Table of Contents
 
 - [WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle](#we-build---conformance-specification-cs-04-individual-wallet-unit-attestation-wua-lifecycle)
-  - [Table of Contents](#table-of-contents)
+- [Table of Contents](#table-of-contents)
 - [1. Introduction](#1-introduction)
 - [2. Scope](#2-scope)
 - [3. Normative Language](#3-normative-language)
