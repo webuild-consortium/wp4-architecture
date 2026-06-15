@@ -90,10 +90,16 @@ class ACMEClient:
 
     # ----- ACME flow -----
 
-    def new_account_with_eab(self, contact: list[str], wrp_id: str) -> None:
-        # Stub EAB: a non-empty JWS-shaped blob the façade will accept.
+    def new_account_with_eab(self, contact: list[str], wrp_id: str,
+                             legal_name: str) -> None:
+        # Stub EAB carrying the (simulated) EBWOID identity the RA "verified".
+        # In production the RA issues EAB credentials bound to the EBWOID; here
+        # the EBWOID {id, name} travels in the EAB protected header so the
+        # façade can enforce the EBWOID↔wrp-id match (CS-06 §5.4, §7.2 #9).
         eab_protected = b64u(json.dumps({"alg": "HS256", "kid": f"eab-{wrp_id}",
-                                          "url": self.directory["newAccount"]}).encode())
+                                          "url": self.directory["newAccount"],
+                                          "ebwoid": {"id": wrp_id,
+                                                     "name": legal_name}}).encode())
         eab_payload = b64u(self.account_key.export_public().encode())
         eab_signature = b64u(b"STUB-NOT-AN-HMAC")  # CS-06 §5.4 MVP path
         payload = {
@@ -192,7 +198,8 @@ def main() -> int:
     c = ACMEClient(args.directory, args.rp_list)
     c.fetch_directory()
     c.fetch_nonce()
-    c.new_account_with_eab([f"mailto:smoke@{args.wrp_id}"], args.wrp_id)
+    c.new_account_with_eab([f"mailto:smoke@{args.wrp_id}"], args.wrp_id,
+                           args.legal_name)
     order = c.new_order(args.wrp_id)
 
     # Walk authorizations

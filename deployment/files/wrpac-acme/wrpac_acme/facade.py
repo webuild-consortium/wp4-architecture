@@ -4,9 +4,12 @@ What's here
 -----------
 * /acme-eudi-wrpac/directory with `wrp-id` and `registrar-api-01` in meta
 * JWS-signed requests per RFC 8555 §6
-* newAccount with EAB stub (CS-06 §5.4 MVP path — EAB blob required but not HMAC-verified)
+* newAccount with EAB carrying a (simulated) EBWOID {id, name} claim
+  (CS-06 §5.4 MVP path — EAB blob required, HMAC not verified)
 * newOrder accepting `{type:"wrp-id", value: <wrp_id>}`
-* registrar-api-01 challenge: fetches RP List, compares key-authorization
+* registrar-api-01 challenge: fetches RP List, compares key-authorization,
+  and enforces the EBWOID↔wrp-id match (CS-06 §7.2 #9: EBWOID.id == wrp-id,
+  EBWOID.name == RP List legal name)
 * finalize: verifies CSR Subject DN matches the RP List entry, forwards CSR to
   Dogtag (`pki ca-cert-request-submit --profile wrpacCert`), returns issued PEM
 
@@ -52,6 +55,10 @@ class Account:
     jwk: jwk.JWK
     contact: List[str] = field(default_factory=list)
     status: str = "valid"
+    # Organisational identity from the EBWOID the RA verified (CS-06 §5.4).
+    # Matched against the order's wrp-id at challenge time (§7.2 #9).
+    ebwoid_id: Optional[str] = None
+    ebwoid_name: Optional[str] = None
 
 
 @dataclass
@@ -91,6 +98,8 @@ def _account_to_dict(a: Account) -> dict:
         "jwk": json.loads(a.jwk.export(private_key=False)),
         "contact": list(a.contact),
         "status": a.status,
+        "ebwoid_id": a.ebwoid_id,
+        "ebwoid_name": a.ebwoid_name,
     }
 
 
@@ -100,6 +109,8 @@ def _account_from_dict(d: dict) -> Account:
         jwk=jwk.JWK(**d["jwk"]),
         contact=list(d.get("contact", [])),
         status=d.get("status", "valid"),
+        ebwoid_id=d.get("ebwoid_id"),
+        ebwoid_name=d.get("ebwoid_name"),
     )
 
 
@@ -238,22 +249,50 @@ def _verify_with_account(body: dict) -> tuple[Account, dict, bytes]:
 
 # ---------- newAccount ----------
 
+def _eab_ebwoid(eab: dict) -> dict:
+    """Extract the (simulated) EBWOID {id, name} claim from the EAB protected
+    header. In production the RA resolves this from the EAB Key ID after
+    verifying the EBWOID via OID4VP; in this MVP the claim travels in the EAB
+    so the façade can enforce the EBWOID↔wrp-id match (CS-06 §5.4, §7.2 #9)."""
+    import base64
+    import json as _json
+    try:
+        prot = eab["protected"]
+        pad = "=" * (-len(prot) % 4)
+        header = _json.loads(base64.urlsafe_b64decode(prot + pad))
+    except Exception:
+        return {}
+    ebwoid = header.get("ebwoid")
+    return ebwoid if isinstance(ebwoid, dict) else {}
+
+
 @app.post(ROOT + "/new-account")
 async def new_account(request: Request) -> JSONResponse:
     body = await _read_jws(request)
     parsed = parse_and_verify(body, account_jwk=None)
     payload = parsed.payload_json or {}
 
-    # CS-06 §5.4: EAB required. We accept any well-formed EAB blob (stub).
+    # CS-06 §5.4: EAB required. In production the RA issues these credentials
+    # bound to the organisation's verified EBWOID; here the EAB carries the
+    # (simulated) EBWOID identity {id, name} in its protected header so the
+    # façade can enforce the EBWOID↔wrp-id match at challenge time (§7.2 #9).
     eab = payload.get("externalAccountBinding")
     if not eab or not all(k in eab for k in ("protected", "payload", "signature")):
         raise HTTPException(400, "externalAccountBinding required (CS-06 §5.4)")
+    ebwoid = _eab_ebwoid(eab)
+    if not ebwoid.get("id") or not ebwoid.get("name"):
+        raise HTTPException(
+            400,
+            "externalAccountBinding must carry an EBWOID {id, name} claim (CS-06 §5.4)",
+        )
 
     account_id = uuid.uuid4().hex[:16]
     _accounts[account_id] = Account(
         id=account_id,
         jwk=parsed.jwk_obj,
         contact=payload.get("contact", []),
+        ebwoid_id=ebwoid["id"],
+        ebwoid_name=ebwoid["name"],
     )
     resp = JSONResponse(
         {
@@ -392,6 +431,22 @@ async def challenge(chall_id: str, request: Request) -> JSONResponse:
         a.status = "invalid"
         _challenges.save(c.id); _authzs.save(a.id)
         raise HTTPException(403, "WRP not active")
+
+    # CS-06 §7.2 #9: the EBWOID bound to the account MUST correspond to the WRP
+    # being ordered — EBWOID.id == wrp-id and EBWOID.name == the RP List entry's
+    # WRP legal name. This is the direct, testable identity binding that replaces
+    # the looser POA-based check.
+    if (account.ebwoid_id != a.identifier_value
+            or account.ebwoid_name != entry.get("legal_name")):
+        c.status = "invalid"
+        a.status = "invalid"
+        _challenges.save(c.id); _authzs.save(a.id)
+        raise HTTPException(
+            403,
+            "EBWOID does not correspond to the WRP: "
+            f"ebwoid.id={account.ebwoid_id!r} wrp-id={a.identifier_value!r}, "
+            f"ebwoid.name={account.ebwoid_name!r} legal_name={entry.get('legal_name')!r}",
+        )
 
     # acme-challenge may be a bare string (single-instance shorthand) or a
     # structured object per CS-06 §7.8. We only support single-instance.
