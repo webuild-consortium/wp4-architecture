@@ -9,6 +9,8 @@ Date: 15-June-2026
 - Filip Hladky, BankID, Czech Republic
 - Nikolaos Triantafyllou, University of Aegean, Greece
 - Erik Eriksson, DIGG, Sweden
+- Miriam Weber, Procivis, Switzerland
+- Eelco Klaver, Credenco, Netherlands
 
 # Table of Contents
 
@@ -101,7 +103,7 @@ The WUA is the evidence that lets a PID Provider or Attestation Provider trust a
 > **WE BUILD profile decisions.** This specification profiles TS-03 [3] for the WE BUILD ecosystem. Three scoping decisions, recorded here and reflected in the requirements in section 7, apply throughout:
 > 1. **No long-lived Key Attestation; the WIA and KA are both short-lived.** TS-03 [3] requires the WIA to be short-lived (time-to-live under 24 hours, clause 2.2.1.1) but permits the KA a longer validity period, leaving the KA's technical validity period to the Wallet Provider (clause 2.4.2). WE BUILD does not use that allowance: as a deliberate simplification within the scope of WE BUILD, it keeps the KA short-lived as well, comparable to the WIA, so there is **no long-lived KA** (sections 5.2 and 7.1). The KA's short token-level lifetime is independent of, and far shorter than, the `key_storage_status.exp` revocation-maintenance commitment (section 7.2).
 > 2. **Multiple keys permitted, but a single proof of possession.** TS-03 [3] permits a KA to attest multiple keys (`attested_keys`, in order to support batch issuance; clause 2.2.2.1). WE BUILD allows multiple attested keys but uses a single `jwt` proof of possession, signed with the key at index 0 of `attested_keys` (sections 5.3 and 7.3; TS-03 [3], clause 2.2.2.1).
-> 3. **One WIA per issuer.** A WIA instance is used with only one issuer: there is a one-to-one relationship between a WIA instance and the PID Provider or Attestation Provider it is sent to, and the same WIA is never sent to more than one issuer (TS-03 [3], clause 2.2.1.1). The Wallet Provider maintains and serves the revocation status list (sections 7.2 and 8.2) and never reuses a status list entry across different issuers, which preserves unlinkability between issuers (TS-03 [3], clause 2.5.1).
+> 3. **One WIA per issuance process.** A WIA instance is used only once: there is a one-to-one relationship between a WIA instance and an issuance process, so the same WIA is never sent to more than one issuer (TS-03 [3], clause 2.2.1.1). The Wallet Provider maintains and serves the revocation status list (sections 7.2 and 8.2) and never reuses a status list entry across different issuers, which preserves unlinkability between issuers (TS-03 [3], clause 2.5.1).
 
 ## 5.1 Actors and information flows
 
@@ -210,8 +212,8 @@ Decoded payload of the `jwt` proof sent in step 4 (the `nonce`, `aud` and `iat` 
 
 This overview is non-normative; the binding requirements are in sections 7.1 and 7.2. Per TS-03 [3], the Wallet Provider:
 - Creates and signs each WIA and KA (ES256, ES384 or ES512) with the required claims (TS-03 [3], clauses 2.6, 2.3.1, 2.3.2);
-- Ensures the Wallet Unit has WIAs available **as needed** for issuance, and that a given WIA is sent to **only one issuer** — a one-to-one relationship between a WIA instance and the PID Provider or Attestation Provider (TS-03 [3], clause 2.2.1.1);
-- Keeps each WIA **short-lived** (under 24 hours) and **single-use per relying party** for freshness and unlinkability (TS-03 [3], clauses 2.2.1.1, 2.2.2.1); TS-03 permits a longer KA validity (clause 2.4.2), but the WE BUILD profile keeps the KA equally short-lived, with **no long-lived KA**;
+- Ensures the Wallet Unit has WIAs available **as needed** for issuance, and that a given WIA is used in **a single issuance process** and is **never shared across issuers** (TS-03 [3], clause 2.2.1.1);
+- Keeps each WIA **short-lived** (under 24 hours) and **single-use** (at most one credential issuance process) for freshness and unlinkability (TS-03 [3], clauses 2.2.1.1, 2.2.2.1); TS-03 permits a longer KA validity (clause 2.4.2), but the WE BUILD profile keeps the KA equally short-lived, with **no long-lived KA**;
 - **Maintains revocation status** via Token Status List [9], kept at least 31 days ahead at presentation and live until each entry's `exp` (TS-03 [3], clauses 2.5, 2.4.2);
 - **Revokes** all `client_status` entries for a Wallet Unit on revocation, triggered by a detected security vulnerability or a user request such as loss or theft (TS-03 [3], clauses 2.4.2, 2.5.1).
 
@@ -282,7 +284,7 @@ Wallet Provider **MUST**:
 2. Maintain revocation status so that a Wallet Unit can always present a WIA and KA whose `client_status.exp` and `key_storage_status.exp` are at least 31 days in the future at the time of presentation (TS-03 [3], clause 2.4.2).
 3. For KA revocation, either reference the same status list index for all KAs attesting keys stored in the same WSCD or keystore type (Option 1, type-shared), or assign a fresh status list index to each KA (Option 2, per-KA) (TS-03 [3], clause 2.5.2).
 4. Ensure a Wallet Unit uses a single KA at most once, and that each attested public key is included in at most one KA (TS-03 [3], clause 2.2.2.1).
-5. Ensure a Wallet Unit sends the same WIA to at most one PID Provider or Attestation Provider — a one-to-one relationship between a WIA instance and the issuer — unless per-issuer reuse applies (TS-03 [3], clause 2.2.1.1).
+5. Ensure a Wallet Unit sends the same WIA to at most one PID Provider or Attestation Provider, unless per-issuer reuse applies (TS-03 [3], clause 2.2.1.1).
 6. Ensure that a Wallet Unit has WIAs available as needed for issuance (TS-03 [3], clause 2.2.1.1). TS-03 does not mandate on-demand versus batch pre-provisioning.
 7. Keep each published status list entry available until its `exp` has passed (TS-03 [3], clause 2.4.2).
 8. On revocation of a Wallet Instance, revoke all `client_status.status` entries associated with that Wallet Unit (TS-03 [3], clause 2.4.2).
