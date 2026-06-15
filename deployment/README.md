@@ -21,11 +21,12 @@ of a CSR with a real WRPAC Subject DN (`O=` legal name + `organizationIdentifier
 
 **Phase 3** — minimal CS-06 ACME façade (Python/FastAPI) + mock Registrar (RP List
 service) sitting in front of the Dogtag CA. Implements `wrp-id` identifier
-(CS-06 §5.2), `registrar-api-01` challenge (§5.3), EBW-EAB **stub** (§5.4 MVP
-path — accepts any EAB blob without HMAC verification), and synchronous
-finalize → CSR-Subject vs RP-List cross-check → `pki ca-cert-request-submit
---profile wrpacCert`. Verified end-to-end by a Python ACME client (`acme.sh`
-can't speak `wrp-id`).
+(CS-06 §5.2), `registrar-api-01` challenge (§5.3) with the EBWOID↔wrp-id match
+(§7.2 #9: `EBWOID.id == wrp-id`, `EBWOID.name == RP List legal name`), EBW-EAB
+**stub** (§5.4 MVP path — EAB carries a simulated EBWOID `{id, name}` claim but
+the HMAC is not verified), and synchronous finalize → CSR-Subject vs RP-List
+cross-check → `pki ca-cert-request-submit --profile wrpacCert`. Verified
+end-to-end by a Python ACME client (`acme.sh` can't speak `wrp-id`).
 
 ## Layout
 
@@ -122,14 +123,15 @@ Before any non-throwaway use, replace them with an `ansible-vault` encrypted fil
 - `registrar-api-01` challenge (§5.3) — façade fetches RP List, verifies `acme-challenge` against expected key-authorization
 - WRPAC certificate profile (§7.4) — Dogtag `wrpacCert`, 1-year, RSA-3072+/ECDSA P-256/P-384, policy OID, server-built Subject DN
 - Mock Registrar / RP List (§7.8) — single-instance shorthand form
-- EAB **structure** at newAccount (§5.4) — blob accepted, HMAC not verified
+- EAB **structure** at newAccount (§5.4) — blob accepted, carries a simulated EBWOID `{id, name}`; HMAC not verified
+- EBWOID↔wrp-id match (§7.2 #9) — challenge validation enforces `EBWOID.id == wrp-id` and `EBWOID.name == RP List legal name`
 
 ### Still missing
 
 | Gap | Spec ref | Notes |
 |---|---|---|
 | HTTPS on the façade | §7.1 #2 | Façade currently binds plain HTTP on :9080. Put nginx in front, or have uvicorn terminate TLS with a Dogtag-issued cert. |
-| Real EAB HMAC verification | §5.4 | Currently a stub. Needs an EAB-credentials store (Key ID → HMAC key) populated by the RA, and JWS HMAC verify on newAccount. |
+| Real EAB HMAC verification | §5.4 | Currently a stub. Needs an EAB-credentials store (Key ID → HMAC key) populated by the RA, and JWS HMAC verify on newAccount. The EBWOID `{id, name}` the EAB carries is likewise trusted as-presented, not cryptographically bound. |
 | Nonce replay protection | §7.1 #4 | Façade issues fresh nonces but does not verify incoming ones. |
 | `keyChange`, real `revokeCert` | §5.1, §7.6 | Stubs / unimplemented. |
 | Multi-instance `instanceId` | §5.2, §8.3 | Single-instance only today. |

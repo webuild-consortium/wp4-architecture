@@ -65,12 +65,19 @@ class Runner:
     def fresh_nonce(self) -> str:
         return self.http.head(self.dir["newNonce"]).headers["Replay-Nonce"]
 
-    def fresh_account(self) -> Tuple[jwk.JWK, str]:
-        """Successfully create a new account and return (key, account_url)."""
+    def fresh_account(self, ebwoid_id: str = "NLKVK.12345678",
+                      ebwoid_name: str = "ACME Test Organisation B.V.",
+                      ) -> Tuple[jwk.JWK, str]:
+        """Successfully create a new account and return (key, account_url).
+
+        The EAB carries a (simulated) EBWOID {id, name}; the defaults match the
+        seeded WRP so the account passes the §7.2 #9 EBWOID↔wrp-id check."""
         key = jwk.JWK.generate(kty="RSA", size=2048)
         nonce = self.fresh_nonce()
         eab_protected = b64u(json.dumps({"alg": "HS256", "kid": "eab-test",
-                                          "url": self.dir["newAccount"]}).encode())
+                                          "url": self.dir["newAccount"],
+                                          "ebwoid": {"id": ebwoid_id,
+                                                     "name": ebwoid_name}}).encode())
         eab_payload = b64u(key.export_public().encode())
         eab_sig = b64u(b"STUB")
         payload = {
@@ -159,6 +166,29 @@ class Runner:
         self.record(r.status_code == 403, name,
                     f"expected 403, got {r.status_code}: {r.text[:200]}")
 
+    def t_challenge_ebwoid_mismatch(self) -> None:
+        name = "registrar-api-01 fails when EBWOID.id != ordered wrp-id (§7.2 #9)"
+        # Account's EBWOID is for a DIFFERENT organisation than the WRP ordered.
+        key, acct = self.fresh_account(ebwoid_id="NLKVK.99999999",
+                                       ebwoid_name="Someone Else B.V.")
+        r = self.post(self.dir["newOrder"], key, acct,
+                      {"identifiers": [{"type": "wrp-id",
+                                         "value": "NLKVK.12345678"}]})
+        if r.status_code not in (200, 201):
+            self.record(False, name, f"newOrder failed unexpectedly: {r.status_code}")
+            return
+        order = r.json()
+        authz = self.post(order["authorizations"][0], key, acct, None).json()
+        chall = next(c for c in authz["challenges"]
+                     if c["type"] == "registrar-api-01")
+        # Place the CORRECT key-auth, so the only failing check is the EBWOID match.
+        key_auth = f"{chall['token']}.{key.thumbprint()}"
+        self.http.put(f"{self.rp_list_url}/rp-list/NLKVK.12345678/acme-challenge",
+                      json={"key_authorization": key_auth})
+        r = self.post(chall["url"], key, acct, {})
+        self.record(r.status_code == 403, name,
+                    f"expected 403, got {r.status_code}: {r.text[:200]}")
+
     def t_finalize_subject_mismatch(self) -> None:
         name = "finalize rejects CSR whose Subject doesn't match RP List entry"
         key, acct = self.fresh_account()
@@ -215,6 +245,7 @@ def main() -> int:
         r.t_neworder_bad_identifier_type,
         r.t_challenge_unknown_wrp,
         r.t_challenge_wrong_keyauth,
+        r.t_challenge_ebwoid_mismatch,
         r.t_finalize_subject_mismatch,
         r.t_revoke_unimplemented,
     ):
