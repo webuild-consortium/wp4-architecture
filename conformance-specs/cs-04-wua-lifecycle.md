@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle
 
-Version 0.5 / Draft
-Date: 30 May 2026
+Version 1.0
+Date: 15-June-2026
 
 **Authors / Contributors**: WP4 Architecture
 - Lal Chandran, iGrant.io, Sweden
@@ -9,11 +9,13 @@ Date: 30 May 2026
 - Filip Hladky, BankID, Czech Republic
 - Nikolaos Triantafyllou, University of Aegean, Greece
 - Erik Eriksson, DIGG, Sweden
+- Miriam Weber, Procivis, Switzerland
+- Eelco Klaver, Credenco, Netherlands
 
-## Table of Contents
+# Table of Contents
 
 - [WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle](#we-build---conformance-specification-cs-04-individual-wallet-unit-attestation-wua-lifecycle)
-  - [Table of Contents](#table-of-contents)
+- [Table of Contents](#table-of-contents)
 - [1. Introduction](#1-introduction)
 - [2. Scope](#2-scope)
 - [3. Normative Language](#3-normative-language)
@@ -97,6 +99,12 @@ The role names are protocol/functional roles, not products. One product may impl
 
 The WUA is the evidence that lets a PID Provider or Attestation Provider trust a natural-person EUDI Wallet during issuance, and that underpins holder binding when the resulting credentials are later presented. The Wallet Provider creates and signs two JSON Web Tokens: the **Wallet Instance Attestation (WIA)**, attesting the integrity and authenticity of the wallet instance, and the **Key Attestation (KA)**, attesting the security properties of the keys to which credentials will be bound (TS-03 [3], clauses 2.3.1 and 2.3.2). Together they form the WUA. Detailed behaviour is in sections 6 to 8; this section gives the high-level picture.
 
+> [!NOTE]
+> **WE BUILD profile decisions.** This specification profiles TS-03 [3] for the WE BUILD ecosystem. Three scoping decisions, recorded here and reflected in the requirements in section 7, apply throughout:
+> 1. **No long-lived Key Attestation; the WIA and KA are both short-lived.** TS-03 [3] requires the WIA to be short-lived (time-to-live under 24 hours, clause 2.2.1.1) but permits the KA a longer validity period, leaving the KA's technical validity period to the Wallet Provider (clause 2.4.2). WE BUILD does not use that allowance: as a deliberate simplification within the scope of WE BUILD, it keeps the KA short-lived as well, comparable to the WIA, so there is **no long-lived KA** (sections 5.2 and 7.1). The KA's short token-level lifetime is independent of, and far shorter than, the `key_storage_status.exp` revocation-maintenance commitment (section 7.2).
+> 2. **Multiple keys permitted, but a single proof of possession.** TS-03 [3] permits a KA to attest multiple keys (`attested_keys`, in order to support batch issuance; clause 2.2.2.1). WE BUILD allows multiple attested keys but uses a single `jwt` proof of possession, signed with the key at index 0 of `attested_keys` (sections 5.3 and 7.3; TS-03 [3], clause 2.2.2.1).
+> 3. **One WIA per issuance process.** A WIA instance is used only once: there is a one-to-one relationship between a WIA instance and an issuance process, so the same WIA is never sent to more than one issuer (TS-03 [3], clause 2.2.1.1). The Wallet Provider maintains and serves the revocation status list (sections 7.2 and 8.2) and never reuses a status list entry across different issuers, which preserves unlinkability between issuers (TS-03 [3], clause 2.5.1).
+
 ## 5.1 Actors and information flows
 
 The Wallet Provider issues and signs the attestations and publishes their revocation status; the Wallet Unit presents them; relying parties verify the signature and check revocation status (TS-03 [3], clause 2.5), as illustrated below:
@@ -114,7 +122,7 @@ The WUA lifecycle is independent of two things the Wallet Provider does not trac
 The Wallet Provider tracks only the WUAs it has issued, their status-list entries, and the events that trigger revocation.
 
 From the Wallet Provider's perspective a WUA has three states:
-- **Issued**: the Wallet Provider has signed and issued the WIA/KA to the Wallet Unit; it remains in use until it expires or is revoked. The WIA is deliberately short-lived, with a time-to-live under 24 hours so a stale one cannot be reused (TS-03 [3], clause 2.2.1.1).
+- **Issued**: the Wallet Provider has signed and issued the WIA/KA to the Wallet Unit; it remains in use until it expires or is revoked. The WIA is deliberately short-lived, with a time-to-live under 24 hours so a stale one cannot be reused (TS-03 [3], clause 2.2.1.1). TS-03 [3] permits the KA a longer validity period (clause 2.4.2), but the WE BUILD profile keeps the KA short-lived too, to keep things simple within the scope of WE BUILD, so there is **no long-lived KA**.
 - **Expired**: the WIA's time-to-live has elapsed (TS-03 [3], clause 2.2.1.1).
 - **Revoked**: the Wallet Provider has set the WUA's status-list entry to revoked (TS-03 [3], clause 2.5.1).
 
@@ -162,7 +170,7 @@ sequenceDiagram
 
 **Stage B - key binding: the issued credential is bound to a key attested by the KA.**
 
-4. **Credential Request (Wallet Unit -> Credential Issuer).** The Wallet Unit sends the KA as a `jwt` proof, signed with the key at index 0 of `attested_keys`, proving possession (TS-03 [3], clause 2.2.2.1). See the example below.
+4. **Credential Request (Wallet Unit -> Credential Issuer).** The Wallet Unit sends the KA as a `jwt` proof, signed with the key at index 0 of `attested_keys`, proving possession (TS-03 [3], clause 2.2.2.1). Although TS-03 permits a KA to attest multiple keys for batch issuance (clause 2.2.2.1), the WE BUILD profile uses a single `jwt` proof of possession, proving the key at index 0. See the example below.
 5. **Credential issued (Credential Issuer -> Wallet Unit).** The Credential Issuer binds the issued credential to the attested key.
 
 The issuance transport that carries these messages is profiled in CS-01 [10]; CS-04 owns only the binding obligations (section 7.3).
@@ -204,8 +212,8 @@ Decoded payload of the `jwt` proof sent in step 4 (the `nonce`, `aud` and `iat` 
 
 This overview is non-normative; the binding requirements are in sections 7.1 and 7.2. Per TS-03 [3], the Wallet Provider:
 - Creates and signs each WIA and KA (ES256, ES384 or ES512) with the required claims (TS-03 [3], clauses 2.6, 2.3.1, 2.3.2);
-- Ensures the Wallet Unit has WIAs available **as needed** for issuance (TS-03 [3], clause 2.2.1.1);
-- Keeps each WIA **short-lived** (under 24 hours) and **single-use per relying party**, for freshness and unlinkability (TS-03 [3], clauses 2.2.1.1, 2.2.2.1);
+- Ensures the Wallet Unit has WIAs available **as needed** for issuance, and that a given WIA is used in **a single issuance process** and is **never shared across issuers** (TS-03 [3], clause 2.2.1.1);
+- Keeps each WIA **short-lived** (under 24 hours) and **single-use** (at most one credential issuance process) for freshness and unlinkability (TS-03 [3], clauses 2.2.1.1, 2.2.2.1); TS-03 permits a longer KA validity (clause 2.4.2), but the WE BUILD profile keeps the KA equally short-lived, with **no long-lived KA**;
 - **Maintains revocation status** via Token Status List [9], kept at least 31 days ahead at presentation and live until each entry's `exp` (TS-03 [3], clauses 2.5, 2.4.2);
 - **Revokes** all `client_status` entries for a Wallet Unit on revocation, triggered by a detected security vulnerability or a user request such as loss or theft (TS-03 [3], clauses 2.4.2, 2.5.1).
 
@@ -259,6 +267,7 @@ Wallet Provider **MUST**:
 2. Populate the WIA with at least `wallet_name`, `wallet_version`, `wallet_solution_certification_information`, a `client_status` object (containing `status` and `exp`) and a `cnf` key, as defined in TS-03 [3], clause 2.3.1.
 3. Populate the KA with at least the `attested_keys` array (one or more keys), `key_storage`, `certification`, `user_authentication` and a `key_storage_status` object (containing `status` and `exp`), as defined in TS-03 [3], clause 2.3.2.
 4. Issue each WIA with a time-to-live of less than 24 hours (TS-03 [3], clause 2.2.1.1).
+5. (WE BUILD profile) Issue each KA with a short token-level time-to-live comparable to the WIA. TS-03 [3] permits the KA a longer validity period and leaves its technical validity period to the Wallet Provider (clause 2.4.2); WE BUILD does not use that allowance and issues **no long-lived KA**, to keep things simple within the scope of WE BUILD. This token-level `exp` is independent of the `key_storage_status.exp` revocation-maintenance commitment (section 7.2; TS-03 [3], clause 2.4.1).
 
 Wallet Provider **SHOULD**:
 1. Include `wallet_link` in the WIA (TS-03 [3], clause 2.3.1).
@@ -276,7 +285,7 @@ Wallet Provider **MUST**:
 3. For KA revocation, either reference the same status list index for all KAs attesting keys stored in the same WSCD or keystore type (Option 1, type-shared), or assign a fresh status list index to each KA (Option 2, per-KA) (TS-03 [3], clause 2.5.2).
 4. Ensure a Wallet Unit uses a single KA at most once, and that each attested public key is included in at most one KA (TS-03 [3], clause 2.2.2.1).
 5. Ensure a Wallet Unit sends the same WIA to at most one PID Provider or Attestation Provider, unless per-issuer reuse applies (TS-03 [3], clause 2.2.1.1).
-6. Ensure that a Wallet Unit has WIAs available as needed for issuance (TS-03 [3], clause 2.2.1.1). The specification does not mandate on-demand versus batch pre-provisioning.
+6. Ensure that a Wallet Unit has WIAs available as needed for issuance (TS-03 [3], clause 2.2.1.1). TS-03 does not mandate on-demand versus batch pre-provisioning.
 7. Keep each published status list entry available until its `exp` has passed (TS-03 [3], clause 2.4.2).
 8. On revocation of a Wallet Instance, revoke all `client_status.status` entries associated with that Wallet Unit (TS-03 [3], clause 2.4.2).
 9. Revoke a Wallet Instance upon detecting a security vulnerability in its device or operating environment, or upon a user request such as loss or theft (TS-03 [3], clause 2.5.1).
@@ -307,6 +316,7 @@ Wallet Unit **MUST**:
 2. Verify, on receipt of an Access Token, that its `cnf.jkt` matches the JWK Thumbprint of the `cnf` key in the WIA presented in the same issuance session, and abort the issuance session on mismatch (TS-03 [3], clause 2.2.1.1; ARF Topic C [2], Proposal 7, HLR WUA_37).
 3. Where a KA is included in a `jwt` proof element, sign that element with the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.1).
 4. Use a WIA in at most one credential issuance process, unless per-issuer reuse applies (TS-03 [3], clause 2.2.1.1).
+5. (WE BUILD profile) Include a **single** `jwt` proof of possession in the Credential Request, signed with the key at index 0 of `attested_keys`, even where the KA attests multiple keys. TS-03 [3] permits a KA to attest multiple keys for batch issuance (clause 2.2.2.1); WE BUILD permits multiple keys but uses a single proof of possession.
 
 Relying parties **MUST**:
 1. Verify that the signature of the `jwt` proof element verifies under the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.2).
