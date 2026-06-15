@@ -1,7 +1,8 @@
 # WE BUILD - Conformance Specification: Issuance of Relying Party Access and Registration Certificates
 
-Version 0.2 / First proposal
-Date: 24 April 2026
+Version 0.3
+Date: 15 June 2026
+Author: Jilles van Oossanen
 
 ## Table of Contents
 
@@ -34,7 +35,7 @@ Date: 24 April 2026
   - [7.9 IANA Considerations](#79-iana-considerations)
 - [8. Interface Definitions](#8-interface-definitions)
   - [8.1 ACME Directory](#81-acme-directory)
-  - [8.2 Account Management with EBW/POA](#82-account-management-with-ebwpoa)
+  - [8.2 Account Management with EBW/EBWOID](#82-account-management-with-ebwebwoid)
   - [8.3 Order Lifecycle](#83-order-lifecycle)
   - [8.4 Authorization and Challenge](#84-authorization-and-challenge)
   - [8.5 Finalize and Certificate](#85-finalize-and-certificate)
@@ -58,7 +59,7 @@ It profiles:
 
 This specification positions the ACME protocol as a **technical implementation** of the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4], as adopted by the WE BUILD Blueprint [5]. Section 9 provides an explicit mapping between the WE BUILD Blueprint issuance workflow and the ACME protocol operations.
 
-This specification focuses **only on direct issuance** of WRPACs to registered Wallet-Relying Parties. The ACME flow is extended with EBW-based authentication and POA verification to align with the Blueprint's requirements for user authentication via European Business Wallets. This document is used to build the WE BUILD Interoperability Test Bed Plus (ITB+) [6].
+This specification focuses **only on direct issuance** of WRPACs to registered Wallet-Relying Parties. The ACME flow is extended with EBW-based authentication and EBWOID verification to align with the Blueprint's requirements for user authentication via European Business Wallets. This document is used to build the WE BUILD Interoperability Test Bed Plus (ITB+) [6].
 
 > [!IMPORTANT]
 > CS-RPAC_01: This specification is intended for **interoperability testing only**, not for production deployment. Its purpose is to validate the technical feasibility of ACME-based WRPAC issuance and to establish interoperability between independent implementations. Production deployments will require additional security hardening, policy alignment, and conformity assessment beyond the scope of this document.
@@ -102,10 +103,9 @@ The following terminology applies throughout this specification:
 * **EUDIW** — European Digital Identity Wallet.
 * **RP** — Relying Party; in this specification usually **WRP** (Wallet-Relying Party).
 * **RA / CA / TSP** — Registration Authority, Certificate Authority, Trust Service Provider.
-* **POA** — Power of Attorney.
 * **EAA** — Electronic Attestation of Attributes.
 * **PID** — Person Identification Data.
-* **EBWOID** — European Business Wallet Organisational Identification Data.
+* **EBWOID** — European Business Wallet Organisational Identification Data, as defined in the WE BUILD EBWOID Attestation Rulebook [20]. Carries the organisation's unique identifier (`id`) and official name (`name`).
 
 # 4. Roles and Components
 
@@ -114,15 +114,15 @@ This specification uses the following roles, mapped to both the ACME protocol an
 | ACME Role | Blueprint Role | Description |
 |---|---|---|
 | **ACME Client** | **User + EBW** | The RP representative using an European Business Wallet. The EBW plays two roles in this specification: (i) host or invocation environment for the ACME Client software, and (ii) user-authentication authority for EBW-based External Account Binding per RFC 8555 §7.3.4 [1]. |
-| **ACME Server** | **RA + CA** | The combined Registration Authority and Certificate Authority. The RA function handles identity verification, POA validation, and RP list checks. The CA function handles certificate generation and signing. These MAY be separate systems behind a single ACME endpoint. |
+| **ACME Server** | **RA + CA** | The combined Registration Authority and Certificate Authority. The RA function handles identity verification, EBWOID validation, and RP list checks. The CA function handles certificate generation and signing. These MAY be separate systems behind a single ACME endpoint. |
 | — | **Mock Registrar (RA/TSP)** | In the WE BUILD pilot, participating TSPs acting as mock Registrars maintain the Lists of authorised RPs. This role is functionally equivalent to the Member State Registrar in the production eIDAS ecosystem. In production, this function is performed by the national Registrar of the Member State concerned per the eIDAS framework. |
 | **Wallet Unit** | — | The EUDI/Business Wallet that verifies WRPACs during RP authentication. Not involved in issuance. |
 
 Detailed role descriptions:
 
-* **User (RP Representative):** A natural person authorized to act on behalf of the Wallet-Relying Party. Authenticates via an EBW and presents a Power of Attorney (POA) attestation as an EAA.
-* **European Business Wallet (EBW):** The wallet application used by the RP representative to authenticate to the RA and to retrieve issued certificates. In the ACME flow, the EBW acts as the ACME Client or provides the authentication layer for the ACME Client.
-* **Registration Authority (RA):** The TSP component that verifies the user's identity and POA, requests additional attributes for the RPRC, and checks the RP's presence in the authorised RP lists. Implemented as part of the ACME Server.
+* **User (RP Representative):** A natural person operating on behalf of the Wallet-Relying Party via the organisation's EBW. Authenticates via the EBW, which presents the organisation's EBWOID attestation (an EAA). Authorisation to obtain a certificate for the WRP follows from control of the organisation's EBW; this profile does not require a separate Power of Attorney or representative attestation.
+* **European Business Wallet (EBW):** The wallet application used to authenticate to the RA and to retrieve issued certificates. In the ACME flow, the EBW acts as the ACME Client or provides the authentication layer for the ACME Client.
+* **Registration Authority (RA):** The TSP component that verifies the organisation's identity by validating the EBWOID, requests additional attributes for the RPRC, and checks the RP's presence in the authorised RP lists. Implemented as part of the ACME Server.
 * **Certificate Authority (CA):** The TSP component that generates and signs WRPAC and WRPRC certificates. Implemented as the ACME Server's certificate issuance backend.
 * **Mock Registrar:** In the WE BUILD pilot, participating TSPs acting as mock Registrars establish and maintain the Lists of authorized Relying Parties. These lists serve as the functional equivalent of the national register of wallet-relying parties per the Blueprint [5] MVP governance model. The ACME Server checks these lists during authorization. During ITB+ conformance testing, the WE BUILD RP List is served by the mock Registrar; in production, by the national Registrar of the Member State concerned.
 
@@ -134,8 +134,8 @@ The key adaptations are:
 
 * **Identifier type `wrp-id`**: replaces the `dns` identifier. The value is the WRP's unique identifier as it appears in the WE BUILD RP Lists. For the `wrp-id` identifier type, the only defined challenge is `registrar-api-01`; the standard ACME challenges `http-01` and `dns-01` do not apply to `wrp-id`.
 * **Challenge type `registrar-api-01`**: the ACME Server verifies the WRP's presence in the WE BUILD RP Lists and confirms a token link between the ACME account and the RP entry. The RP List entry supports multiple concurrent challenge tokens to enable multi-instance issuance (see §5.2).
-* **EBW-based External Account Binding (EAB)**: REQUIRED for account creation. The RP representative authenticates via their EBW and presents a POA (EAA). The EAB binds the ACME account to the verified EBW identity and POA.
-* **RA-integrated ACME Server**: the ACME Server combines RA and CA functions. The RA function validates identity, POA, and RP list membership. The CA function generates certificates.
+* **EBW-based External Account Binding (EAB)**: REQUIRED for account creation. The EBW presents the organisation's EBWOID (EAA). The EAB binds the ACME account to the verified EBW organisational identity (EBWOID).
+* **RA-integrated ACME Server**: the ACME Server combines RA and CA functions. The RA function validates the EBWOID, the organisation's identity, and RP list membership. The CA function generates certificates.
 * **Multi-instance issuance**: a single WRP (`wrp-id`) MAY obtain multiple WRPACs, one per Relying Party Instance. Each instance is identified by an optional `instanceId` in the order (see §5.2).
 * **Co-issuance of WRPAC + WRPRC**: the ACME order MAY result in both a WRPAC and a WRPRC being issued together, as specified in the Blueprint and in CIR (EU) 2025/848 Annex V [2].
 * **Certificate profile**: the issued certificate is an X.509 v3 WRPAC conforming to CIR 2025/848 Annex IV and ETSI TS 119 411-8 v1.1.1 [3], with attribute content as specified in ETSI TS 119 475 v1.2.1 clause 5 [4].
@@ -212,7 +212,7 @@ When `instanceId` is omitted, the ACME Server treats the order as targeting a si
 5. The ACME Server checks the RP List:
     * WRP is present and authorized
     * `acme-challenge` attribute (for the relevant `instanceId`) matches the expected `key-authorization`
-    * Identity data is consistent with the account and POA
+    * The EBWOID bound to the account corresponds to the WRP: `EBWOID.id` equals the order's `wrp-id` and `EBWOID.name` matches the entry's *WRP legal name* (§7.2 item 9)
 6. Authorization transitions to `valid` on success.
 
 **Challenge object:**
@@ -235,9 +235,9 @@ This profile extends ACME External Account Binding (RFC 8555 §7.3.4 [1]) with E
 
 **Mechanism:**
 
-1. The RP representative authenticates to the RA using their EBW, presenting PID/EBWOID and a POA attestation (EAA).
-2. The RA validates the POA and verifies the representative's authority.
-3. The RA issues EAB credentials (Key ID + HMAC Key) bound to the verified identity and POA.
+1. The EBW authenticates to the RA, presenting the organisation's EBWOID attestation (EAA).
+2. The RA validates the EBWOID and verifies the organisation's identity.
+3. The RA issues EAB credentials (Key ID + HMAC Key) bound to the verified organisational identity (EBWOID).
 4. The ACME Client uses these EAB credentials during `newAccount`.
 
 **EAB in newAccount:**
@@ -257,7 +257,7 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 ```
 
 > [!NOTE]
-> CS-RPAC_05: **[MVP]** For initial interoperability testing, EBW authentication MAY be simulated. EAB credentials are pre-provisioned by the RA/TSP after out-of-band identity verification. **[MVP+]** Future iterations MUST implement the full EBW-based OID4VP authentication flow for EAB provisioning, including presentation of PID/EBWOID and POA (EAA) via OID4VP. Implementations declaring MVP+ conformance MUST support the full OID4VP-based EBW authentication flow.
+> CS-RPAC_05: **[MVP]** For initial interoperability testing, EBW authentication MAY be simulated. EAB credentials are pre-provisioned by the RA/TSP after out-of-band identity verification. **[MVP+]** Future iterations MUST implement the full EBW-based OID4VP authentication flow for EAB provisioning, including presentation of the organisation's EBWOID (EAA) via OID4VP. Implementations declaring MVP+ conformance MUST support the full OID4VP-based EBW authentication flow.
 
 # 6. High-level Flows
 
@@ -270,12 +270,12 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 
 **Pre-ACME phase (Blueprint steps 1-3):**
 
-1. The RP representative connects to the TSP's RA portal/service.
-2. **[MVP+]** The RA initiates an OID4VP request to the user's EBW, requesting PID/EBWOID and POA (EAA). **[MVP]** This step MAY be performed out-of-band.
-3. The EBW presents the requested credentials.
-4. The RA validates the POA and verifies the representative's authority.
+1. The RP representative connects to the TSP's RA portal/service via the organisation's EBW.
+2. **[MVP+]** The RA initiates an OID4VP request to the EBW, requesting the organisation's EBWOID (EAA). **[MVP]** This step MAY be performed out-of-band.
+3. The EBW presents the EBWOID.
+4. The RA validates the EBWOID and verifies the organisation's identity.
 5. Optionally (Blueprint step 4): the RA requests additional attributes for WRPRC production.
-6. The RA issues EAB credentials to the user.
+6. The RA issues EAB credentials to the EBW.
 
 **ACME phase:**
 
@@ -342,11 +342,11 @@ The ACME Server **MUST**:
 2. Require EAB for all accounts (RFC 8555 §7.3.4 [1]).
 3. Support `wrp-id` identifiers and `registrar-api-01` challenges.
 4. Verify WRP presence in the WE BUILD RP Lists during challenge validation (Blueprint step 5).
-5. Reject authorization if the WRP is not in the list or identity data is inconsistent.
+5. Reject authorization if the WRP is not in the list, or if the EBWOID bound to the account does not correspond to the requested `wrp-id` (see item 9).
 6. Issue WRPACs exclusively to authorized WRPs.
 7. Support the order state transitions defined in RFC 8555 §7.1.6 "Status Changes" [1].
 8. Support `revokeCert`.
-9. Implement the RA function: POA validation (Blueprint steps 1-3) and RP List check (step 5).
+9. Implement the RA function: EBWOID validation (Blueprint steps 1-3) and RP List check (step 5). As part of EBWOID validation, the ACME Server MUST verify that the organisation identified by the validated EBWOID corresponds to the order's `wrp-id`: specifically that `EBWOID.id` equals the `wrp-id` value and `EBWOID.name` matches the *WRP legal name* of the corresponding RP List entry (§7.8). The ACME Server MUST reject the order or authorization if they do not correspond.
 10. Support multi-instance issuance: accept an optional `instanceId` in orders, verify its uniqueness among active WRPACs for the same `wrp-id`, and issue separate WRPACs per instance (§5.2).
 11. Enforce that each Relying Party Instance receives a distinct WRPAC bound to a distinct key pair (see §7.3 item 4).
 12. Upon successful replacement of a single-instance WRPAC (new order without `instanceId` replacing an existing single-instance WRPAC), MUST initiate revocation of the superseded certificate (see §5.2).
@@ -494,11 +494,11 @@ This specification defines extensions to the ACME protocol that fall within IANA
 > [!NOTE]
 > CS-RPAC_10: `rprcCoIssuanceSupported` and `multiInstanceIssuanceSupported` are WE BUILD extensions to the ACME directory metadata. The former indicates the server can co-issue WRPAC and WRPRC; the latter indicates support for per-instance issuance per the ARF v2.8 Relying Party Instance model [15]. Registration considerations for these extensions are described in §7.9.
 
-## 8.2 Account Management with EBW/POA
+## 8.2 Account Management with EBW/EBWOID
 
 * **Method**: `POST` (JWS-signed)
 
-**Pre-condition**: EBW authentication + POA validation completed; EAB credentials received.
+**Pre-condition**: EBW authentication + EBWOID validation completed; EAB credentials received.
 
 ```json
 {
@@ -602,13 +602,13 @@ An implementation **conforms as an ACME Server (TSP: RA + CA)** if it:
 
 1. Implements ACME per RFC 8555 [1] with the extensions in §5.
 2. Publishes an ACME directory per §8.1.
-3. Requires EAB with EBW/POA verification (§5.4).
+3. Requires EAB with EBW/EBWOID verification (§5.4).
 4. Supports `wrp-id` identifiers and `registrar-api-01` challenges.
 5. Verifies WRP presence in WE BUILD RP Lists (§7.8).
 6. Issues certificates per §7.4, including compliance with ETSI TS 119 411-8 v1.1.1 [3] and the attribute mapping in ETSI TS 119 475 v1.2.1 clause 5 [4].
 7. Logs to CT logs (§7.5).
 8. Supports revocation (§7.6).
-9. Implements RA function: POA validation + RP List checks (§7.2).
+9. Implements RA function: EBWOID validation, including the EBWOID-to-`wrp-id` match (`EBWOID.id` = `wrp-id`, `EBWOID.name` = *WRP legal name*) per §7.2 item 9, plus RP List checks (§7.2).
 10. Supports multi-instance issuance per §5.2, §7.2, and §8.3.
 11. Implements interfaces per §8.
 
@@ -631,7 +631,7 @@ An implementation **conforms as a test environment** if it:
 An **MVP+ conformant** implementation additionally:
 
 1. Implements the full OID4VP-based EBW authentication flow for EAB provisioning (§5.4, §6.2).
-2. Accepts PID/EBWOID and POA (EAA) as presented via the EBW during the pre-ACME authentication phase.
+2. Accepts the organisation's EBWOID (EAA) as presented via the EBW during the pre-ACME authentication phase.
 
 Profiles for specific WE BUILD credential types MUST NOT relax these requirements.
 
@@ -641,7 +641,7 @@ Profiles for specific WE BUILD credential types MUST NOT relax these requirement
 |---|---|---|---|
 | **1** | User authenticates to RA using EBW | EBW authentication → EAB provisioning | §5.4, §8.2 |
 | **2** | RA requests credentials | OID4VP request from RA to EBW [MVP+] | §5.4 |
-| **3** | User supplies EAA (POA) | EBW presents POA to RA | §5.4 |
+| **3** | User supplies EAA (EBWOID) | EBW presents EBWOID to RA | §5.4 |
 | **4** | RA requests additional WRPRC attributes | Collected during EAB provisioning or as order metadata | §8.3 |
 | **5** | RA checks RP in authorized RP lists | `registrar-api-01` challenge validation | §6.4, §8.4 |
 | **6** | RA orders issuance of both certificates | ACME `finalize` (CSR submission) | §8.5 |
@@ -656,7 +656,7 @@ Profiles for specific WE BUILD credential types MUST NOT relax these requirement
 
 **Key design decisions:**
 
-* **Steps 1-3** (EBW auth + POA) are a **pre-ACME phase** producing EAB credentials. This cleanly separates human authentication from the machine protocol. Full OID4VP-based EBW authentication is required for MVP+ conformance.
+* **Steps 1-3** (EBW auth + EBWOID) are a **pre-ACME phase** producing EAB credentials. This cleanly separates organisational authentication from the machine protocol. Authorisation derives from control of the organisation's EBW and the EBWOID it presents; the EBWOID's `id`/`name` are matched against the order's `wrp-id` (§7.2 item 9). Full OID4VP-based EBW authentication is required for MVP+ conformance.
 * **Step 4** (WRPRC attributes) is collected either during EAB provisioning or as ACME order metadata.
 * **Step 5** (RP list check) maps directly to the `registrar-api-01` challenge.
 * **Steps 6-8** (order, issue, transmit) map to ACME `finalize` → `processing` → `valid`.
@@ -704,3 +704,5 @@ Profiles for specific WE BUILD credential types MUST NOT relax these requirement
 [18] ETSI EN 319 412-1 — Electronic Signatures and Trust Infrastructures (ESI); Certificate Profiles; Part 1: Overview and common data structures.
 
 [19] IETF (2019) RFC 8615 — Well-Known Uniform Resource Identifiers (URIs). Standards Track, May 2019. https://www.rfc-editor.org/rfc/rfc8615
+
+[20] WE BUILD Attestation Rulebooks Catalog — EBWOID Attestation Rulebook (rb-ebwoid). https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-ebwoid
