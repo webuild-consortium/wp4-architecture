@@ -10,9 +10,9 @@ While the previous chapter describes the regulatory and architectural frameworks
 
 ## The Ecosystem at a Glance
 The EUDI Wallet and EBW ecosystem follows the common three-party attestation model. In this model, three primary actors interact: issuer, holder and verifier. A trust framework supports these actors by providing the trust anchors used for validation.
-1. **Holder** – the wallet controlled by a natural person or economic operator.
+1. **Holder** – Natural person or economic operator receiving, storing and sharing credentials.
 2. **Issuer** – an entity that issues attestations to the Holder.
-3. **Verifier** – a relying party that receives and validates attestations presented by the Holder.
+3. **Verifier** – an economic operator or natural person that requests and verifies the authenticity and validity of a holder's credential.
 4. **Trust framework** – the infrastructure used to validate trust relationships between ecosystem participants (described in Chapter 6).
 
 The diagram below shows the **WE BUILD reference pattern** for the ecosystem.
