@@ -45,6 +45,12 @@ Date: 15-June-2026
 - [Annex B (informative): Key binding and holder binding](#annex-b-informative-key-binding-and-holder-binding)
   - [B.1 Key binding at issuance](#b1-key-binding-at-issuance)
   - [B.2 Holder binding at presentation](#b2-holder-binding-at-presentation)
+- [Annex C (informative): Tiered WUA for cross-platform Wallet Solutions](#annex-c-informative-tiered-wua-for-cross-platform-wallet-solutions)
+  - [C.1 Problem statement](#c1-problem-statement)
+  - [C.2 Two orthogonal dimensions](#c2-two-orthogonal-dimensions)
+  - [C.3 Mapping to WIA and KA data structures](#c3-mapping-to-wia-and-ka-data-structures)
+  - [C.4 Issuer acceptance policy](#c4-issuer-acceptance-policy)
+  - [C.5 Relevance to the European Business Wallet (CS-05)](#c5-relevance-to-the-european-business-wallet-cs-05)
   - [B.3 The sequence](#b3-the-sequence)
 
 # 1. Introduction
@@ -508,4 +514,158 @@ sequenceDiagram
 *Figure B.1: Key binding (issuance) and holder binding (presentation). The KA assures the issuer that the `cnf` key is hardware-held; the verifier later checks the KB-JWT against that same key in the credential, not against the WUA.*
 
 > Note: the two `cnf` uses are different. In the WIA, `cnf` is the DPoP key that binds the issuance session (section 7.3). In the issued credential, `cnf` is the holder key the credential is bound to (this annex).
+
+# Annex C (informative): Tiered WUA for cross-platform Wallet Solutions
+
+This annex is **informative**. It discusses how a Wallet Solution that deploys Wallet Units across heterogeneous platforms can produce conformant WUAs with varying attestation strength, while remaining interoperable with issuers that implement CS-04.
+
+## C.1 Problem statement
+
+The EUDI Wallet ecosystem anticipates Wallet Solutions that are not exclusively native mobile applications. The European Business Wallet (BWUA, CS-05) and some natural-person wallets may deploy across native mobile, web with companion software, and web-only environments. All deployment models participate in the same OID4VCI issuance flows. The WUA (WIA + KA) must express the actual security properties of each model so that issuers can make informed acceptance decisions via `key_attestations_required` (TS-03 [3], clause 2.3.2; CS-01 [10], section 7.5).
+
+## C.2 Two orthogonal dimensions
+
+A cross-platform Wallet Solution's attestation strength is determined by two independent dimensions: the security level of the cryptographic key storage (the KA dimension) and the degree to which the Wallet Provider can verify the integrity of the wallet software (the WIA dimension). Neither dimension implies or constrains the other.
+
+### C.2.1 KA dimension: key storage security
+
+The KA `key_storage` and `certification` claims (TS-03 [3], clause 2.3.2) express where the credential private keys reside and what assurance the Wallet Provider has about that storage.
+
+| Level | Key storage | KA `key_storage` | KA `certification` |
+|---|---|---|---|
+| **K1: Certified device** | Private keys reside in a device or module that has been independently certified under a recognised scheme (e.g., Common Criteria, EUCC, or equivalent) | `["iso_18045_high"]` or higher | Identifies the certification scheme, evaluated requirements, and assurance level |
+| **K2: Hardware, non-certified** | Private keys reside in a hardware-backed store that has not been independently certified, or whose certification status is unknown to the Wallet Provider | `["iso_18045_moderate"]` or as attested | Absent or states that no recognised certification applies |
+| **K3: Software** | Private keys reside in software-managed storage (process memory, encrypted container, or equivalent) with no hardware isolation | `["iso_18045_low"]` | `"none"` |
+
+The `user_authentication` claim is orthogonal to key storage level. A K1 deployment with biometric unlock, a K2 deployment with PIN, and a K3 deployment with a two-factor remote authentication protocol may each declare different `user_authentication` values on the ISO 18045 AVA_VAN scale. The issuer evaluates both claims independently.
+
+> Note: CS-04 does not mandate that the key storage be local to the user's device. A remotely hosted certified device (e.g., a certified HSM accessed via an authenticated protocol) is a valid K1 WSCD if the KA claims accurately reflect its properties and the Wallet Provider's signing certificate chain (x5c) is anchored on a Wallet Provider Trusted List.
+
+### C.2.2 WIA dimension: software attestation coverage
+
+The WIA attests the integrity and authenticity of the Wallet Instance — the software the user runs. How thoroughly the Wallet Provider can verify that software depends on the deployment platform.
+
+| Level | Attestation coverage | Wallet Provider verification |
+|---|---|---|
+| **S1: Full client attestation** | The platform provides a cryptographic attestation of the application's identity and integrity (code signature, runtime environment) to the Wallet Provider | Wallet Provider verifies platform-issued attestation evidence before signing the WIA |
+| **S2: Partial client attestation** | A locally installed component (e.g., a browser extension or companion application) can attest its own integrity to the Wallet Provider, but cannot attest the broader runtime environment | Wallet Provider verifies the component's attestation; residual risk from the unattested host environment |
+| **S3: Backend-only attestation** | No client-side integrity evidence is available; the Wallet Provider can verify only its own backend components | WIA represents a trust assertion by the Wallet Provider about itself; no independent client integrity proof |
+
+### C.2.3 The attestation matrix
+
+The two dimensions are independent. A deployment combines one KA level with one WIA level:
+
+| | K1 (certified device) | K2 (hardware, non-certified) | K3 (software) |
+|---|---|---|---|
+| **S1 (full client attestation)** | Highest assurance: certified key storage + verified application integrity | Hardware key storage + verified application | Software keys + verified application |
+| **S2 (partial client attestation)** | Certified key storage + partially verified client | Hardware keys + partially verified client | Software keys + partially verified client |
+| **S3 (backend-only attestation)** | Certified key storage + no client integrity proof | Hardware keys + no client integrity proof | Lowest assurance: software keys + no client integrity proof |
+
+Not all combinations are equally likely in practice. A native mobile wallet typically operates at S1+K1 or S1+K2. A browser wallet with a companion component may operate at S2+K1 (if the companion binds to a certified device), S2+K2, or S2+K3. A browser-only wallet typically operates at S3+K1 (remote certified device), S3+K2, or S3+K3.
+
+## C.3 Mapping to WIA and KA data structures
+
+This section shows how each level populates the normative WIA and KA claims defined in TS-03 [3], clauses 2.3.1 and 2.3.2.
+
+### C.3.1 KA claims by key storage level
+
+The KA is a JWT with `typ: keyattestation+jwt` (TS-03 [3], clause 2.3.2). The key storage level determines the values of three claims; all other KA claims (`attested_keys`, `key_storage_status`, `iat`, `exp`) are populated identically regardless of level.
+
+| KA claim | K1 (certified device) | K2 (hardware, non-certified) | K3 (software) |
+|---|---|---|---|
+| `key_storage` | `["iso_18045_high"]` or higher | `["iso_18045_moderate"]` or as attested | `["iso_18045_low"]` |
+| `certification` | `{"scheme": "<name>", "assurance_level": "<level>"}` | `{}` or absent | `"none"` |
+| `user_authentication` | Per authentication mechanism (independent of K level) | Per authentication mechanism | Per authentication mechanism |
+
+Example KA payload fragment for a K1 deployment with two-factor user authentication:
+
+```json
+{
+  "attested_keys": [{"kty": "EC", "crv": "P-256", "x": "...", "y": "..."}],
+  "key_storage": ["iso_18045_high"],
+  "user_authentication": ["iso_18045_high"],
+  "certification": {
+    "scheme": "EUCC",
+    "assurance_level": "substantial"
+  },
+  "key_storage_status": {
+    "status": {"status_list": {"idx": 8081, "uri": "https://wp.example/ka-status/7"}},
+    "exp": 1779678000
+  }
+}
+```
+
+Example KA payload fragment for a K3 deployment with no user authentication:
+
+```json
+{
+  "attested_keys": [{"kty": "EC", "crv": "P-256", "x": "...", "y": "..."}],
+  "key_storage": ["iso_18045_low"],
+  "user_authentication": [],
+  "certification": "none",
+  "key_storage_status": {
+    "status": {"status_list": {"idx": 9012, "uri": "https://wp.example/ka-status/7"}},
+    "exp": 1779678000
+  }
+}
+```
+
+### C.3.2 WIA claims by attestation coverage level
+
+The WIA is a JWT with `typ: oauth-client-attestation+jwt` (TS-03 [3], clause 2.3.1). The attestation coverage level affects how the Wallet Provider populates the WIA but does not change the claim set — all WIA claims are present regardless of level. What changes is the **confidence** the Wallet Provider (and, transitively, the issuer) can place in the WIA's assertions.
+
+| WIA aspect | S1 (full client attestation) | S2 (partial client attestation) | S3 (backend-only attestation) |
+|---|---|---|---|
+| Wallet Provider's verification before signing | Verifies platform-issued attestation evidence (cryptographic proof of app identity and runtime integrity) | Verifies component attestation (e.g., signed challenge from companion software); cannot verify host runtime | No client-side evidence; signs based on backend-side checks only |
+| `wallet_solution_certification_information` | References certification that covers the attested client software | References certification that covers the attested component; may note limited scope | References certification of the backend component only |
+| `cnf` (instance key) | Key managed in the attested client environment | Key managed in the attested component or delegated to the component | Key managed server-side or in unattested client |
+| `client_status` | Revocation reflects both backend and client integrity signals | Revocation reflects backend integrity and component liveness | Revocation reflects backend integrity only |
+
+The WIA claim set itself is identical across levels:
+
+```json
+{
+  "sub": "<wallet_instance_id>",
+  "cnf": {"jwk": {"kty": "EC", "crv": "P-256", "x": "...", "y": "..."}},
+  "wallet_name": "...",
+  "wallet_version": "...",
+  "wallet_link": "...",
+  "wallet_solution_certification_information": {"...": "..."},
+  "client_status": {
+    "status": {"status_list": {"idx": 1337, "uri": "https://wp.example/wia-status/42"}},
+    "exp": 1779678000
+  },
+  "iat": 1777000000,
+  "exp": 1777040000
+}
+```
+
+> Note: TS-03 [3] and CS-04 do not define a WIA claim that declares the attestation coverage level (S1/S2/S3). The WIA is signed by the Wallet Provider in all cases; the issuer trusts the Wallet Provider's signing certificate chain (x5c) and the `wallet_solution_certification_information` claim. A Wallet Solution that wishes to signal its attestation model to issuers may do so via the certification information or via an extension claim, but this is outside the scope of TS-03 and CS-04.
+
+### C.3.3 Combined example: how an issuer evaluates a WUA
+
+An issuer receiving a WUA (WIA + KA) during issuance evaluates the claims without knowledge of the K/S labels:
+
+1. **WIA verification** (CS-04 section 7.1): verify x5c chain to Wallet Provider Trusted List; check `exp` < 24h; check `client_status` not revoked.
+2. **KA evaluation** (CS-04 section 7.1): verify x5c chain; read `key_storage` and `user_authentication`; compare against `key_attestations_required` in Credential Issuer Metadata (CS-01 [10], section 7.5, meet-or-exceed rule).
+3. **Policy decision**: if the KA declares `key_storage: ["iso_18045_high"]` and `user_authentication: ["iso_18045_high"]`, the issuer accepts regardless of whether the underlying deployment is S1+K1 (native app with local secure element), S2+K1 (browser extension binding to a certified device), or S3+K1 (browser-only wallet with a remote certified device).
+
+The K/S classification is a Wallet Provider implementation concern. The issuer's acceptance decision is driven entirely by claim values.
+
+## C.4 Issuer acceptance policy
+
+The two-dimensional model enables graduated acceptance policies per credential type. This is an issuer policy concern, not a CS-04 conformance requirement:
+
+| Credential type | Minimum KA level | Minimum WIA level | Rationale |
+|---|---|---|---|
+| **PID** (LoA High) | K1 | S1 | Regulatory requirement for certified WSCD and verified application |
+| **QEAA** (high assurance) | K1 | S1 | Mirrors PID requirements |
+| **EAA** (device-bound) | K1 or K2 | S1 or S2 | Hardware key binding required; partial attestation may suffice |
+| **EAA** (standard) | Any | Any | No WSCD or attestation constraint |
+
+The acceptance decision is driven by the KA and WIA claim values, not by the level labels. The labels are a convenience for policy authors.
+
+## C.5 Relevance to the European Business Wallet (CS-05)
+
+The European Business Wallet shares the cross-platform deployment challenge. Business wallet deployments are frequently web-first (browser-based dashboards for organisational credential management), making the S2 and S3 attestation levels and the K1-via-remote-device pattern particularly relevant. The two-dimensional model in this annex applies equally to the BWUA lifecycle in CS-05.
 
