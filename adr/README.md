@@ -18,8 +18,21 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 9. [Separate QERDS registry from relay](qerds-registry-relay.md)
 10. [Structure the European Digital Directory as identification, discovery, and connection](build-edd-identification-discovery-connection.md)
 11. [Separate attestations, documents, and data in EBW](build-document-vs-attestation.md)
-
+12. [Acceptance of Self-Issued Attributes](Acceptance-of-Self-Issued-Attributes.md)
+13. [Atomic Granularity for Mandate-Related Attestations](Atomic-Granularity-for-Mandate-Related-Attestations.md)
+14. [EAA Extension for the EDD](EAA-extension-for-the-EDD.md)
+15. [EBW EAA Exchange Automation](EBW-EAA-exchange-automation.md)
+16. [Role-Based vs Service-Based Authorization](Role-Based-vs-Service-Based-Authorization.md)
+17. [Support for Sole Trader Representation](Support-for-Sole-Trader-Representation.md)
+18. [QEAA Attestations and QERDS Documents](adr-qeaa-attestations-qerds-documents.md)
+19. [Credential Offer Endpoint Registry and Lookup Service](ebw-endpoint-lookup-service.md)
+20. [Business Wallet Unit Attestation based on TS3](bwua-ts3-attestation.md)
 <!--END INDEX-->
+
+## Supporting analysis
+
+- [Attestations, Documents and Data Analysis](build-document-vs-attestation-analysis.md)
+- [EDD Identification, Discovery and Connection Analysis](build-edd-identification-discovery-connection-analysis.md)
 
 ## ADR process for WE BUILD
 
