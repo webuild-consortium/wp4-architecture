@@ -26,6 +26,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 17. [Support for Sole Trader Representation](Support-for-Sole-Trader-Representation.md)
 18. [QEAA Attestations and QERDS Documents](adr-qeaa-attestations-qerds-documents.md)
 19. [Credential Offer Endpoint Registry and Lookup Service](ebw-endpoint-lookup-service.md)
+20. [Business Wallet Unit Attestation based on TS3](bwua-ts3-attestation.md)
 <!--END INDEX-->
 
 ## Supporting analysis
