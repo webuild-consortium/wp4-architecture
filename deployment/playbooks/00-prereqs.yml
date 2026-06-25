@@ -1,0 +1,74 @@
+---
+- name: Prereqs for Dogtag PKI CA on AlmaLinux 9
+  hosts: all
+  gather_facts: true
+  tasks:
+
+    - name: Verify expected OS family
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == 'RedHat'
+          - ansible_facts['distribution_major_version'] | int == 9
+        fail_msg: >-
+          This playbook targets RHEL 9 derivatives (AlmaLinux/Rocky/RHEL 9.x).
+          Found {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}.
+
+    - name: Set system hostname to {{ ca_fqdn }}
+      ansible.builtin.hostname:
+        name: "{{ ca_fqdn }}"
+        use: systemd
+
+    - name: Pin {{ ca_fqdn }} in /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: "^[0-9.]+\\s+{{ ca_fqdn | regex_escape }}(\\s|$)"
+        line: "{{ ansible_facts['default_ipv4']['address'] }} {{ ca_fqdn }} {{ ca_fqdn.split('.')[0] }}"
+        state: present
+
+    - name: Install EPEL
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+
+    - name: Check whether CRB repo is enabled
+      ansible.builtin.command: dnf -q repolist --enabled
+      register: dnf_enabled_repos
+      changed_when: false
+
+    - name: Enable CRB repo (CodeReady Builder) — required for some PKI deps
+      ansible.builtin.command: dnf config-manager --set-enabled crb
+      when: "'crb' not in dnf_enabled_repos.stdout"
+
+    - name: Install baseline packages (firewalld, chrony, tools)
+      ansible.builtin.dnf:
+        name:
+          - firewalld
+          - chrony
+          - policycoreutils-python-utils
+          - bind-utils
+          - tar
+          - which
+        state: present
+
+    - name: Enable and start chronyd
+      ansible.builtin.systemd:
+        name: chronyd
+        enabled: true
+        state: started
+
+    - name: Enable and start firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: Open Dogtag Tomcat ports in firewalld
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        - 8080/tcp   # PKI HTTP (admin redirects to 8443)
+        - 8443/tcp   # PKI HTTPS (CA + ACME endpoint)
+        - 389/tcp    # 389-DS LDAP (localhost-bound by default; opened for ops)

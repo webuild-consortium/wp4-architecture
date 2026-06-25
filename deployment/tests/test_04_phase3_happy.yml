@@ -1,0 +1,43 @@
+---
+# Test 04 — Phase 3 CS-06 §6 happy path via the Python ACME client.
+# Targets either local or public URL via test_acme_directory / test_rp_list.
+
+- name: "Test 04: Phase 3 CS-06 happy path"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    test_acme_directory: "http://{{ ca_fqdn }}:{{ wrpac_facade_port }}/acme-eudi-wrpac/directory"
+    test_rp_list: "http://{{ ca_fqdn }}:{{ wrpac_rp_list_port }}"
+    test_python_bin: "{{ playbook_dir }}/../.venv/bin/python"
+    test_out_dir: "{{ playbook_dir }}/../test-out"
+    cert_out: "{{ test_out_dir }}/phase3-{{ lookup('pipe', 'date +%s') }}.pem"
+
+  tasks:
+
+    - name: Ensure output dir
+      ansible.builtin.file:
+        path: "{{ test_out_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Run the Phase 3 client
+      ansible.builtin.command: >
+        {{ test_python_bin }} -m wrpac_acme.client
+        --directory {{ test_acme_directory }}
+        --rp-list   {{ test_rp_list }}
+        --wrp-id    {{ wrpac_test_wrp_id }}
+        --legal-name "{{ wrpac_test_organisation_name }}"
+        --org-id     {{ wrpac_test_organisation_identifier }}
+        --country    {{ wrpac_test_country }}
+        --friendly-name "{{ wrpac_test_friendly_name }}"
+        --out-cert {{ cert_out }}
+      register: client_run
+
+    - name: Tail of client output
+      ansible.builtin.debug:
+        msg: "{{ client_run.stdout_lines[-12:] }}"
+
+    - name: Set cert_out fact for downstream tests
+      ansible.builtin.set_fact:
+        phase3_cert: "{{ cert_out }}"

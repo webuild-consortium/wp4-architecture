@@ -1,0 +1,67 @@
+---
+# Test 03 — Phase 2 direct CA enrolment with the wrpacCert profile.
+# Local-only: needs the caadmin NSS DB on the box.
+
+- name: "Test 03: Phase 2 direct enrolment"
+  hosts: all
+  gather_facts: false
+  vars:
+    smoke_dir: /root/wrpac-smoke
+    nss_dir: "/root/wrpac-smoke/nssdb"
+    nss_password: Secret.123
+    csr_file: "/root/wrpac-smoke/wrpac.csr"
+    cert_out: "/root/test-out/phase2-direct.pem"
+    admin_nickname: "PKI Administrator for lab"
+
+  tasks:
+
+    - name: Ensure the Phase 2 NSS DB is present
+      ansible.builtin.stat:
+        path: "{{ nss_dir }}/cert9.db"
+      register: nss_present
+
+    - name: Skip if Phase 2 hasn't been deployed
+      ansible.builtin.meta: end_play
+      when: not nss_present.stat.exists
+
+    - name: Ensure output dir
+      ansible.builtin.file:
+        path: /root/test-out
+        state: directory
+        owner: root
+        mode: "0700"
+
+    - name: Submit a fresh CSR with the wrpacCert profile
+      ansible.builtin.command: >
+        pki -d {{ nss_dir }} -c {{ nss_password }}
+        -n "{{ admin_nickname }}"
+        -U https://{{ ca_fqdn }}:8443
+        ca-cert-request-submit
+        --profile {{ wrpac_profile_id }}
+        --csr-file {{ csr_file }}
+      register: submit
+      changed_when: true
+
+    - name: Assert auto-issue (agent submitter → complete)
+      ansible.builtin.assert:
+        that:
+          - "'Request Status: complete' in submit.stdout"
+          - "'Operation Result: success' in submit.stdout"
+          - "'Certificate ID:' in submit.stdout"
+
+    - name: Capture Certificate ID
+      ansible.builtin.set_fact:
+        cert_id: "{{ submit.stdout | regex_search('Certificate ID:\\s*(\\S+)', '\\1') | first }}"
+
+    - name: Export issued cert
+      ansible.builtin.command: >
+        pki -d {{ nss_dir }} -c {{ nss_password }}
+        -n "{{ admin_nickname }}"
+        -U https://{{ ca_fqdn }}:8443
+        ca-cert-show {{ cert_id }}
+        --output {{ cert_out }}
+      changed_when: true
+
+    - name: "Test 03 passed — cert at {{ cert_out }}"
+      ansible.builtin.debug:
+        msg: "Certificate ID {{ cert_id }} exported to {{ cert_out }}"

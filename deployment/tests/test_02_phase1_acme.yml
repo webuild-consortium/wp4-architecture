@@ -1,0 +1,61 @@
+---
+# Test 02 — Phase 1 stock ACME issuance via acme.sh http-01.
+# Local-only: the http-01 validator (Dogtag) must reach back to the client's :80
+# listener, so this won't work through a hairpinned public URL.
+
+- name: "Test 02: Phase 1 stock ACME http-01"
+  hosts: all
+  gather_facts: false
+  vars:
+    acme_dir: "https://{{ ca_fqdn }}:8443/acme/directory"
+
+  tasks:
+
+    - name: Ensure /root/.acme.sh exists (test setup ran)
+      ansible.builtin.stat:
+        path: /root/.acme.sh/acme.sh
+      register: acme_sh_present
+
+    - name: Skip if acme.sh isn't installed (run playbooks/99-smoke-test.yml first)
+      ansible.builtin.meta: end_play
+      when: not acme_sh_present.stat.exists
+
+    - name: Clear acme.sh's cached account (Dogtag's ACME state is in-memory and resets across pki-tomcatd restarts)
+      ansible.builtin.shell: |
+        rm -rf /root/.acme.sh/ca/* /root/.acme.sh/account.key 2>/dev/null || true
+      changed_when: false
+
+    - name: Re-issue a stock ACME cert via standalone http-01
+      ansible.builtin.command: >
+        /root/.acme.sh/acme.sh
+        --server {{ acme_dir }}
+        --issue
+        --standalone
+        --insecure
+        --keylength 2048
+        -d {{ ca_fqdn }}
+        --force
+      register: acme_issue
+      changed_when: true
+
+    - name: Assert issuance succeeded
+      ansible.builtin.assert:
+        that:
+          - acme_issue.rc == 0
+          - "'Success' in acme_issue.stdout"
+
+    - name: Inspect issued cert
+      ansible.builtin.command: >
+        openssl x509 -in /root/.acme.sh/{{ ca_fqdn }}/{{ ca_fqdn }}.cer -noout -subject -issuer -nameopt RFC2253
+      register: stock_cert
+      changed_when: false
+
+    - name: Assert stock cert has expected DNS Subject and our CA Issuer
+      ansible.builtin.assert:
+        that:
+          - "'CN=' + ca_fqdn in stock_cert.stdout"
+          - "'CA Signing Certificate' in stock_cert.stdout"
+
+    - name: "Test 02 passed"
+      ansible.builtin.debug:
+        msg: "{{ stock_cert.stdout_lines }}"

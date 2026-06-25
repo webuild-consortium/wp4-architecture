@@ -1,0 +1,125 @@
+---
+- name: Deploy Dogtag ACME subsystem
+  hosts: all
+  gather_facts: false
+  vars:
+    acme_conf_dir: "/var/lib/pki/{{ pki_instance_name }}/conf/acme"
+    acme_deploy_marker: "/var/lib/pki/{{ pki_instance_name }}/conf/Catalina/localhost/acme.xml"
+
+  tasks:
+
+    - name: Install pki-acme package
+      ansible.builtin.dnf:
+        name: pki-acme
+        state: present
+
+    - name: Check whether acme subsystem dir exists
+      ansible.builtin.stat:
+        path: "{{ acme_conf_dir }}"
+      register: acme_conf_dir_stat
+
+    - name: Create ACME subsystem (pki-server acme-create)
+      ansible.builtin.command: "pki-server acme-create"
+      when: not acme_conf_dir_stat.stat.exists
+      changed_when: true
+
+    - name: Configure ACME database (in-memory)
+      ansible.builtin.copy:
+        dest: "{{ acme_conf_dir }}/database.conf"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+        content: |
+          class=org.dogtagpki.acme.database.InMemoryDatabase
+      notify: Restart pki-tomcatd
+
+    - name: Configure ACME issuer (PKIIssuer → local Dogtag CA)
+      ansible.builtin.copy:
+        dest: "{{ acme_conf_dir }}/issuer.conf"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+        content: |
+          class=org.dogtagpki.acme.issuer.PKIIssuer
+          url=https://{{ ca_fqdn }}:8443
+          profile=acmeServerCert
+          username={{ pki_admin_uid }}
+          password={{ pki_admin_password }}
+      notify: Restart pki-tomcatd
+
+    - name: Configure ACME realm (in-memory)
+      ansible.builtin.copy:
+        dest: "{{ acme_conf_dir }}/realm.conf"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+        content: |
+          class=org.dogtagpki.acme.realm.InMemoryRealm
+          username=admin
+          password={{ pki_admin_password }}
+      notify: Restart pki-tomcatd
+
+    - name: Configure ACME engine (enable, retention, etc.)
+      ansible.builtin.copy:
+        dest: "{{ acme_conf_dir }}/engine.conf"
+        owner: pkiuser
+        group: pkiuser
+        mode: "0660"
+        content: |
+          enabled=true
+          policy.wildcard=false
+          policy.retention.nonces.length=30
+          policy.retention.nonces.unit=MINUTES
+          policy.retention.pendingAuthorizations.length=30
+          policy.retention.pendingAuthorizations.unit=MINUTES
+          policy.retention.invalidAuthorizations.length=30
+          policy.retention.invalidAuthorizations.unit=MINUTES
+          policy.retention.validAuthorizations.length=30
+          policy.retention.validAuthorizations.unit=MINUTES
+          policy.retention.pendingOrders.length=30
+          policy.retention.pendingOrders.unit=MINUTES
+          policy.retention.invalidOrders.length=30
+          policy.retention.invalidOrders.unit=MINUTES
+          policy.retention.readyOrders.length=30
+          policy.retention.readyOrders.unit=MINUTES
+          policy.retention.processingOrders.length=30
+          policy.retention.processingOrders.unit=MINUTES
+          policy.retention.validOrders.length=30
+          policy.retention.validOrders.unit=MINUTES
+          policy.retention.certificates.length=30
+          policy.retention.certificates.unit=DAYS
+      notify: Restart pki-tomcatd
+
+    - name: Check whether ACME webapp is already deployed
+      ansible.builtin.stat:
+        path: "{{ acme_deploy_marker }}"
+      register: acme_deploy_stat
+
+    - name: Deploy ACME webapp (pki-server acme-deploy)
+      ansible.builtin.command: "pki-server acme-deploy"
+      when: not acme_deploy_stat.stat.exists
+      changed_when: true
+      notify: Restart pki-tomcatd
+
+    - name: Flush handlers (restart pki-tomcatd if needed)
+      ansible.builtin.meta: flush_handlers
+
+    - name: Wait for ACME directory endpoint
+      ansible.builtin.uri:
+        url: "https://{{ ca_fqdn }}:8443/acme/directory"
+        validate_certs: false
+        return_content: true
+      register: acme_directory
+      retries: 12
+      delay: 5
+      until: acme_directory.status == 200
+
+    - name: Show ACME directory response
+      ansible.builtin.debug:
+        var: acme_directory.json
+
+  handlers:
+    - name: Restart pki-tomcatd
+      ansible.builtin.systemd:
+        name: "pki-tomcatd@{{ pki_instance_name }}"
+        state: restarted

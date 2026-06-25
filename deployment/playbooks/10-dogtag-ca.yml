@@ -1,0 +1,108 @@
+---
+- name: Provision 389-DS instance and Dogtag CA subsystem
+  hosts: all
+  gather_facts: true
+  vars:
+    ds_inf_path: /root/ds-instance.inf
+    ca_cfg_path: /root/ca.cfg
+    ds_instance_marker: "/etc/dirsrv/slapd-{{ ds_instance_name }}/dse.ldif"
+    ca_install_marker: "/var/lib/pki/{{ pki_instance_name }}/conf/ca/CS.cfg"
+
+  tasks:
+
+    - name: Install 389-DS base package
+      ansible.builtin.dnf:
+        name: 389-ds-base
+        state: present
+
+    - name: Render 389-DS instance config (inf file)
+      ansible.builtin.copy:
+        dest: "{{ ds_inf_path }}"
+        owner: root
+        group: root
+        mode: "0600"
+        content: |
+          [general]
+          config_version = 2
+
+          [slapd]
+          instance_name = {{ ds_instance_name }}
+          root_password = {{ ds_dm_password }}
+
+          [backend-userroot]
+          sample_entries = no
+          suffix = {{ ds_suffix }}
+
+    - name: Check whether the 389-DS instance already exists
+      ansible.builtin.stat:
+        path: "{{ ds_instance_marker }}"
+      register: ds_marker
+
+    - name: Create 389-DS instance via dscreate
+      ansible.builtin.command: "dscreate from-file {{ ds_inf_path }}"
+      when: not ds_marker.stat.exists
+      register: dscreate_result
+      changed_when: dscreate_result.rc == 0
+
+    - name: Ensure 389-DS instance is running
+      ansible.builtin.systemd:
+        name: "dirsrv@{{ ds_instance_name }}"
+        enabled: true
+        state: started
+
+    - name: Install Dogtag CA packages
+      ansible.builtin.dnf:
+        name:
+          - pki-ca
+          - pki-server
+          - pki-tools
+        state: present
+
+    - name: Render pkispawn CA config
+      ansible.builtin.copy:
+        dest: "{{ ca_cfg_path }}"
+        owner: root
+        group: root
+        mode: "0600"
+        content: |
+          [DEFAULT]
+          pki_admin_password={{ pki_admin_password }}
+          pki_client_database_password={{ pki_admin_password }}
+          pki_client_pkcs12_password={{ pki_admin_password }}
+          pki_server_database_password={{ pki_admin_password }}
+          pki_security_domain_password={{ pki_security_domain_password }}
+          pki_hostname={{ ca_fqdn }}
+          pki_ds_url=ldap://{{ ca_fqdn }}:389
+          pki_ds_bind_dn=cn=Directory Manager
+          pki_ds_password={{ pki_ds_password }}
+          pki_ds_database=ca
+          pki_ds_base_dn={{ ds_base_dn_ca }}
+          pki_admin_email={{ pki_admin_email }}
+          pki_admin_uid={{ pki_admin_uid }}
+          pki_admin_name={{ pki_admin_uid }}
+          pki_admin_nickname={{ pki_admin_uid }}
+
+          [CA]
+
+    - name: Check whether the CA subsystem is already installed
+      ansible.builtin.stat:
+        path: "{{ ca_install_marker }}"
+      register: ca_marker
+
+    - name: Run pkispawn for CA subsystem
+      ansible.builtin.command: "pkispawn -f {{ ca_cfg_path }} -s CA"
+      when: not ca_marker.stat.exists
+      register: pkispawn_ca
+      changed_when: pkispawn_ca.rc == 0
+
+    - name: Ensure pki-tomcatd is enabled and running
+      ansible.builtin.systemd:
+        name: "pki-tomcatd@{{ pki_instance_name }}"
+        enabled: true
+        state: started
+
+    - name: Wait for CA endpoint on 8443
+      ansible.builtin.wait_for:
+        host: 127.0.0.1
+        port: 8443
+        timeout: 60
