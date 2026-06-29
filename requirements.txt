@@ -1,4 +1,3 @@
-enumerate-markdown==1.0.0
 mistune==2.0.5
 ipython
 ipykernel

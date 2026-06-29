@@ -42,23 +42,3 @@
 {{< include appendix-history.qmd >}}
 :::
 
-::: {.shift-headings by=1}
-{{< include appendix-trust-ecosystem.qmd >}}
-:::
-
-::: {.shift-headings by=1}
-{{< include appendix-ebw-definition.qmd >}}
-:::
-
-::: {.shift-headings by=1}
-{{< include appendix-wallet-implementation-models.qmd >}}
-:::
-
-::: {.shift-headings by=1}
-{{< include appendix-adr.qmd >}}
-:::
-
-::: {.shift-headings by=1}
-{{< include appendix-cs.qmd >}}
-:::
-
