@@ -1,0 +1,61 @@
+project:
+  title: "WE BUILD — Architecture & Integration Blueprint (D4.1)"
+  type: website
+  output-dir: _site
+
+highlight-style: a11y
+
+website:
+  site-url: https://webuild-consortium.github.io/wp4-architecture/blueprint/blueprint.html
+  repo-url: https://github.com/webuild-consortium/wp4-architecture
+  page-navigation: true
+  bread-crumbs: true
+  llms-txt: true
+  search:
+    show-item-context: true
+    type: overlay
+  page-footer:
+    left: |
+      ![EU](eu.png){width=200px} ![WE BUILD](/we_build.png){width=200px}
+  navbar:
+    background: light
+    collapse-below: lg
+    left:
+      - text: "Architecture & Integration Blueprint"
+        href: blueprint.qmd
+      - text: "Architecture Decision Records"
+        href: appendix-adr.qmd
+      - text: "Conformance Specifications"
+        href: appendix-cs.qmd
+      - text: "Business Wallet Definition"
+        href: appendix-ebw-definition.qmd
+      - text: "Trust Infrastructure"
+        href: appendix-trust-ecosystem.qmd
+      - text: "QTSP Documentation"
+        href: appendix-qtsp.qmd
+
+toc: true
+# format-links: false
+
+format:
+  html:
+    number-depth: 4
+    number-sections: true
+    toc: true
+    toc-depth: 4
+    toc-expand: 4
+    include-in-header:
+      - text: |
+          <img src="eu.png" width="200px"> <img src="we_build.png" width="200px">
+    theme:
+      - cosmo
+      - brand
+    mermaid:
+      theme: default
+  # docx:
+  #   reference-doc: template.docx
+
+filters:
+  - shift_headings.lua
+
+# freeze: true
