@@ -63,5 +63,6 @@ graph TB
 | -------- | ------------ |
 | CS-005   | [European Business Wallet Unit Attestation (BWUA) Lifecycle](https://github.com/webuild-consortium/wp4-architecture/issues/177) |
 | CS-006   | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) | 
+| CS-010   | [Attestation Revocation Mechanism (pre-flight)](cs-10-revocation-mechanism.md) |
 
 
