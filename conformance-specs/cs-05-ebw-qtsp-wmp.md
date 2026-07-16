@@ -60,8 +60,6 @@ This profile composes four WMP specifications. All four are **mandatory** for QE
 
 This specification is based on the [WE BUILD ADR: Deliver business wallet data using QERDS](https://github.com/webuild-consortium/wp4-architecture/blob/main/adr/build-qerds.md), the [WE BUILD QERDS Architecture](https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qerds/architecture.md), and the [WE BUILD QERDS Interoperability Framework](https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qerds/interop-framework.md).
 
-> **Replaces:** This specification supersedes the earlier DIDComm-based draft of WBCS-004. WMP subsumes the identifier, discovery, encryption, and routing concerns that the DIDComm draft specified separately. No DID method is defined or required by this specification.
-
 # 2. Scope
 
 This specification covers:
