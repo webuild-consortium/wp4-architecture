@@ -1,4 +1,4 @@
-# Appendix D - Business Wallet Definition
+# Appendix D. Business Wallet Definition
 
 Revision 1.0
 
@@ -20,12 +20,25 @@ A technical decomposition (front end, back end, and cryptographic components) is
 
 Each Business Wallet has a single **wallet owner**, which is the entity that the wallet represents through its interactions. Note that this is distinct from, for example, the company owner or the wallet provider.
 
-The wallet owner is defined by **owner identification data**, which includes an official name and an EU-unique identifier. These owner identification data are issued into the business wallet as an electronic attestation of attributes.
+The wallet owner is defined by **European Business Wallet Owner Identification Data (EBW-OID)**, which includes an official name and an EU-unique identifier. These owner identification data are issued into the business wallet as an electronic attestation of attributes.
 
 A Business Wallet can have multiple **wallet users**, meaning natural or legal persons that operate the wallet through a user interface or an application programming interface under roles and mandates set by the wallet owner. These wallet users may apply software applications to access these interfaces. Some users may be **authorised representatives**, while others may be employees or service providers operating within delegated permissions.
 
 ### Conceptual model
-![Conceptual model](../images/EBW-def-1.png)
+```mermaid
+graph LR
+    A(Other Business Wallets) --> B(Business Wallets)
+    C(Attestation Providers and Other Trust Service Providers) --> B
+    B --> D(Other Business or Digital Identity Wallets)
+    B --> E(Other Relying Parties)
+
+    %% Styling
+    classDef externalActor stroke:#0000ff, stroke-width:2px
+    classDef businessWallet color:#ffffff, fill:#0000ff, stroke:#0000aa, stroke-width:2px, font-weight:bold, border-radius:15px
+
+    class A,C,D,E externalActor
+    class B businessWallet
+```
 
 ## Business Wallet definition
 
@@ -69,13 +82,13 @@ The business wallet enables the wallet owner to create, store, use and validate 
 
 For this purpose, the business wallet implements several applications, including signature creation and secure cryptographic applications.
 
-**_WE BUILD implementation note:_** _The WP4 Wallet Providers provide, as part of their business wallet solutions, a subset of the functionalities required by the use cases. For the functionalities that require qualified trust services, such as the issuance of qualified certificates or the sealing of documents with qualified electronic seals, the WP4 QTSP group provides these services within WE BUILD._
+**_WE BUILD implementation note:_** _The WP4 Wallet Providers provide, as part of their business wallet solutions, a subset of the functionalities required by the use cases. For the functionalities that require qualified trust services, such as the issuance of qualified certificates or the sealing of documents with qualified electronic seals, the WP4 QTSP group provides these services within WE BUILD. For reference, see the [QTSP documentation](#appendix-f-qtsp-documentation)._
 
 #### Secure communication channel
 
 To enable public and private sector information exchange, such as in B2G eGovernment notifications, B2B/B2G eProcurement business documents and other business use cases, a business wallet implements a secure communication channel with other business wallets, with users of digital identity wallets, or with alternative solutions provided through a gateway. This channel enables cross-border delivery and receipt of submissions and notifications with legal effect, and provides a trusted channel with public authorities and other regulated parties across the EU. The channel is implemented using a qualified electronic registered delivery service (QERDS). The digital address for the channel is registered in a standard digital directory.
 
-**_WE BUILD implementation note:_** _the WP4 QTSP group will explore delivering an interoperable pre-production QERDS, along with CIR (EU) 2025/1944 requirements, as a service to the WP4 Wallet Providers group, working with the WP4 Architecture group on cross-cutting concerns, such as interoperability specifications. This enables wallet providers to provide a business wallet to the use cases with a digital address and access to the designated QERDS. To ensure this work is useful for the European Business Wallet regulation, WP4 would like to have an introductory meeting with DG CNECT on this subject._
+**_WE BUILD implementation note:_** _the WP4 QTSP group will explore delivering an interoperable pre-production QERDS, along with CIR (EU) 2025/1944 requirements, as a service to the WP4 Wallet Providers group, working with the WP4 Architecture group on cross-cutting concerns, such as interoperability specifications. This enables wallet providers to provide a business wallet to the use cases with a digital address and access to the designated QERDS. For reference, see the [QERDS documentation](#qerds-documentation)._
 
 #### Access control mechanism
 

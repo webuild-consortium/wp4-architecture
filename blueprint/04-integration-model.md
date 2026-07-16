@@ -1,36 +1,22 @@
 # How the Wallet Interacts with Services
-Todo:
- - EBW: the issuing we do
- - This chapter describes the general **WE BUILD PID/EBWOID issuing process** in a sequence diagram.
- - Mention ETSI standardization: ETSI TS 119 472-3 for (Q)EAA and PID issuance. ETSI TS 119 476-3 will standardize WUA and WIA.
- - Design principle text: Modularity, standardization, versioning.
- - High-Level Flows - Revocation and status checking
- - PID issuing
- - The Technical Languages We Use: List of integration points that will be formalized in Conformance Specifications.
- - Signature and Seal Integration: To be authored by Group 6 (QTSP). Explains the technical flows for wallet-centric and QTSP-centric (remote) signing/sealing, allowing individuals to sign on behalf of a company with full legal effect
- - Secure communication channel: To be authored by the QTSP group in consultation with the Architecture and Wallets groups. Explains the technical flows for usage of the qualified electronic registered delivery service (QERDS).
-
-
-##  The Technical Languages We Use 
-List of integration points that will be formalized in Conformance Specifications.
+Chapter 3 introduced the main actors in the WE BUILD ecosystem. This chapter describes how these actors interact through wallet-based service flows.
 
 ## Interaction Pattern: Attestation Issuance
-To be authored by Group 6 (QTSP) and Group 7 (Wallets). Focuses on how use cases get data into the wallet (e.g., PID or QEAA) using protocols like OpenID4VCI (but no need to mention that part, stuff like that should be mainly in CS). 
 
-The [WE BUILD Consortium Conformance Specification (CS)](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-01-credential-issuance.md) for high-assurance credential issuance defines the requirements that will be applied within the WE BUILD project to ensure that Wallet Units and Credential Issuers across the WE BUILD ecosystem interoperate reliably and consistently when issuing verifiable digital credentials, with strong security guarantees and privacy protections.
+The [WBCS](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-01-credential-issuance.md) for high-assurance credential issuance defines the requirements used in the project to ensure interoperable issuance of verifiable digital credentials between wallets and issuers. For reference on qualified electronic attestation of attributes, see the [QEAA documentation](#qeaa-documentation).
 
-The WE BUILD ecosystem mainly supports two credential issuance models, which differ in which actor inititates the process: wallet-initiated issuance and issuer-initiated-issuance In both cases, if the credential cannot be issued immediately, a deferred issuance mechanism is applied. In such case, the wallet will automatically make periodic retries until the credential is successfully issued or until it receives an unrecoverable error.
+The WE BUILD ecosystem mainly supports two credential issuance models, which differ in which actor initiates the process: wallet-initiated issuance and issuer-initiated issuance. If the credential cannot be issued immediately, deferred issuance is used. The wallet retries periodically until the credential is issued or an unrecoverable error occurs.
 
-### Wallet-initiated issuance
+### Wallet-initiated Issuance
 
-This issuance flow is initiated by the wallet user:
+This issuance flow is initiated by the user:
 
 1. The user opens their wallet and selects the credential type to be issued (for example, a PID or a QEAA).
 2. The wallet connects with the corresponding issuer and requests the credential.
-3. The wallet user authenticates with the issuer, following the procedure specified by the issuer itself.
-4. The issuer requests the user's consent from the user to issue the credential and send it to their wallet.
+3. The user authenticates with the issuer, following the procedure specified by the issuer itself.
+4. The issuer requests the user's consent to issue the credential and send it to their wallet.
 5. The issuer generates the credential and delivers it to the wallet.
-6. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
+6. The wallet verifies the authenticity of the credential and stores it. From this point, the user becomes responsible for managing the issued credential.
 
 ```mermaid
 sequenceDiagram
@@ -38,7 +24,7 @@ participant User
 participant Wallet
 participant Issuer
 
-User->>Wallet:Selects the credential type
+User->>Wallet: Selects the credential type
 Wallet-->>Issuer: Requests the credential
 Issuer->>User: Requests authentication
 User->>Issuer: Authentication
@@ -51,20 +37,20 @@ Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
 
-### Issuer-initiated issuance
+### Issuer-initiated Issuance
 
 This issuance flow is initiated by the issuer:
 
 1. The user interacts with the issuer (for example, during a digital onboarding process).
 2. The issuer prepares one or more credentials.
-3. The issuer offers these credentials to the wallet user. This can be done in several ways, both same-device and cross-device:
+3. The issuer offers these credentials to the user. This can be done in several ways, both same-device and cross-device:
 - By displaying a QR code that the user shall scan with their wallet.
 - By sending a link to the wallet.
-4. The wallet displays the offer and requess confirmation from the user.
-5. The wallet user authenticates with the issuer, following the procedure specified by the issuer itself.
-6. The issuer requests the user's consent from the user to issue the credential and send it to their wallet.
+4. The wallet displays the offer and requests confirmation from the user.
+5. The user authenticates with the issuer, following the procedure specified by the issuer itself.
+6. The issuer requests the user's consent to issue the credential and send it to their wallet.
 7. The issuer generates the credential and delivers it to the wallet.
-8. The wallet verifies the authenticity of the credential and stores it. From this point, the wallet user becomes responsible for managing the issued credential.
+8. The wallet verifies the authenticity of the credential and stores it. From this point, the user becomes responsible for managing the issued credential.
 
 ```mermaid
 sequenceDiagram
@@ -74,7 +60,7 @@ participant Issuer
 
 User->>Issuer: Interacts digitally
 Issuer-->>Issuer: Prepares the credential
-Issuer->>User: Offers the credential diplaying a QR code
+Issuer->>User: Offers the credential displaying a QR code
 User->>Wallet: Scans the QR code
 Wallet->>User: Requests confirmation
 User->>Wallet: Accepts the offer
@@ -92,67 +78,93 @@ User->>Wallet: Accesses the credential
 
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 
-The [WE BUILD Conformance Specification for Credential Presentation](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-02-credential-presentation.md) describes how Wallet Units (WU) and Verifiers interoperate within the WE BUILD ecosystem. It covers presentation (request and response flows), interfaces between wallets and verifiers as well as security, privacy and interoperability requirements and same‑device and cross‑device invocation patterns
+In this pattern, a verifier requests specific attestations from the wallet. The wallet presents the requested information, typically using selective disclosure mechanisms, and the verifier validates the received data.
+
+The [WE BUILD Conformance Specification for Credential Presentation](https://github.com/webuild-consortium/wp4-architecture/blob/blueprint/updates-jan/conformance-specs/cs-02-credential-presentation.md) describes how wallets and relying parties interoperate within the WE BUILD ecosystem. It covers presentation (request and response flows), interfaces between wallets and relying parties as well as security, privacy and interoperability requirements and same‑device and cross‑device invocation patterns.
 
 ## Signature and Seal Integration
-In WE BUILD, signature and seal integration will combine wallet-centric signing with QTSP-centric (remote) signing/sealing. The architecture distinguishes where the private key and the signature/seal creation device will reside and how documents will be presented and processed within the Signature Creation Application (SCA). This enables the wallet to orchestrate the user experience while remote signing and sealing operations remain anchored in QTSP-governed environments and follow standards-aligned processes intended to support qualified signatures and seals in certified deployments.
 
-As permitted by the ARF, qualified signing and sealing can be implemented using a local signature or seal creation device controlled by the wallet. It can also be implemented using a remote signature or seal creation device operated by a QTSP. During the pilot phase, not every wallet provider and QTSP will implement every model. For interoperability, WE BUILD therefore treats remote signing and sealing through a QTSP-managed service with standardized interfaces as the common baseline. This section is aligned with the publicly documented WP4 interoperability baselines for issuance and presentation and with the current pilot scoping towards remote transaction flows, while proximity is out of scope in the baseline protocol direction.
+Wallets in WE BUILD provide the ability to create qualified electronic signatures and seals. This section describes the various integration models. For reference, see the [QES documentation](#qes-documentation).
 
-### Wallet-centric signing model
-In the wallet-centric model, the EUDI Wallet is the central component of the electronic signature process. Three distinct signing processes are considered, depending on where the SCA runs and where signature creation takes place. In the remote cases, the private key and SCD/QSCD will be remote (QTSP-governed), while in local cases, they will be under the user’s control (e.g., on-device or locally accessible token).
+WE BUILD supports both wallet-centric and QTSP-operated approaches for electronic signatures and seals. In both models, the wallet provides the user interaction layer, while cryptographic operations may take place either locally or in remote infrastructure operated by a QTSP.
 
-During the pilot, the remote options below are expected to be the primary interoperability path. Some wallet implementations may also support local signing, but local signing is not assumed as a uniform baseline across all scenarios.
+Both approaches are compatible with the architectural patterns described in the ARF. However, during the WE BUILD pilot phase not every wallet provider or QTSP is expected to implement every possible model. For interoperability across the consortium, WE BUILD therefore treats remote signing and sealing through QTSP-managed services with standardised interfaces as the common baseline. Local signing models may still be supported by individual wallet implementations, but they are not assumed as a uniform baseline for interoperability within the project.
 
-#### 1) Remote signing with external SCA  
-The user will initiate signing in the wallet, but the SCA is external. The document (or a derived signature request) will be transmitted to the external SCA, where the content is displayed for review. The external SCA captures the user’s approval and then triggers the signing operation. The document/signature request will be forwarded to a remote signature creation device, which creates the signature and returns the result to the calling flow.
+This section aligns with the WP4 interoperability baselines defined for issuance and presentation flows. Proximity-based signing scenarios are currently outside the baseline protocol scope of the WE BUILD pilots.
 
-#### 2) Remote signing with local SCA (wallet as SCA)  
-The user will initiate signing in the wallet and the wallet acts as the SCA. The document is displayed in the wallet so review and explicit consent take place inside the wallet experience. After consent, the wallet will submit the document/signature request to a remote signature creation device for signature creation. The result will be returned to the wallet for delivery to the relying party as part of the business transaction.
+In the WE BUILD pilot and ITB environment, eIDAS-qualified status cannot be achieved because the ITB operates outside the formal eIDAS certification framework. Any reference to “qualified” in WE BUILD therefore represents a technical demonstration only and does not constitute a legally valid qualified electronic signature. The prerequisites for eIDAS-qualified status remain unchanged, including use of a Qualified Signature Creation Device (QSCD) and a qualified certificate issued by a QTSP that is listed on an official national Trusted List.
 
-#### 3) Local signing  
-The wallet will initiate signing and the full SCA experience remains on-device. The document is displayed in the wallet and the user provides explicit consent there. Signature creation is performed locally using a signature creation device integrated into the user’s smartphone, without invoking a remote signature creation device.
+### Wallet-centric Signing Model
+In the wallet-centric model, the EUDI Wallet is the central component of the electronic signature process. Three distinct signing processes are considered, depending on where the Signature Creation Application (SCA) runs and where the Signature Creation Device (SCD) is hosted. 
 
+#### 1) Remote Signing with External SCA  
+The user initiates signing from the wallet, while the SCA is external. The document is sent to the external SCA for review and consent, after which the signing request is forwarded to a remote SCD that creates the signature and returns the result.
 
-### QTSP-centric signing and sealing model
-In the QTSP-centric model, the trust service provider remains the central authority responsible for execution and governance of the signing or sealing process. The cryptographic key material used for signature or seal creation will be generated, stored, and operated within infrastructure controlled by or on behalf of the QTSP, typically within secure hardware environments. From the perspective of the user or calling application, signing and sealing are remote: external components interact with the trust service through defined service interfaces, while the cryptographic operation is performed within the QTSP-controlled environment.
+![Remote signing with external SCA](../images/remote-sign-ext-sca.png)
 
-Within this architecture, the EUDI Wallet may act as the client-side orchestration component, primarily for user authentication, collecting user intent, and triggering a signing operation. However, it does not operate the signature creation environment, does not manage signing credentials, and does not assume the regulatory obligations of a trust service provider.
+#### Remote Signing with Local SCA (Wallet as SCA)
+The user initiates signing from the wallet, which also acts as the SCA. The document is presented to the user within the wallet for review and consent. After approval, the wallet forwards the signing request to a remote SCD that produces the signature and returns the result.
 
-From a regulatory perspective, established trust boundaries are preserved. The QTSP remains responsible for identity binding, credential issuance, and compliance with applicable ETSI standards. Signature or seal creation data remains under controlled conditions consistent with the required assurance level. Activation mechanisms enforce the conditions required for advanced or qualified signatures, including sole control where applicable.
+![Remote signing with local SCA](../images/remote-sign-local-sca.png)
 
-In the pilot and testbed environment, eIDAS-qualified status cannot be achieved because the testbed operates outside the formal eIDAS certification and trust framework. Any reference to “qualified” in WE BUILD is therefore a technical demonstration concept only and does not represent a legally binding qualified electronic signature. The prerequisites for eIDAS-qualified status remain unchanged, including use of a qualified signature creation device and a qualified certificate issued by a QTSP that is listed on an official national Trusted List.
+#### 3) Local Signing  
+The user initiates signing from the wallet, which also acts as the SCA. The document is presented to the user within the wallet for review and consent. After approval, the signature is created locally using a SCD integrated in the user’s device.
 
-The pilot implementation aims to be technically aligned with qualified signing requirements. Pilot trust validation is described below and relies on consortium trusted lists referenced in ADRs and based on ETSI TS 119 612.
+![Local signing](../images/local-sign.png)
 
-### CSC interoperability profile for remote signing/sealing
-In line with Section 2.1.1 (Standardization and Technical Specifications), for all remote signing and sealing flows, CSC interoperability will be implemented using CSC API 2.2.0.0, CSC data model (DM) 1.0.0, and CSC data-model-bindings 1.0.0. This interoperability profile will expose remote signing/sealing via a standardized interface, while the underlying trust model and QTSP responsibilities remain unchanged.
+### QTSP-centric Signing and Sealing Model
+In the QTSP-centric model, the trust service provider operates the signing or sealing process. The cryptographic key material used for signature or seal creation is generated, stored, and used within infrastructure controlled by or on behalf of the QTSP, typically in secure hardware environments. From the perspective of the user, signing and sealing are therefore remote operations. External components interact with the trust service through defined interfaces, while the cryptographic operation itself is performed within the QTSP-controlled environment.
 
-The detailed WE BUILD CSC profile is expected to be specified in a WE BUILD Conformance Specification (WBCS/CS). It will define the authorization mode, the endpoints that are used, SAD handling, supported formats and algorithms, error handling, and ITB constraints. Until this WE BUILD CSC profile is published, CSC v2.2.0.0 is the authoritative base specification for CSC behaviour.
+Within this architecture, the EUDI Wallet may act as a client-side orchestration component. It can authenticate the user, capture user intent, and trigger a signing operation. However, it does not operate the signature creation environment, does not manage signing credentials, and does not assume the responsibilities of a trust service provider.
 
-Pilot trust validation uses reference trusted lists and mock registrars. In the pilot, the SCA and/or verifier components it relies on (whether they run in the wallet or externally) validate participating QTSPs and trust anchors against consortium reference trust mechanisms such as consortium trusted lists aligned with ETSI TS 119 612, as recorded in WE BUILD ADRs. The reference trusted list may include participating QTSP entries and their registered issuing certificate authorities for pilot purposes. When a signature creation request is initiated, the SCA validates the signer’s certificate chain to an issuing CA registered in the WE BUILD trusted list. It then checks the QTSP status in the pilot trust framework, with the understanding that any “qualified” status is simulated and has no legal effect. The SCA validates revocation status using pilot OCSP responders or CRL distribution points operated by participating QTSPs. Where required, the SCA also validates additional attributes and roles through relevant attestations, such as organisational affiliation or professional credentials. Where registration status checks are needed, registrar processes are simulated through mock registrar services and endpoints.
+In this model, the QTSP remains responsible for identity binding, credential issuance, and compliance with applicable ETSI standards. Signature or seal creation data remains under controlled conditions consistent with the required assurance level, and activation mechanisms enforce the conditions required for advanced or qualified signatures, including sole control where applicable.
 
-### Organisational signing: individuals signing on behalf of a company
-To support individuals signing on behalf of a company, the planned approach will reuse the wallet-centric and QTSP-centric models above. The wallet remains the user-facing control point for review and approval, while the QTSP will execute the signing/sealing operation within its controlled environment. The relying party workflow will verify, bind, and validate the transaction and the resulting signature/seal according to its policy and evidence model. WE BUILD will pilot this organisational signing pattern while preserving the QTSP trust boundary and reusing the same CSC-based interoperability profile for remote QSCD usage.
+The pilot implementation aims to remain technically aligned with qualified signing requirements. Pilot trust validation is described below and relies on consortium trusted lists.
 
-WE BUILD organisational signing builds on the EBWOID concept as the cross-border minimum organisation identifier. Additional organisation attributes can be provided through additional attestations when needed. At signing time, the natural person context from the PID and the organisation context from the EBWOID must be cryptographically bound to the transaction. This requires including the identifiers, or unambiguous references to them, in the transaction data that is shown to the user and then signed or authorized. This can be achieved through ARF transactional data in remote presentation flows and through CSC hash-based signing where the SAD is bound to the same content. The exact representation is use-case specific. It should define the fields, canonicalization rules, and what is displayed versus what is hashed and signed. These choices should be profiled in rulebooks and in a WBCS/CS to ensure interoperability in the ITB.
+### CSC Interoperability Profile for Remote Signing and Sealing
+For remote signing and sealing flows, WE BUILD uses the Cloud Signature Consortium (CSC) interoperability framework. CSC APIs expose standardised interfaces that allow wallets and client applications to interact with QTSP-operated signing services.
+The detailed WE BUILD CSC interoperability profile will be defined in a WBCS. That specification will describe the concrete integration details, including authorisation mechanisms, endpoints, supported formats and algorithms, and interoperability constraints used in the ITB. Until such a profile is published, CSC API v2.2.0.0 serves as the base reference specification for CSC-based interactions.
 
-## Secure communication channel
-In WE BUILD, the secure communication channel will be implemented through Qualified Electronic Registered Delivery Services (QERDS) operated by QTSPs. The core idea will be that whenever a message will need legal-grade delivery assurance (who sent what, to whom, and when it was received), it will be routed through QERDS so that delivery will be registered and can later be proven to a relying party. The QERDS providers also ensure mutual authentication, end-to-end integrity and confidentiality, and interoperability across access points. This “registered delivery” pattern will be positioned as an enabler for interactions between and across public sector bodies and economic operators.
+During the pilot phase, trust validation relies on consortium reference trust mechanisms. Wallet components or external SCAs validate participating QTSPs and trust anchors using WE BUILD trusted lists. The reference trusted list may include participating QTSP entries and their registered issuing certificate authorities for pilot purposes.
 
-Whereas the QERDS and the EU Digital Directory designated for the production European Business Wallet are not yet ready, WE BUILD designates the pre-production QERDS specified by WP4 for use in WE BUILD business wallets.
+When a signing request is processed, the SCA validates the signer’s certificate chain against issuing certificate authorities listed in the WE BUILD trusted list and checks the QTSP status within the pilot trust framework. Revocation status is validated using OCSP responders or CRL distribution points operated by participating QTSPs. Where registration status checks are required, registrar processes are simulated through mock registrar services and endpoints.
 
-### From “registered delivery” to “digital identity wallets”
-As a baseline a classic B2G/B2B situation will be used: an authority will notify an economic operator, the economic operator will respond, and the relying party will require evidence. With QERDS, both sides will use their QERDS providers to register sending and receiving, so that delivery will not be just transport, but will be a process that will produce trustworthy evidence.
+### Organisational Signing: Individuals Signing on Behalf of a Company
+WE BUILD supports signing scenarios where an individual signs on behalf of an organisation. This model reuses the wallet-centric and QTSP-operated signing approaches described above. The wallet provides the user interface for document review and approval, while the QTSP performs the signature or seal creation within its controlled environment. 
 
-WE BUILD will take the next step: wallets will become the user-facing endpoints (“wallet-centric delivery”). The sender wallet and recipient wallet will remain the places where users will read, will approve, and will manage messages, or where they will configure connections to backend systems to perform these actions. QERDS providers will form the delivery layer underneath, handling routing, inter-provider exchange, and evidence creation, while wallets will provide identity/authentication and user control.
+In these scenarios, the transaction must bind both the natural person and the organisation represented. The natural person identity is represented by the PID, while the organisation context is represented through the EBWOID, which acts as the cross-border minimum organisation identifier.
 
-### Technical flow (WE BUILD high-level)
-WE BUILD will follow the QERDS architecture decomposition and the 4-corner delivery pattern:
-1) Sender identification and authentication will be performed at the sender’s QTSP (wallet-driven).
-2) Message submission will be performed from the sender’s wallet or connected backend system to the sender QERDS (QTSP A).
-3) Discovery of the recipient’s QERDS endpoint and capabilities will be performed via common services (e.g., the WE BUILD Digital Directory, simulating the EU Digital Directory from the European Business Wallet proposal).
-4) Handshake and relay will be performed between QTSP A and QTSP B (QERDS-to-QERDS interoperability) and will be based on ETSI EN 319 522.
-5) Recipient notification will be issued, followed by recipient authentication being performed at QTSP B.
-6) Consignment and handover of the message and its metadata will be performed to the recipient’s wallet or connected backend system.
-7) Evidence will be made accessible to sender and recipient wallets (submission/dispatch and receipt/consignment or non-delivery). Evidence will be protected by qualified sealing and, where required, qualified timestamping. Where applicable, the evidence can be pushed to the sender’s and the recipient’s backend systems as well.
+At signing time, identifiers or references to both the PID and the EBWOID are included in the transaction data presented to the user and subsequently authorised or signed. This ensures that the resulting signature or seal can be unambiguously linked to both the individual and the organisation.
+
+The exact representation of these bindings is use-case specific and will be defined in rulebooks and WBCS (see Chapter 5 for the semantic and schema model).
+
+## Secure Communication Channel
+This section describes how secure message exchange is integrated into the WE BUILD wallet ecosystem.
+
+In WE BUILD, the secure communication channel is implemented through Qualified Electronic Registered Delivery Services (QERDS) operated by QTSPs. Whenever legal-grade delivery assurance is required, messages are routed through QERDS. QERDS providers ensure mutual authentication, end-to-end integrity and confidentiality, and interoperability across access points. This “registered delivery” pattern is positioned as an enabler for interactions between and across public sector bodies and economic operators.
+
+Because the QERDS and the EU Digital Directory designated for the production European Business Wallet are not yet available, WE BUILD designates the pre-production QERDS specified by WP4 for use in WE BUILD business wallets.
+For reference, see the [QERDS documentation](#qerds-documentation).
+
+### From “Registered Delivery” to “Digital Identity Wallets”
+As a baseline, a classic B2G/B2B situation is used: an authority notifies an economic operator, the economic operator responds, and the relying party requires evidence. With QERDS, both sides use their QERDS providers to register sending and receiving, so that delivery is not just transport, but is a process that produces trustworthy evidence.
+
+In this model, WE BUILD takes the next step: wallets become the user-facing endpoints (“wallet-centric delivery”). The sender wallet and recipient wallet remain the places where users read, approve, and manage messages, or where they configure connections to backend systems to perform these actions. QERDS providers form the delivery layer underneath, handling routing, inter-provider exchange, and evidence creation, while wallets provide identity/authentication and user control.
+
+### Technical Flow (WE BUILD High-Level)
+WE BUILD follows the QERDS architecture decomposition and the four-corner delivery pattern:
+
+1. Sender identification and authentication is performed at the sender’s QTSP (wallet-driven).
+2. Message submission is performed from the sender’s wallet or connected backend system to the sender QERDS (QTSP A).
+3. Discovery of the recipient’s QERDS endpoint and capabilities is performed via common services (e.g., the WE BUILD Digital Directory, simulating the EU Digital Directory from the EBW proposal).
+4. Handshake and relay is performed between QTSP A and QTSP B (QERDS-to-QERDS interoperability).
+5. Recipient notification is issued, followed by recipient authentication at QTSP B.
+6. Consignment and handover of the message and its metadata is performed to the recipient’s wallet or connected backend system.
+7. Evidence is made available to sender and recipient wallets (submission/dispatch and receipt/consignment or non-delivery). Evidence is protected by qualified sealing and, where required, qualified timestamping. Where applicable, the evidence can be pushed to the sender’s and the recipient’s backend systems as well.
+
+## Enterprise and System-to-System Wallet Interactions
+Some WE BUILD scenarios involve interactions between backend systems rather than direct end-user actions. In these cases, wallet functionality may be integrated into enterprise platforms, APIs, or automated services.
+
+This is particularly relevant for EBW scenarios such as supply chain credentials, Digital Product Passports, and automated B2B or B2G data exchange. In such cases, credential issuance and presentation may be initiated by backend systems while still following the interoperability patterns defined in this blueprint.
+
+Although the interaction is system-driven, the same trust framework, credential formats, and verification mechanisms apply as in user-driven wallet interactions.
