@@ -697,7 +697,7 @@ sequenceDiagram
     EBW-->>S_QTSP: wmp.evidence.ack
 
     note over S_QTSP,R_QTSP: QTSP resolves recipient QTSP endpoint<br>via BDXL/SMP, appends relay_chain entry,<br>then relays (Interface 16 — out of scope)
-    S_QTSP->>R_QTSP: Relay (WMP relay-to-relay or AS4)
+    S_QTSP->>R_QTSP: Relay
 
     R_QTSP-->>S_QTSP: relay_accepted
     S_QTSP-->>EBW: wmp.evidence.notify<br>{ event_type: relay_accepted }
