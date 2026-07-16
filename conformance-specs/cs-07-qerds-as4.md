@@ -1,9 +1,9 @@
 # QeRDS Four-Corner AS4 Conformance Specification
 
-**Status**: Draft v0.5 (revised: §7.3 EVI area no longer assigns `AS4CONF-EVI-*` IDs to requirements that merely restate [ETSI-319-522]'s own event definitions, schema fields, or cardinality notes — those are redirected to direct ETSI citation and their former IDs retired per the Annex; only genuine profiling additions on top of ETSI keep an ID. All repo-relative file-path references replaced with document titles/citation tags.)
+**Status**: Draft 
 **Scope**: C2 (Sender QeRDS Provider) ↔ C3 (Recipient QeRDS Provider) inter-provider channel, and the QeRDS evidence artifacts obligation
 **Profiles**: CEF eDelivery AS4 Profile 2.0 (profiling OASIS AS4 Profile of ebMS 3.0 v1.0); ETSI EN 319 522 (Parts 1–4)
-**Context**: This work sits within the WE BUILD consortium's QERDS-for-European-Business-Wallets architecture ([WEBUILD-ARCH]) — see §2 and §4 for how this document's C1–C4 scope maps onto that wallet/QTSP model
+**Context**: This work sits within the WE BUILD consortium's QERDS-for-European-Business-Wallets architecture ([WEBUILD-ARCH]) — see §2 and §4 for how this document's C1–C4 scope maps onto that model
 **Citation scheme**: See `AS4CONF-<AREA>-<seq>` IDs throughout — see §3 and this feature's Clause Citation Scheme contract for the stability contract
 **Author**: Alejandro Nieto Gallego — DigitelTS
 **Contributors**: 
