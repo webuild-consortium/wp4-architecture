@@ -4,6 +4,7 @@ Version 0.9 / Draft
 Date: 3 August 2026
 
 **Authors / Contributors**: WP4 Architecture
+
 - Lal Chandran, iGrant.io, Sweden
 - Eelco Klaver, Credenco, The Netherlands
 - George Padayatti, iGrant.io, Sweden
@@ -82,6 +83,7 @@ Date: 3 August 2026
 This document defines the **WE BUILD Conformance Specification for the Business Wallet BWUA lifecycle**. It describes how a Business Wallet Unit Attestation (**BWUA**, comprising the **Business Wallet Instance Attestation (BWIA)** and **Server Key Attestation (SKA)**) is created, maintained, revoked, and rotated throughout its lifecycle, in a consistent and testable way. The BWUA is the business counterpart of the natural-person WUA defined in CS-04 [13].
 
 It profiles and aligns with:
+
 - The EU ARF version 2.9.0 [1] (including its legal-person provisions) and ARF discussion Topic C [2].
 - The EUDI Wallet Technical Specification TS3 [3].
 - ETSI TS 119 472-3 [4], OpenID4VCI [5], OpenID4VP [6], and HAIP [7] where relevant.
@@ -95,6 +97,7 @@ Like the WUA, the BWUA is an infrastructure attestation, not a user-facing crede
 This specification defines the conformance expectations for the **BWUA lifecycle** of the business wallet.
 
 In scope:
+
 - BWUA structure and role (BWIA and SKA) at the level needed to express lifecycle behaviour, by analogy to TS3 [3].
 - **Lifecycle**: activation, validity, revocation and status maintenance, rotation / re-issuance, adopting CS-04 [13] Section 7.2 by analogy.
 - **Binding**: key binding, holder binding, and session binding, adopting CS-04 [13] Section 7.3 by analogy, with the server-side session binding specified in 5.3, 6.4 and 7.3.
@@ -102,6 +105,7 @@ In scope:
 - Discovery of a Credential Offer Endpoint, session binding for a server-hosted wallet, and throughput for high-volume services.
 
 Out of scope (handled elsewhere):
+
 - The issuance protocol itself (CS-01 [10]); the presentation protocol itself (CS-02 [11]); remote signing mechanics (CS-03 [12]); natural-person WUA specifics (CS-04 [13]).
 - Trust anchoring and organisation-registration discovery (Handled separately).
 
@@ -127,7 +131,11 @@ The BWUA is the evidence that lets a counterparty trust a business wallet and un
 
 ## 5.1 Actors and information flows
 
-The Business Wallet Provider issues and signs the attestations (BWIA and SKA) and publishes their revocation status; the BWU presents them; issuers and Relying Parties verify the Business Wallet Provider's signature and check revocation status (TS3 [3], clause 2.5). The BWU is a server- or cloud-hosted service; its keys are held in a cloud- or organisation-controlled HSM, and it may act in the Holder, Issuer, and Verifier roles within a single deployment.
+The Business Wallet Provider issues and signs the attestations (BWIA and SKA) and publishes their revocation status; the BWU presents them; issuers and Relying Parties verify the Business Wallet Provider's signature and check revocation status (TS3 [3], clause 2.5). The BWU is a server- or cloud-hosted service; its keys are held in a cloud- or organisation-controlled HSM, and it may act in the Holder, Issuer, and Verifier roles within a single deployment, as illustrated below:
+
+<img src="../images/bwua-actors-interactions.png" alt="BWUA actors and interactions" width="820">
+
+*Figure 1: Actors and the high-level BWUA issuance and verification*
 
 ## 5.2 BWUA lifecycle
 
@@ -140,6 +148,7 @@ The BWUA lifecycle is independent of two things that the Business Wallet Provide
 The Business Wallet Provider tracks only the BWUAs it has issued, their status-list entries, and the events that trigger revocation.
 
 From the Business Wallet Provider's perspective, a BWUA has three states:
+
 - **Issued**: the Business Wallet Provider has signed and issued the BWIA and SKA to the BWU; they remain in use until they expire or are revoked. The BWIA is deliberately short-lived, so a stale one cannot be reused.
 - **Expired**: the BWIA's time-to-live has elapsed.
 - **Revoked**: the Business Wallet Provider has set the BWUA's status-list entry to revoked.
@@ -147,6 +156,10 @@ From the Business Wallet Provider's perspective, a BWUA has three states:
 Because BWUAs are short-lived and single-use, the Business Wallet Provider issues fresh BWUAs to the BWU as needed; each fresh BWUA is a **new instance** of this lifecycle, not a reactivation of an expired one. For high-volume services, the provisioning cadence is profiled under section 6.6. Independent of any single BWUA's time-to-live, the Business Wallet Provider maintains the revocation status entry until its expiration, keeping it at least 31 days ahead at presentation, so that Relying Parties can recheck it throughout the life of any credential issued against it. Lifecycle transitions are driven by the organisation administrator and the Business Wallet Provider rather than a single user.
 
 Revocation of the BWIA `client_status` entry signals revocation of the wallet service instance. Revocation of the SKA `key_storage_status` entry signals that the HSM or keystore referenced by the SKA is no longer trusted. If a breach affects the wallet service as a whole, the Business Wallet Provider revokes the wallet service instance and, where relevant, the corresponding SKAs.
+
+<img src="../images/bwua-lifecycle-states.png" alt="BWUA attestation lifecycle" width="540">
+
+*Figure 2: BWUA (BWIA/SKA) attestation lifecycle, from the Business Wallet Provider's perspective. Re-issuance produces a new BWUA, i.e. a new run of this lifecycle. The deployment state of the organisation's wallet service (installed, migrated or decommissioned) is a BWU lifecycle matter, tracked separately from this lifecycle.*
 
 ## 5.3 Signing and key binding
 
@@ -159,6 +172,7 @@ For a server- or cloud-hosted wallet there is no single device to bind to, and a
 ## 5.4 Business Wallet Provider responsibilities
 
 This overview is non-normative; the binding requirements are in sections 7.1 and 7.2. The Business Wallet Provider:
+
 - Creates and signs each BWIA and SKA (ES256, ES384, or ES512) with the required claims (TS3 [3], clauses 2.6, 2.3.1, and 2.3.2),
 - Ensures the BWU has BWIAs available **as needed** for issuance, and that a given BWIA is used in **a single issuance process** and is **never shared across issuers**,
 - Keeps each BWIA **short-lived** (under 24 hours) and **single-use** for freshness and unlinkability, and issues **no long-lived SKA**; the provisioning cadence for high-volume services follows section 7.5,
@@ -238,6 +252,7 @@ Discovery answers the following question:
 > Which Credential Offer Endpoint, if any, is currently registered for this EBWOID identifier or Legal Name?
 
 A Registry entry records an operational association registered by a Business Wallet Provider. It is not the authoritative source of the EBWOID itself and does not establish:
+
 - EBWOID validity;
 - BWUA validity;
 - Issuer eligibility;
@@ -248,6 +263,10 @@ A Registry entry records an operational association registered by a Business Wal
 - acceptance of a delivered Credential Offer.
 
 Those checks remain the responsibility of the relevant BWU, Business Wallet Provider, Issuer, CS-01 flow, attestation rulebook and applicable trust framework.
+
+<img src="../images/bwua-discovery-model.png" alt="BWUA discovery model" width="800">
+
+*Figure 3: Discovery of a Credential Offer Endpoint for a BWU. The Business Wallet Provider registers and maintains the endpoint record through the Registry Management API; an Issuer resolves an EBWOID identifier or Legal Name through the Lookup Service API and then delivers the Credential Offer to the resolved endpoint under CS-01 [10]. Successful resolution is technical endpoint resolution only (section 7.4.1).*
 
 ### 6.5.2 Endpoint registration and lifecycle management
 
@@ -305,6 +324,7 @@ Actors: Business Wallet Provider, BWU, HSM, Issuers and Relying Parties.
 ## 7.1 BWUA structure and validity
 
 Business Wallet Provider **MUST**:
+
 1. Sign every BWIA and SKA as a JWT using ES256, ES384, or ES512 (TS3 [3], clause 2.6).
 2. Populate the BWIA, by analogy to TS3 [3], clause 2.3.1, with at least the wallet service identification (name, version, and certification information), a `client_status` object (containing `status` and `exp`), and a `cnf` key.
 3. Populate the SKA, by analogy to TS3 [3] clause 2.3.2, with at least the `attested_keys` array (one or more keys), the key storage and certification information for the HSM, and a `key_storage_status` object (containing `status` and `exp`).
@@ -312,11 +332,13 @@ Business Wallet Provider **MUST**:
 5. Issue each SKA with a short token-level time-to-live comparable to the BWIA, so that no SKA is long-lived. The token-level `exp` is independent of the `key_storage_status.exp` revocation-maintenance commitment (section 7.2).
 
 BWU **MUST**:
+
 1. Present a BWIA whose time-to-live has not expired, together with an SKA, where the consuming process requires it.
 
 ## 7.2 Lifecycle, revocation, and unlinkability
 
 Business Wallet Provider **MUST**:
+
 1. Use Token Status List [9] as the revocation mechanism for both BWIAs and SKAs.
 2. Maintain revocation status so that a BWU can always present a BWIA and SKA whose `client_status.exp` and `key_storage_status.exp` are at least 31 days in the future.
 3. For SKA revocation, either reference the same status-list index for all SKAs attesting keys stored in the same HSM or keystore type (type-shared), or assign a fresh status-list index to each SKA (per-SKA).
@@ -327,9 +349,11 @@ Business Wallet Provider **MUST**:
 8. Revoke a wallet service instance upon detecting a security vulnerability in the service or its operating environment, or upon an authorised administrator's request on behalf of the organisation.
 
 BWU **MUST NOT** (per-SKA index):
+
 1. Reuse the same per-SKA status-list index for interactions with different Issuers.
 
 Relying Parties **MUST**:
+
 1. Check the revocation status of both the BWIA and the SKA received during issuance at least once every 24 hours for the validity period of the credential issued against them; where that validity period is less than 24 hours, checking on issuance is sufficient. The check is a status-list retrieval, not a per-wallet call; a single status list covers many BWUs.
 
 > Note: the token-level `exp` (technical validity, under 24 hours) and `client_status.exp` (the revocation maintenance commitment) are independent. A short-lived BWIA can carry a far-future `client_status.exp`.
@@ -337,10 +361,12 @@ Relying Parties **MUST**:
 ## 7.3 Binding
 
 Business Wallet Provider **MUST**:
+
 1. Issue each BWIA with a `cnf` key suitable as the proof-of-possession key for attestation-to-session binding (Stage A), with the corresponding private key held in the HSM.
 2. Issue each SKA such that every key in `attested_keys` is held in the HSM and usable for key binding (Stage B).
 
 BWU **MUST**:
+
 1. Bind the Access Token to the wallet-service instance (Stage A) by presenting a valid, unexpired BWIA and proving possession of the BWIA `cnf` key held in the HSM over a fresh AS-provided nonce and the token request.
 2. Ensure the attestation-to-session binding is at the wallet-service-instance level and does not depend on which administrator or user (section 4) drives the session.
 3. Bind each issued credential (Stage B) to a key listed in the `attested_keys` of a valid SKA by proving possession of that key using the HSM at the credential endpoint.
@@ -349,6 +375,7 @@ BWU **MUST**:
 6. Use each BWIA in a single issuance session and not reuse a Stage A or Stage B proof across sessions.
 
 Issuer **MUST**:
+
 1. Verify the Business Wallet Provider's signature on the BWIA and SKA and check their status (section 7.2) before issuing.
 2. Verify the Stage A binding (the Access Token is sender-constrained to the BWIA `cnf` key) and the Stage B binding (proof of possession of an SKA-attested key).
 3. Where presentation during issuance is requested, verify the counterparty presentation, its holder binding, and that it is bound to the same issuance session, before issuing.
@@ -372,6 +399,7 @@ Issuer **MUST**:
 ### 7.4.2 Business Wallet Provider and BWU requirements
 
 The Business Wallet Provider **MUST**:
+
 1. Register a Credential Offer Endpoint for every BWU that supports inbound Credential Offers.
 2. Associate the endpoint record with the correct Wallet Owner EBWOID.
 3. Establish that it is authorised to operate the BWU and manage the corresponding endpoint record.
@@ -388,11 +416,13 @@ The Business Wallet Provider **MUST**:
 10. Coordinate endpoint suspension or removal with the BWU and BWUA lifecycle as specified in section 6.5.2.
 
 The Business Wallet Provider **SHOULD**:
+
 1. Use endpoint URIs containing non-identifying and rotatable routing identifiers.
 2. Use a cache lifetime appropriate to the expected endpoint lifecycle and incident-response requirements.
 3. Provide supported delivery methods and endpoint metadata where this assists interoperable delivery.
 
 The BWU or Credential Offer Endpoint **MUST**:
+
 1. Be reachable over HTTPS.
 2. Support receiving a CS-01 / OpenID4VCI Credential Offer.
 3. Treat lookup as endpoint discovery only.
@@ -406,6 +436,7 @@ The BWU or Credential Offer Endpoint **MUST**:
 ### 7.4.3 Issuer requirements
 
 An Issuer **MUST**:
+
 1. Obtain the EBWOID identifier or Legal Name of the intended Wallet Owner before lookup.
 2. Authenticate to the Lookup Service.
 3. Submit the EBWOID identifier or Legal Name as the primary lookup key.
@@ -419,6 +450,7 @@ An Issuer **MUST**:
 11. Independently verify the BWUA where reliance on the BWU requires such verification.
 
 An Issuer **MUST NOT**:
+
 1. Treat endpoint resolution as authorisation to issue.
 2. Treat endpoint resolution as evidence of Wallet Owner consent.
 3. Treat endpoint resolution as evidence of BWUA or EBWOID validity.
@@ -428,12 +460,14 @@ An Issuer **MUST NOT**:
 ### 7.4.4 Endpoint URI requirements
 
 A registered Credential Offer Endpoint URI **MUST**:
+
 1. Be an absolute HTTPS URI.
 2. Be directly usable by an Issuer for Credential Offer delivery.
 3. Be capable of rotation without changing the EBWOID identifier.
 4. Not be treated as a secret or bearer credential.
 
 The URI **SHOULD**:
+
 1. Be non-identifying.
 2. Not contain the EBWOID identifier in its path or query string.
 3. Not contain legal names, tax identifiers, registration numbers or similar directly identifying information.
@@ -442,19 +476,23 @@ The URI **SHOULD**:
 ## 7.5 Throughput
 
 Business Wallet Provider **MUST**:
+
 1. Support batch provisioning, so that a BWU can obtain more than one single-use BWIA and SKA in a single provisioning request.
 2. Issue every BWUA in a batch with the same structure, validity and status-maintenance guarantees as a singly issued BWUA (sections 7.1 and 7.2).
 3. Assign each BWIA in a batch its own status-list entry, so that batching does not create linkability between Issuers (section 7.2).
 
 Business Wallet Provider **SHOULD**:
+
 1. Publish the maximum batch size and any rate limit applied to the provisioning interface.
 2. Apply per-BWU rate limiting and abuse controls to that interface.
 
 BWU **MUST**:
+
 1. Maintain a buffer of unused BWUAs sized to its expected issuance and presentation volume, and request a fresh batch before that buffer is exhausted.
 2. Use each BWIA in a single issuance session and allow unused BWUAs to expire rather than reusing them (sections 7.1 and 7.2).
 
 Relying Parties **MUST**:
+
 1. Check BWUA revocation by retrieving the status list rather than by a per-wallet call to the Business Wallet Provider (section 7.2), so that verification load does not scale with transaction volume.
 
 > Note: batch size, refill threshold and provisioning interval are deployment parameters and are not fixed by this specification.
@@ -612,6 +650,7 @@ Payload:
 ```
 
 Where each element comes from:
+
 - `alg` (ES256, ES384 or ES512) - TS3 [3], clause 2.6, as required by section 7.1.
 - `attested_keys`, `key_storage`, `certification` and `key_storage_status` - TS3 [3], clause 2.3.2, applied to a cloud- or organisation-controlled HSM rather than a device WSCD.
 - `user_authentication` - OpenID4VCI [5], Appendix D, as referenced by TS3 [3], clause 2.3.2. For a business wallet it expresses the authentication level applied to the administrator or user operating the BWU (section 4), not that of a single device holder.
@@ -665,6 +704,30 @@ The KB-JWT (illustrative, SD-JWT-VC [16]):
 7. BWU to Verifier: the credential and the KB-JWT (`nonce`, audience, `iat`, `sd_hash`).
 8. Verifier: verifies the KB-JWT against the `cnf` key, checks `nonce` and audience, and verifies the Issuer signature and revocation status.
 
+```mermaid
+sequenceDiagram
+  participant S as HSM
+  participant W as BWU
+  participant I as Issuer
+  participant V as Verifier
+  rect rgb(255, 243, 224)
+  Note over S,I: Key binding (issuance)
+  S->>W: public key<br/>(private key never leaves the HSM)
+  W->>I: Credential Request, jwt proof signed by an<br/>SKA-attested key, plus the SKA and the<br/>BWIA-bound Access Token (Stage A)
+  Note over I: verify SKA on trusted list,<br/>key custody and authentication level,<br/>verify proof of possession
+  I->>W: Credential with cnf as the attested<br/>public key, signed by the Issuer
+  end
+  rect rgb(227, 242, 253)
+  Note over W,V: Holder binding (presentation)
+  V->>W: presentation request with nonce and audience
+  Note over S,W: BWU signs a KB-JWT in the HSM<br/>under the organisation access control
+  W->>V: Credential and KB-JWT<br/>(nonce, audience, iat, sd_hash)
+  Note over V: verify KB-JWT against the cnf key,<br/>check nonce and audience,<br/>verify Issuer signature and revocation
+  end
+```
+
+*Figure B.1: Key binding (issuance) and holder binding (presentation) for a business wallet. The SKA assures the Issuer that the `cnf` key is held in the HSM; the Verifier later checks the KB-JWT against that same key in the credential, not against the BWUA.*
+
 Where the requested holder is a natural person, or where that person co-signs with the BWU, the presentation comes from the personal wallet and is holder-bound into the same issuance session (section 6.4); the session-level construction is specified in section 5.3.
 
 > Note: the two `cnf` uses are different. In the BWIA, `cnf` is the key that binds the issuance session (Stage A, section 7.3). In the issued credential, `cnf` is the holder key to which the credential is bound (this annex).
@@ -684,6 +747,7 @@ The Registry and Lookup Service preserve a logical separation between endpoint r
 ## C.2 Registry behaviour
 
 The Registry **MUST**:
+
 1. Support creation, management read, rotation, suspension, reactivation and removal of endpoint records.
 2. Accept write operations only from an authenticated party authorised to manage the submitted EBWOID endpoint record.
 3. Perform record-level authorisation for every write operation.
@@ -701,6 +765,7 @@ The Registry **MUST**:
 15. Preserve removed records where required for audit and historical accountability.
 
 The Registry **SHOULD**:
+
 1. Store a record version.
 2. Store a cache lifetime.
 3. Store supported Credential Offer delivery methods.
@@ -711,6 +776,7 @@ The Registry **SHOULD**:
 8. Support multiple endpoints for one EBWOID only where each endpoint has a clear and unambiguous routing purpose.
 
 The Registry **MUST NOT**:
+
 1. Act as the authoritative source of EBWOID validity.
 2. Act as the authoritative source of BWUA validity.
 3. Validate a Credential Offer as part of endpoint registration.
@@ -721,6 +787,7 @@ For every lifecycle operation, the Registry authenticates the caller, verifies r
 ## C.3 Lookup Service behaviour
 
 The Lookup Service **MUST**:
+
 1. Require authentication for external lookup requests.
 2. Accept lookup requests containing an EBWOID identifier or Legal Name.
 3. Resolve endpoint information only from Registry records.
@@ -737,6 +804,7 @@ The Lookup Service **MUST**:
 14. Maintain sufficient security logs to support abuse investigation.
 
 The Lookup Service **MAY**:
+
 1. Support delivery-method selection.
 2. Support routing hints where multiple endpoints exist for one EBWOID.
 3. Return an endpoint metadata URI.
@@ -745,6 +813,7 @@ The Lookup Service **MAY**:
 Routing hints **MUST** be used only for technical endpoint selection. They **MUST NOT** be used to determine Issuer eligibility, Credential Offer validity or Wallet Owner consent.
 
 The Lookup Service **MUST NOT**:
+
 1. Decide whether an Issuer is legally, contractually or technically eligible to issue a credential.
 2. Decide whether the Wallet Owner consents to issuance.
 3. Validate the Credential Offer.
@@ -754,6 +823,7 @@ The Lookup Service **MUST NOT**:
 ## C.4 Security, privacy and audit
 
 The Registry and Lookup Service **MUST**:
+
 1. Use TLS for all external interfaces.
 2. Use OAuth 2.0 Client Credentials for external API authentication as defined in C.5.
 3. Validate the access-token issuer, audience, expiry, client identity, required scope and participant status.
@@ -766,6 +836,7 @@ The Registry and Lookup Service **MUST**:
 10. Protect audit logs against unauthorised access and tampering.
 
 The Registry and Lookup Service **SHOULD**:
+
 1. Apply anomaly detection for lookup abuse.
 2. Use non-enumerating responses where required.
 3. Support short cache lifetimes where rapid endpoint changes must be propagated.
@@ -807,6 +878,7 @@ The Registry Management API **MUST** require `cs05.discovery.registry.write` for
 A Registry entry represents the association between an EBWOID identifier and a Credential Offer Endpoint.
 
 A Registry entry **MUST** contain:
+
 - `record_id`: internal unique identifier of the Registry record.
 - `ebwoid_id`: EBWOID identifier used as the lookup key.
 - `legal_name`: legal name used as the lookup key.
@@ -817,6 +889,7 @@ A Registry entry **MUST** contain:
 - `updated_at`: timestamp of the most recent record change.
 
 A Registry entry **SHOULD** contain:
+
 - `cache_ttl`: maximum number of seconds for which a lookup result may be cached.
 - `record_version`: version identifier incremented following a record change.
 - `administrative_label`: human-readable label for management purposes.
@@ -1103,6 +1176,7 @@ Removal **SHOULD** be implemented as a lifecycle-state change rather than physic
 Authentication identifies the caller but does not, by itself, authorise the caller to manage a particular EBWOID endpoint record.
 
 For every Registry write operation, the Registry Management API **MUST** verify:
+
 - the access token is valid;
 - the required scope is present;
 - the OAuth client and participant are active;
@@ -1113,6 +1187,7 @@ For every Registry write operation, the Registry Management API **MUST** verify:
 - the requested lifecycle transition is valid.
 
 The Registry authorisation model **MUST** bind:
+
 - OAuth client identity;
 - Business Wallet Provider identity;
 - managed EBWOID identifiers;
@@ -1122,6 +1197,7 @@ The Registry authorisation model **MUST** bind:
 The full list of managed EBWOIDs **SHOULD NOT** be placed in the access token. The token **SHOULD** identify the caller, while the Registry's authorisation data determines which EBWOID records the caller may manage.
 
 The Registry Management API **MUST** reject a request where:
+
 - authentication is missing, invalid or expired;
 - the required scope is missing;
 - the caller is not authorised for the submitted EBWOID;
@@ -1145,6 +1221,7 @@ Error responses **SHOULD** use a consistent structure:
 ```
 
 The following error values **SHOULD** be supported:
+
 - `unauthorized`;
 - `forbidden`;
 - `invalid_request`;
@@ -1159,6 +1236,7 @@ Where non-enumeration is required, an error response **SHOULD** avoid revealing 
 State-changing Registry operations **MUST** use an idempotency key or an equivalent replay-protection mechanism. Repeated requests carrying the same idempotency key and equivalent content **SHOULD** return the original result rather than performing the operation again.
 
 The Registry **MUST** audit successful and failed write attempts. Audit records **SHOULD** contain:
+
 - timestamp;
 - OAuth `client_id`;
 - Business Wallet Provider identity;
