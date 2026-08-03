@@ -144,7 +144,7 @@ From the Business Wallet Provider's perspective, a BWUA has three states:
 - **Expired**: the BWIA's time-to-live has elapsed.
 - **Revoked**: the Business Wallet Provider has set the BWUA's status-list entry to revoked.
 
-Because BWUAs are short-lived and single-use, the Business Wallet Provider issues fresh BWUAs to the BWU as needed; each fresh BWUA is a **new instance** of this lifecycle, not a reactivation of an expired one. For high-volume services, the provisioning cadence is profiled under section 7.5. Independent of any single BWUA's time-to-live, the Business Wallet Provider maintains the revocation status entry until its expiration, keeping it at least 31 days ahead at presentation, so that Relying Parties can recheck it throughout the life of any credential issued against it. Lifecycle transitions are driven by the organisation administrator and the Business Wallet Provider rather than a single user.
+Because BWUAs are short-lived and single-use, the Business Wallet Provider issues fresh BWUAs to the BWU as needed; each fresh BWUA is a **new instance** of this lifecycle, not a reactivation of an expired one. For high-volume services, the provisioning cadence is profiled under section 6.6. Independent of any single BWUA's time-to-live, the Business Wallet Provider maintains the revocation status entry until its expiration, keeping it at least 31 days ahead at presentation, so that Relying Parties can recheck it throughout the life of any credential issued against it. Lifecycle transitions are driven by the organisation administrator and the Business Wallet Provider rather than a single user.
 
 Revocation of the BWIA `client_status` entry signals revocation of the wallet service instance. Revocation of the SKA `key_storage_status` entry signals that the HSM or keystore referenced by the SKA is no longer trusted. If a breach affects the wallet service as a whole, the Business Wallet Provider revokes the wallet service instance and, where relevant, the corresponding SKAs.
 
@@ -196,7 +196,7 @@ Actors: Business Wallet Provider, Issuers, and Verifiers relying on the BWUA.
 Actors: Business Wallet Provider, BWU.
 
 1. A BWIA or SKA approaches expiry, has been used (single-use), or has an insufficient remaining maintenance period for a forthcoming issuance.
-2. The BWU requests fresh BWUAs from the Business Wallet Provider as needed; for high-volume services, the provisioning cadence follows section 7.5.
+2. The BWU requests fresh BWUAs from the Business Wallet Provider as needed; for high-volume services, the provisioning cadence follows section 6.6.
 3. The Business Wallet Provider re-verifies the wallet service's integrity and issues fresh, single-use BWIAs and SKAs (sections 7.1 and 7.2).
 
 **Outcome**: the BWU continuously holds usable BWUAs; each fresh BWUA is a new instance of the lifecycle in section 5.2, and the previous one simply expires.
