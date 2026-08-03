@@ -227,7 +227,7 @@ The discovery capability allows an Issuer or Attestation Provider to resolve the
 
 Discovery is provided by a directory service comprising a **Registry**, which holds the authoritative record of Credential Offer Endpoints, a **Lookup Service**, which resolves an EBWOID identifier or Legal Name against that record, and a **Directory Operator**, which operates either or both. The behaviour of that service is described in Annex C.
 
-One another component participates in this flow:
+One other component participates in this flow:
 
 - **Credential Offer Endpoint**: The HTTPS endpoint exposed by the BWU or Business Wallet Provider for receiving a CS-01 / OpenID4VCI Credential Offer or `credential_offer_uri`.
 
