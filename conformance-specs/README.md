@@ -61,7 +61,7 @@ graph TB
 
 | **WBCS #** | **WBCS Title** |
 | -------- | ------------ |
-| CS-005   | [European Business Wallet Unit Attestation (BWUA) Lifecycle](https://github.com/webuild-consortium/wp4-architecture/issues/177) |
+| CS-005   | [European Business Wallet Unit Attestation (BWUA) Lifecycle - v0.9](cs-05-bwua-lifecycle.md) |
 | CS-006   | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) |
 | CS-007   | [Credential Presentation and Issuance via the Digital Credentials API (Pre-flight)](cs-07-credential-presentation-dc-api.md) |
 
