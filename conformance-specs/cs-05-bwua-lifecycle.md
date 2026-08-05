@@ -733,7 +733,9 @@ Where the requested holder is a natural person, the presentation comes from the 
 
 # Annex C (informative): Discovery Registry and Lookup Service
 
-This annex is mainly for informative purposes to showcase how the discovery service is developed within WE BUILD. It describes the directory service that the discovery requirements in section 7.4 assume, so that a Directory Operator can implement a service the participants in section 7.4 can rely on. Within WE BUILD the discovery directory is operated as a separate service.
+> **Note: status of this annex.** This annex is informative, not normative. It records the Credential Offer Endpoint Registry and Lookup Service as currently built, following the decision in [adr/ebw-endpoint-lookup-service.md](../adr/ebw-endpoint-lookup-service.md). It addresses one use case, an Issuer that has to reach a business wallet where there is no browser session and no user present to scan a QR code, and it is not a specification of the WE BUILD Digital Directory as a whole. Wider directory requirements, and the further use cases they bring, are expected to be specified separately. This annex will be revisited and refined in a subsequent iteration of CS-05 once that work has settled. The normative discovery requirements in section 7.4 depend on a Registry Management API and a Lookup Service API existing, but not on the specific paths, payloads or scopes given here, so refining this annex does not disturb section 7.
+
+It describes the directory service that the discovery requirements in section 7.4 assume, so that a Directory Operator can implement a service the participants in section 7.4 can rely on. Within WE BUILD the discovery directory is operated as a separate service.
 
 ## C.1 Components
 
