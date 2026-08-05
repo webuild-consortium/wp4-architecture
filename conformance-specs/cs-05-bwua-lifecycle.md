@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification CS-05: Business Wallet Unit Attestation (BWUA) Lifecycle
 
-Version 0.9 / Draft
-Date: 3 August 2026
+Version 1.0
+Date: 05-August-2026
 
 **Authors / Contributors**: WP4 Architecture
 
@@ -557,11 +557,11 @@ Profiles MUST NOT weaken the mandatory requirements in this specification.
 
 [9] IETF (2026) OAuth Token Status List, draft-ietf-oauth-status-list-20 (Internet-Draft, OAuth WG). Available at: https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/20/ (Accessed: 10 July 2026). CS-05 pins this revision, following CS-04 [13].
 
-[10] WE BUILD (2025) Conformance Specification CS-01: Credential Issuance, version 1.0
+[10] WE BUILD (2026) Conformance Specification CS-01: Credential Issuance, version 1.2
 
 [11] WE BUILD (2026) Conformance Specification CS-02: Credential Presentation, version 1.1
 
-[12] WE BUILD (2026) Conformance Specification CS-03: Remote Qualified Signing with Wallet Units, version 1.0
+[12] WE BUILD (2026) Conformance Specification CS-03: Remote Qualified Signing with Wallet Units, version 1.2
 
 [13] WE BUILD (2026) Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle, version 1.0
 
