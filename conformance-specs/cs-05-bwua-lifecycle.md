@@ -107,7 +107,7 @@ In scope:
 Out of scope (handled elsewhere):
 
 - The issuance protocol itself (CS-01 [10]); the presentation protocol itself (CS-02 [11]); remote signing mechanics (CS-03 [12]); natural-person WUA specifics (CS-04 [13]).
-- Trust anchoring and organisation-registration discovery (Handled separately).
+- Trust anchoring and organisation-registration discovery (Handled separately). CS-05 requires an Issuer to verify the Business Wallet Provider's certificate against the Wallet Provider Trust List (section 7.3), but does not define how that Trust List is established, populated or discovered.
 
 # 3. Normative Language
 
@@ -376,9 +376,10 @@ BWU **MUST**:
 
 Issuer **MUST**:
 
-1. Verify the Business Wallet Provider's signature on the BWIA and SKA and check their status (section 7.2) before issuing.
-2. Verify the Stage A binding (the Access Token is sender-constrained to the BWIA `cnf` key) and the Stage B binding (proof of possession of an SKA-attested key).
-3. Where presentation during issuance is requested, verify the counterparty presentation, its holder binding, and that it is bound to the same issuance session, before issuing.
+1. Verify that the Business Wallet Provider's signing certificate, taken from the `x5c` JOSE header of the BWIA and SKA (Annex A), chains to a trust anchor on the Wallet Provider Trust List, and reject the attestation where it does not.
+2. Verify the Business Wallet Provider's signature on the BWIA and SKA and check their status (section 7.2) before issuing.
+3. Verify the Stage A binding (the Access Token is sender-constrained to the BWIA `cnf` key) and the Stage B binding (proof of possession of an SKA-attested key).
+4. Where presentation during issuance is requested, verify the counterparty presentation, its holder binding, and that it is bound to the same issuance session, before issuing.
 
 ## 7.4 Discovery
 
@@ -666,7 +667,7 @@ This annex is **informative**. Key binding at issuance and holder binding at pre
 
 1. The BWU generates the key pair inside the HSM; the private key never leaves it.
 2. In the Credential Request, the `jwt` proof carries the SKA in its `key_attestation` header and is signed by a key listed in `attested_keys`, presenting the public key and proving possession in one step (section 7.3).
-3. The Issuer verifies the SKA against the trusted list, reads `key_storage` and `certification` (the HSM protection level) and `user_authentication` (TS3 [3], clause 2.3.2), and verifies the proof of possession.
+3. The Issuer verifies the SKA against the Wallet Provider Trust List, reads `key_storage` and `certification` (the HSM protection level) and `user_authentication` (TS3 [3], clause 2.3.2), and verifies the proof of possession.
 4. The Issuer embeds the holder public key in the credential `cnf` claim (RFC 7800 [17]) and signs the credential, for example an SD-JWT-VC [16]. The credential is now bound to that HSM-held key.
 
 The credential `cnf` claim (illustrative):
@@ -697,7 +698,7 @@ The KB-JWT (illustrative, SD-JWT-VC [16]):
 
 1. HSM to BWU: the public key, the private key never leaving the HSM.
 2. BWU to Issuer: Credential Request, with the `jwt` proof signed by an SKA-attested key, together with the SKA and the BWIA-bound Access Token obtained in Stage A (section 6.4).
-3. Issuer: verifies the SKA on the trusted list, the key custody and authentication level, and the proof of possession.
+3. Issuer: verifies the SKA on the Wallet Provider Trust List, the key custody and authentication level, and the proof of possession.
 4. Issuer to BWU: the credential with `cnf` set to the attested public key, signed by the Issuer.
 5. Verifier to BWU: presentation request with `nonce` and audience.
 6. BWU: signs a KB-JWT in the HSM under the organisation access control.
@@ -714,7 +715,7 @@ sequenceDiagram
   Note over S,I: Key binding (issuance)
   S->>W: public key<br/>(private key never leaves the HSM)
   W->>I: Credential Request, jwt proof signed by an<br/>SKA-attested key, plus the SKA and the<br/>BWIA-bound Access Token (Stage A)
-  Note over I: verify SKA on trusted list,<br/>key custody and authentication level,<br/>verify proof of possession
+  Note over I: verify SKA on Wallet Provider Trust List,<br/>key custody and authentication level,<br/>verify proof of possession
   I->>W: Credential with cnf as the attested<br/>public key, signed by the Issuer
   end
   rect rgb(227, 242, 253)
