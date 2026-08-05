@@ -175,7 +175,7 @@ This overview is non-normative; the binding requirements are in sections 7.1 and
 
 - Creates and signs each BWIA and SKA (ES256, ES384, or ES512) with the required claims (TS3 [3], clauses 2.6, 2.3.1, and 2.3.2),
 - Ensures the BWU has BWIAs available **as needed** for issuance, and that a given BWIA is used in **a single issuance process** and is **never shared across issuers**,
-- Keeps each BWIA **short-lived** (under 24 hours) and **single-use** for freshness and unlinkability, and issues **no long-lived SKA**; the provisioning cadence for high-volume services follows section 7.5,
+- Keeps each BWIA **short-lived** (under 24 hours) and ensures the BWU treats it as **single-use** for freshness and unlinkability, and issues **no long-lived SKA**; the provisioning cadence for high-volume services follows section 7.5,
 - **Maintains revocation status** via Token Status List [9], kept at least 31 days ahead of presentation and live until each entry's `exp`,
 - **Revokes** all status entries for a BWU on revocation, triggered by a detected security vulnerability in the wallet service or its operating environment, or by an authorised administrator request on behalf of the organisation.
 
