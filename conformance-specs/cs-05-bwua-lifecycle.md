@@ -150,7 +150,7 @@ The Business Wallet Provider tracks only the BWUAs it has issued, their status-l
 From the Business Wallet Provider's perspective, a BWUA has three states:
 
 - **Issued**: the Business Wallet Provider has signed and issued the BWIA and SKA to the BWU; they remain in use until they expire or are revoked. The BWIA is deliberately short-lived, so a stale one cannot be reused.
-- **Expired**: the BWIA's time-to-live has elapsed.
+- **Expired**: the BWIA's or SKA's time-to-live has elapsed.
 - **Revoked**: the Business Wallet Provider has set the BWUA's status-list entry to revoked.
 
 Because BWUAs are short-lived and single-use, the Business Wallet Provider issues fresh BWUAs to the BWU as needed; each fresh BWUA is a **new instance** of this lifecycle, not a reactivation of an expired one. For high-volume services, the provisioning cadence is profiled under section 6.6. Independent of any single BWUA's time-to-live, the Business Wallet Provider maintains the revocation status entry until its expiration, keeping it at least 31 days ahead at presentation, so that Relying Parties can recheck it throughout the life of any credential issued against it. Lifecycle transitions are driven by the organisation administrator and the Business Wallet Provider rather than a single user.
