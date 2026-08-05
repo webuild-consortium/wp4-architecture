@@ -108,6 +108,7 @@ Out of scope (handled elsewhere):
 
 - The issuance protocol itself (CS-01 [10]); the presentation protocol itself (CS-02 [11]); remote signing mechanics (CS-03 [12]); natural-person WUA specifics (CS-04 [13]).
 - Trust anchoring and organisation-registration discovery (Handled separately). CS-05 requires an Issuer to verify the Business Wallet Provider's certificate against the Wallet Provider Trust List (section 7.3), but does not define how that Trust List is established, populated or discovered.
+- Co-signature by a natural person alongside the BWU, and the session construction that would require.
 
 # 3. Normative Language
 
@@ -167,7 +168,7 @@ The Business Wallet Provider signs each BWIA and SKA as a JWT using ES256, ES384
 
 Key binding links an issued or held credential to a key that the BWU controls in the HSM. It is required whenever a credential must be cryptographically bound to such a key. Within a single issuance session, binding happens in two stages: **Stage A** binds the Access Token to the BWIA (attestation-to-session binding), and **Stage B** binds the issued credential to a key attested by the SKA (key binding), as specified below.
 
-For a server- or cloud-hosted wallet there is no single device to bind to, and a transaction may involve a natural-person counterparty presenting from a personal wallet. Stage A therefore binds the Access Token to the wallet-service instance rather than to a device: the BWU proves possession of the BWIA `cnf` key, held in the HSM, over a fresh Authorization Server nonce and the token request, and the Authorization Server issues an Access Token sender-constrained to that key following DPoP [14]. The binding is at the wallet-service-instance level and does not depend on which administrator or user drives the session. Where a natural person co-signs with the BWU, the session is established as an MLS group (MLS [15]) whose members' leaf signature keys are their attestation-bound keys, giving both parties shared freshness and replay protection across the server session. Stage B, binding a credential to an SKA-attested key, carries over from CS-04 [13] by analogy, with the keys held on the server side. The normative requirements are in section 7.3.
+For a server- or cloud-hosted wallet there is no single device to bind to, and a transaction may involve a natural-person counterparty presenting from a personal wallet. Stage A therefore binds the Access Token to the wallet-service instance rather than to a device: the BWU proves possession of the BWIA `cnf` key, held in the HSM, over a fresh Authorization Server nonce and the token request, and the Authorization Server issues an Access Token sender-constrained to that key following DPoP [14]. The binding is at the wallet-service-instance level and does not depend on which administrator or user drives the session. Stage B, binding a credential to an SKA-attested key, carries over from CS-04 [13] by analogy, with the keys held on the server side. The normative requirements are in section 7.3.
 
 ## 5.4 Business Wallet Provider responsibilities
 
@@ -223,15 +224,15 @@ Actors: Business Wallet Provider, BWU (Holder), HSM, Authorization Server (AS) a
 
 1. **Stage A**: the BWU obtains a fresh AS nonce, presents a valid BWIA, and proves possession of the BWIA `cnf` key held in the HSM over the nonce and the token request. This binds the Access Token to the wallet-service instance, the server-side analogue of the CS-04 DPoP-on-device binding.
 2. The AS issues a sender-constrained Access Token bound to the BWIA `cnf` key, independent of which administrator or user (section 4) drives the session.
-3. Where the Issuer requires a presentation as a condition of issuance (OpenID4VCI [5], via OpenID4VP [6]) and the requested holder is a natural person, that person presents from their personal wallet; the presentation is holder-bound (WUA-bound key, Annex B) into the same session. When the person co-signs with the BWU, the session is established as an MLS group (MLS [15]) whose members' leaf keys are their attestation-bound keys, thereby providing shared freshness and replay protection.
+3. Where the Issuer requires a presentation as a condition of issuance (OpenID4VCI [5], via OpenID4VP [6]) and the requested holder is a natural person, that person presents from their personal wallet; the presentation is holder-bound (WUA-bound key, Annex B) into the same session.
 4. **Stage B**: at the credential endpoint, the BWU proves possession of a key listed in the SKA `attested_keys` using the HSM; the issued credential is bound to that key.
 5. The Issuer verifies the Business Wallet Provider's signature on the BWIA and SKA, checks their status (section 6.2), and verifies the Stage A and Stage B proofs before issuing.
 
-**Freshness**: each session carries a fresh AS nonce (the MLS epoch where a group is used), and the BWIA is short-lived and single-use (sections 5.2 and 7.1), so a binding cannot be replayed.
+**Freshness**: each session carries a fresh AS nonce, and the BWIA is short-lived and single-use (sections 5.2 and 7.1), so a binding cannot be replayed.
 
 **Outcome**: the Access Token is bound to the wallet-service instance, and each issued credential is bound to an SKA-attested, HSM-protected key; when presentation is requested during issuance, a natural-person counterparty is holder-bound to the same session.
 
-Stage A uses attestation-based client authentication over a fresh Authorization Server nonce, with the resulting Access Token sender-constrained to the BWIA `cnf` key following DPoP [14]; the interface is profiled in section 8. Where a natural person co-signs, the MLS group construction and the mapping of attestation-bound keys to MLS leaf credentials follow CS-03 [12].
+Stage A uses attestation-based client authentication over a fresh Authorization Server nonce, with the resulting Access Token sender-constrained to the BWIA `cnf` key following DPoP [14]; the interface is profiled in section 8.
 
 ## 6.5 Discovery
 
@@ -371,8 +372,7 @@ BWU **MUST**:
 2. Ensure the attestation-to-session binding is at the wallet-service-instance level and does not depend on which administrator or user (section 4) drives the session.
 3. Bind each issued credential (Stage B) to a key listed in the `attested_keys` of a valid SKA by proving possession of that key using the HSM at the credential endpoint.
 4. Where the Issuer requires a presentation as a condition of issuance and the requested holder is a natural person, ensure that person's presentation is holder-bound into the same issuance session, carrying the session freshness value.
-5. Where a natural person co-signs with the BWU, establish the session as an MLS group whose members' leaf signature keys are their attestation-bound keys.
-6. Use each BWIA in a single issuance session and not reuse a Stage A or Stage B proof across sessions.
+5. Use each BWIA in a single issuance session and not reuse a Stage A or Stage B proof across sessions.
 
 Issuer **MUST**:
 
@@ -567,11 +567,9 @@ Profiles MUST NOT weaken the mandatory requirements in this specification.
 
 [14] IETF (2023) RFC 9449: OAuth 2.0 Demonstrating Proof of Possession (DPoP). Available at: https://datatracker.ietf.org/doc/html/rfc9449 (Accessed: 3 August 2026)
 
-[15] IETF (2023) RFC 9420: The Messaging Layer Security (MLS) Protocol. Available at: https://datatracker.ietf.org/doc/html/rfc9420 (Accessed: 3 August 2026)
+[15] IETF (2025) SD-JWT-based Verifiable Credentials (SD-JWT-VC). Available at: https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/ (Accessed: 3 August 2026)
 
-[16] IETF (2025) SD-JWT-based Verifiable Credentials (SD-JWT-VC). Available at: https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/ (Accessed: 3 August 2026)
-
-[17] IETF (2013) RFC 7800: Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs). Available at: https://datatracker.ietf.org/doc/html/rfc7800 (Accessed: 3 August 2026)
+[16] IETF (2013) RFC 7800: Proof-of-Possession Key Semantics for JSON Web Tokens (JWTs). Available at: https://datatracker.ietf.org/doc/html/rfc7800 (Accessed: 3 August 2026)
 
 # Annex A (informative): Example BWUA
 
@@ -668,7 +666,7 @@ This annex is **informative**. Key binding at issuance and holder binding at pre
 1. The BWU generates the key pair inside the HSM; the private key never leaves it.
 2. In the Credential Request, the `jwt` proof carries the SKA in its `key_attestation` header and is signed by a key listed in `attested_keys`, presenting the public key and proving possession in one step (section 7.3).
 3. The Issuer verifies the SKA against the Wallet Provider Trust List, reads `key_storage` and `certification` (the HSM protection level) and `user_authentication` (TS3 [3], clause 2.3.2), and verifies the proof of possession.
-4. The Issuer embeds the holder public key in the credential `cnf` claim (RFC 7800 [17]) and signs the credential, for example an SD-JWT-VC [16]. The credential is now bound to that HSM-held key.
+4. The Issuer embeds the holder public key in the credential `cnf` claim (RFC 7800 [16]) and signs the credential, for example an SD-JWT-VC [15]. The credential is now bound to that HSM-held key.
 
 The credential `cnf` claim (illustrative):
 
@@ -684,7 +682,7 @@ Profiled in CS-02 [11]; summarised here for context.
 2. The BWU signs a Key Binding JWT with the bound private key in the HSM; use of that key is authorised under the organisation role-based access control (section 4) rather than by a single device holder authentication.
 3. The Verifier verifies the KB-JWT against the `cnf` key inside the credential, checks `nonce` (anti-replay) and `aud` (intended verifier), and verifies the Issuer signature and the credential revocation status. The BWUA is not presented.
 
-The KB-JWT (illustrative, SD-JWT-VC [16]):
+The KB-JWT (illustrative, SD-JWT-VC [15]):
 
 ```json
 { "typ": "kb+jwt", "alg": "ES256" }
@@ -729,7 +727,7 @@ sequenceDiagram
 
 *Figure B.1: Key binding (issuance) and holder binding (presentation) for a business wallet. The SKA assures the Issuer that the `cnf` key is held in the HSM; the Verifier later checks the KB-JWT against that same key in the credential, not against the BWUA.*
 
-Where the requested holder is a natural person, or where that person co-signs with the BWU, the presentation comes from the personal wallet and is holder-bound into the same issuance session (section 6.4); the session-level construction is specified in section 5.3.
+Where the requested holder is a natural person, the presentation comes from the personal wallet and is holder-bound into the same issuance session (section 6.4).
 
 > Note: the two `cnf` uses are different. In the BWIA, `cnf` is the key that binds the issuance session (Stage A, section 7.3). In the issued credential, `cnf` is the holder key to which the credential is bound (this annex).
 
