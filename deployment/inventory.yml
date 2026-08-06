@@ -1,6 +1,0 @@
-all:
-  hosts:
-    mw-vm-ca01.lab:
-      ansible_user: cbadmin
-      ansible_become: true
-      ansible_become_method: sudo
