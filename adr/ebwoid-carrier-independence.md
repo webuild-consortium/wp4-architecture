@@ -33,6 +33,8 @@ What becomes more difficult?
 
 1. Implementers need to know which carrier(s) a given interaction expects, rather than assuming EBWOID always arrives as an SD-JWT VC.
 2. WP4 must explicitly resolve the EBWOID/BWUA composition question rather than leaving it to differ between rb-ebwoid v1.0.0 and bwua-ts3-attestation.md.
+3. EBW owners may not be able to hide whether they internally use an EBW or another WRP component.
+4. In this approach, the WRPRAC/WRPRC becomes an EAA, so a single provider becomes responsible for meeting EAA Provider requirements as well as WRPRAC/WRPRC Provider requirements.
 
 How do we address the risks introduced by this change?
 
