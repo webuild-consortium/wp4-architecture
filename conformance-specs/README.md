@@ -48,7 +48,7 @@ graph TB
     TestDev["Test development"] -- "New version test cases" --> ITB
 ```
 
-### Approved WBCSs
+### Approved WBCS
 
 <!--BEGIN INDEX-->
 | **WBCS #** | **WBCS Title**                                                                         |
@@ -58,15 +58,36 @@ graph TB
 | CS-003   | [Remote Qualified Signing with Wallet Units - v1.0](cs-03-remote-signing-with-wallet-units.md) |
 | CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle - v1.0](cs-04-wua-lifecycle.md) |
 | CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.0](cs-05-bwua-lifecycle.md) |
+| CS-007   | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) |
 <!--END INDEX-->
 
-### WBCSs Under Development
+### WBCS Under Development
 
 <!--BEGIN INDEX-->
-| **WBCS #** | **WBCS Title** |
-| -------- | ------------ |
-| CS-006   | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) |
-| CS-007   | [Credential Presentation and Issuance via the Digital Credentials API (Pre-flight)](cs-07-credential-presentation-dc-api.md) |
+| **WBCS #** | **WBCS Title**                                                                                                                      | **Status**         | **Priority** | **Target Date** |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------ | --------------- |
+| CS-006     | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) | 🟢 *In review*     | Must-have    | Aug 2026        |
+| CS-008     | [Identity Matching](https://github.com/webuild-consortium/wp4-architecture/issues/248)                                              | 🔵 *Investigating* | Must-have    | Aug 2026        |
+| CS-009     | [PID / EBWOID Issuance](https://github.com/webuild-consortium/wp4-architecture/issues/206)                                          | 🟡 *Drafting*      | Should-have  | Aug 2026        |
+| CS-010     | [Revocation mechanism](https://github.com/webuild-consortium/wp4-architecture/issues/188)                                           | 🟢 *In review*     | Should-have  | Aug 2026        |
+| CS-011     | [Remote QESeal creation](https://github.com/webuild-consortium/wp4-architecture/issues/167)                                         | 🟢 *In review*     | Must-have    | Sep 2026        |
+| CS-012     | [TS12 (SCA)](https://github.com/webuild-consortium/wp4-architecture/issues/210)                                                     | 🟡 *Drafting*      | Must-have    | Aug 2026        |
+| CS-014     | [Proximity / Offline profile](https://github.com/webuild-consortium/wp4-architecture/issues/251)                                    | 🔵 *Investigating* | Should-have  | Sep 2026        |
+| CS-015     | [QERDS - EBW Interface](https://github.com/webuild-consortium/wp4-architecture/issues/252)                                          | 🟢 *In review*     | Must-have    | Aug 2026        |
+| CS-016     | [Inter-QTSP Message Relay (QeRDS AS4)](https://github.com/webuild-consortium/wp4-architecture/issues/159)                           | 🟢 *In review*     | Low          | Aug 2026        |
+| CS-017     | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/issues/253)                                    | ⚪ *Not started*   | Must-have    | Sep 2026        |
+|            | [RP-QERDS interface](https://github.com/webuild-consortium/wp4-architecture/issues/254)                                             | 🟣 *Candidate*     | Low          | Jan 2027        |
 <!--END INDEX-->
 
+### Status Definitions 
+<!--BEGIN INDEX-->
+| Status | Description |
+|---|---|
+| **Not started** | No active work has started yet. |
+| **Investigating** | The topic is being investigated and potential approaches are being evaluated. |
+| **Drafting** | The specification is being drafted. |
+| **In review** | A concrete draft exists and is under review. |
+| **On hold** | Work has been temporarily paused. |
+| **Dropped** | The specification will not be taken forward. |
+<!--END INDEX-->
 
