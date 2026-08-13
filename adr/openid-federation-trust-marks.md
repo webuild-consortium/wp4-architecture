@@ -28,7 +28,7 @@ The `TrustAuthority` object is extended with two optional fields that apply when
 |-------|------|----------|-------------|
 | `frameworkType` | string | yes | (existing) Trust framework type. One of `aki`, `etsi_tl`, `openid_federation`. |
 | `value` | string | yes | (existing) Trust Anchor entity identifier (URI). |
-| `isLOTE` | boolean | no | (existing) Set `true` for ETSI List of Trusted Lists. Only applicable when `frameworkType` is `etsi_tl`. |
+| `isLoTE` | boolean | no | (existing) Set `true` for ETSI List of Trusted Lists. Only applicable when `frameworkType` is `etsi_tl`. |
 | `trustMarkId` | string | no | URI identifying a Trust Mark that the issuer MUST hold. Only applicable when `frameworkType` is `openid_federation`. |
 | `trustMarkIssuers` | array of strings | no | URIs of Trust Mark Issuers whose Trust Marks are accepted. If omitted, the Trust Mark MAY be issued by any entity trusted by the Trust Anchor. Only applicable when `trustMarkId` is present. |
 
