@@ -45,6 +45,7 @@ Date: 29 April 2026
     - [6.2.5 qesApproval Generation](#625-qesapproval-generation)
     - [6.2.6 Presentation Submission](#626-presentation-submission)
     - [6.2.7 Result Handling](#627-result-handling)
+  - [6.3 Wallet-Centric Signing Flow with Dedicated Protocol](#63-wallet-centric-signing-flow-with-dedicated-protocol)
 - [7. Normative Requirements](#7-normative-requirements)
   - [7.1 Wallet Unit Requirements](#71-wallet-unit-requirements)
     - [7.1.1 Wallet-Centric Model](#711-wallet-centric-model)
@@ -290,7 +291,7 @@ sequenceDiagram
 
 # 6. High-level Flows
 
-## 6.1 Wallet-Centric Signing Flow (qesRequest)
+## 6.1 Wallet-Centric Signing Flow with OID4VP (qesRequest)
 
 The subsections below apply to both the same-device and cross-device variants of the Wallet-Centric Signing Flow. The cross-device variant follows CS-02 [5] Section 6.2 (rather than Section 6.1) at each corresponding step. Where the two variants differ, the difference is noted inline.
 
@@ -429,6 +430,39 @@ As defined in CS-02 [5] Section 6.1.6 for the same-device variant (redirect with
 ### 6.2.7 Result Handling
 
 As defined in CS-02 [5] Section 6.1.7. After the QTSP validates the presentation and the `qesApproval` binding, the signature is created by the RSSP and returned to the Relying Party via the Relying Party ↔ QTSP interface, which is out of scope of this specification (see NOTE_CSRS_01).
+
+## 6.3 Wallet-Centric Signing Flow with Dedicated Protocol
+
+The subsections below apply to both the same-device and cross-device variants of the Wallet-Centric Signing Flow.
+
+The subsections below rely on the protocol for Wallet-Centric signing specified in Annex D of ETSI DRAFT EN 319 432 [8].
+The protocol is not a credential presentation protocol like OID4VP, but a request-response protocol for requesting a signature and retrieving the signed document.
+
+Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarifications and restrictions:
+
+* The Wallet Unit is Signer's driving application.
+* For transfer of the `requestToSign` object with same-device signing, the Relying Party and Wallet Unit:
+  * MUST support the deep link method (Section D.5.1.3 of ETSI DRAFT EN 319 432 [8]).
+  * MAY support the URI method (Section D.5.1.4 of ETSI DRAFT EN 319 432 [8]).
+* For transfer of the `requestToSign` object with cross-device signing, the Relying Party and Wallet Unit:
+  * MUST support the QR code method (Section D.5.1.5 of ETSI DRAFT EN 319 432 [8]).
+  * MAY support the NFC tag method (Section D.5.1.6 of ETSI DRAFT EN 319 432 [8]).
+* The `requestToSign` MUST contain expiry (`exp` property).
+* TODO: Specify requirements for the certificate associated with the key that signs `requestToSign`. Specify the root of trust to use.
+* When transferring the `requestToSign` with QR code:
+  * The QR code MUST encode a URI as specified in Section D.5.1.4 of ETSI DRAFT EN 319 432 [8].
+  * The Wallet Unit MUST be used to scan the QR code.
+* For transfer of the `signatureRequest`
+  * Both Relying Party and Wallet Unit MUST support the "HTTP" transfer mechanism documented in Section D.5.2.2.1 of ETSI DRAFT EN 319 432 [8].
+  * Wallet Unit SHOULD support the Wi-Fi Aware transfer mechanism documented in Section D.5.2.1.2 of ETSI DRAFT EN 319 432 [8].
+  * Relying Party SHALL support the Wi-Fi Aware transfer mechanism documented in Section D.5.2.1.2 of ETSI DRAFT EN 319 432 [8].
+  * Both Relying Party and Wallet Unit MAY support other transfer mechanisms.
+* Access to `signatureRequest` MUST be protected with PID based access control as defined in Section D.4.3 of ETSI DRAFT EN 319 432 [8]): 
+  * The `signatureRequestLocation.access` property of the `requestToSign` MUST be `https://uri.etsi.org/19432/2026/access/pid` (TODO: WE BUILD may define another identifier until the ETSI identifier has been registered).
+  * The PID presentation MUST be done with OID4VP according to CS-02 [5].
+  * TODO: WE BUILD may define a specific set of PID/EAA.
+* TODO: Access control to `documentReference` 
+* TODO: Will WE BUILD support the `whereToSign` field. If not, add the following: The `whereToSign` field MUST be omitted or empty. Signer's driving application MUST always use a pre-configured signature creation application (i.e., no choice is displayed to the signer).
 
 # 7. Normative Requirements
 
@@ -754,3 +788,5 @@ Conformance of a **Qualified Trust Service Provider** operating a Remote Signing
 [6] EWC Consortium (2025). RFC-010: Document Signing on a Remote Signing Service Provider using Long-Term Certificates, version 1.1. Available at: https://github.com/EWC-consortium/eudi-wallet-rfcs/blob/main/ewc-rfc010-long-term-certifice-qes-creation.md (Accessed: 5 March 2026).
 
 [7] ETSI EN 319 102-1. Electronic Signatures and Trust Infrastructures (ESI); Procedures for Creation and Validation of AdES Digital Signatures; Part 1: Creation and Validation.
+
+[8] ETSI DRAFT EN 319 432. Electronic Signatures and Trust Infrastructures (ESI); Protocols for remote digital signature creation, version 1.3.3. Published July 2027. Available at: https://docbox.etsi.org/ESI/Open/Latest_Drafts/ETSI%20DRAFT%20EN_319_432v1.3.3-public.pdf
