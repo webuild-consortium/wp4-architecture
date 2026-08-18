@@ -546,34 +546,36 @@ Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarificatio
     * The `signatureRequestLocation.access` property of the `requestToSign` MUST be `https://uri.etsi.org/19432/2026/access/pid` (TODO: WE BUILD may define another identifier until the ETSI identifier has been registered).
     * The PID presentation MUST be done with OID4VP according to CS-02 [5].
     * TODO: WE BUILD may define a specific set of PID/EAA.
-* Access to `documentReference` MUST be allowed to clients that have been authorised to access `signatureRequest`.
-* Access to `documentReference` MUST be denied to clients that have not been authorised.
+* Access to the document referenced by `documentReference` MUST be allowed to clients that have been authorised to access `signatureRequest`.
+* Access to the document referenced by `documentReference` MUST be denied to clients that have not been authorised.
 
 # 7. Normative Requirements
 
 ## 7.1 Wallet Unit Requirements
 
-In addition to all requirements in CS-02 [5] Section 7.1, Wallet Units MUST support at least one of the following models:
+Wallet Units MUST support at least one of the following models:
 
-- the Wallet-Centric Model, as defined in Section 7.1.1, or
-- the QTSP-Centric Model, as defined in Section 7.1.2.
+- the Wallet-Centric Model, as defined in Section 7.1.1,
+- the QTSP-Centric Model, as defined in Section 7.1.2, or
+- the Wallet-Centric Model, as defined in Section 7.1.4.
 
-Wallet Units MAY support both models. A Wallet Unit that supports a given model MUST comply with all requirements specified for that model.
+Wallet Units MAY support several models. A Wallet Unit that supports a given model MUST comply with all requirements specified for that model.
 
 Wallet Units MUST support `certificateLifecycle = "long_term"` for any signing model they conform to. Support for `certificateLifecycle = "short_lived"` is OPTIONAL; Wallet Units that claim short-lived support MUST additionally comply with Section 7.1.3.
 
-### 7.1.1 Wallet-Centric Model
+### 7.1.1 Wallet-Centric Model with OpenID4VP
 
 Wallet Units MUST:
 
-1. Support the CSC X.509 credential format (`https://cloudsignatureconsortium.org/2025/x509`).
-2. Process `qesRequest` transaction data as defined in CSC-DMB [3] Section 6.2.1.
-3. Verify document integrity against `checksum` when both `href` and `checksum` are present.
-4. Support `data:` URIs with base64 encoding in `href`.
-5. Display the signing-specific consent information defined in Section 6.1.4.
-6. Generate AdES signatures per the specified `signature_format` and `conformance_level`.
-7. Support inline response delivery via `documentWithSignature` or `signatureObject`.
-8. Support out-of-band response delivery via `responseURI`.
+1. Support all requirements in CS-02 [5] Section 7.1.
+2. Support the CSC X.509 credential format (`https://cloudsignatureconsortium.org/2025/x509`).
+3. Process `qesRequest` transaction data as defined in CSC-DMB [3] Section 6.2.1.
+4. Verify document integrity against `checksum` when both `href` and `checksum` are present.
+5. Support `data:` URIs with base64 encoding in `href`.
+6. Display the signing-specific consent information defined in Section 6.1.4.
+7. Generate AdES signatures per the specified `signature_format` and `conformance_level`.
+8. Support inline response delivery via `documentWithSignature` or `signatureObject`.
+9. Support out-of-band response delivery via `responseURI`.
 
 Wallet Units MUST NOT:
 
@@ -584,13 +586,14 @@ Wallet Units MUST NOT:
 
 Wallet Units MUST:
 
-1. Support the SD-JWT VC credential format for credentials that carry the `org.cloudsignatureconsortium.dm.1.qesApproval` claim as defined in CSC-DMB [3] Section 7.2.1.2.
-2. Process `qesApprovalRequest` transaction data as defined in CSC-DMB [3] Section 7.1.
-3. Verify that the OpenID4VP `client_id` resolves to a QTSP in the applicable trust framework, and verify the Request Object signature against that QTSP's published metadata.
-4. Verify document integrity against `checksum` when both `href` and `checksum` are present in a `documentInfos` entry.
-5. Compute the `qesApproval` value as defined in CSC-DMB [3] Section 7.2.1.2 and carry it in the Key Binding JWT as a top-level claim `org.cloudsignatureconsortium.dm.1.qesApproval`.
-6. Display the signing-specific consent information defined in Section 6.2.4.
-7. Interoperate with both the single-request pattern (PID and `qesApprovalRequest` bundled in one OpenID4VP authorization request) and the separate-request pattern (PID presentation followed by a `qesApprovalRequest` authorization request).
+1. Support all requirements in CS-02 [5] Section 7.1.
+2. Support the SD-JWT VC credential format for credentials that carry the `org.cloudsignatureconsortium.dm.1.qesApproval` claim as defined in CSC-DMB [3] Section 7.2.1.2.
+3. Process `qesApprovalRequest` transaction data as defined in CSC-DMB [3] Section 7.1.
+4. Verify that the OpenID4VP `client_id` resolves to a QTSP in the applicable trust framework, and verify the Request Object signature against that QTSP's published metadata.
+5. Verify document integrity against `checksum` when both `href` and `checksum` are present in a `documentInfos` entry.
+6. Compute the `qesApproval` value as defined in CSC-DMB [3] Section 7.2.1.2 and carry it in the Key Binding JWT as a top-level claim `org.cloudsignatureconsortium.dm.1.qesApproval`.
+7. Display the signing-specific consent information defined in Section 6.2.4.
+8. Interoperate with both the single-request pattern (PID and `qesApprovalRequest` bundled in one OpenID4VP authorization request) and the separate-request pattern (PID presentation followed by a `qesApprovalRequest` authorization request).
 
 Wallet Units MUST NOT:
 
@@ -609,9 +612,23 @@ Wallet Units MAY support `certificateLifecycle = "short_lived"`. Where supported
 5. Refuse to reuse a short-lived credential once it has been used for a signature.
 6. Refuse a `qesRequest` or `qesApprovalRequest` whose `certificateLifecycle` value is not declared as supported for the matching `signatureQualifier`.
 
+### 7.1.3 Wallet-Centric Model with Dedicated Protocol
+
+Wallet Units MUST:
+
+1. Support transfer of `transferMechanisms` with deep link for same-device transfer (Section D.5.1.3 of ETSI DRAFT EN 319 432 [8]).. 
+2. Support transfer of `transferMechanisms` with QR code for cross-device transfer (Section D.5.1.5 of ETSI DRAFT EN 319 432 [8]).
+3. Support scanning of QR code.
+4. Support transfer of `requestToSign` with "HTTP" transfer mechanism for (Section D.5.2.2.1 of ETSI DRAFT EN 319 432 [8]).
+5. Validate `requestToSign` signature and expiry.
+6. Generate AdES signatures per the specified `signature_format` and `conformance_level`.
+
 ## 7.2 Relying Party Requirements
 
-These requirements apply to Relying Parties operating in the Wallet-Centric Model. In the QTSP-Centric Model, the Relying Party's obligations are limited to the Relying Party ↔ QTSP interface, which is out of scope of this specification (see NOTE_CSRS_01).
+These requirements apply to Relying Parties operating in the Wallet-Centric Model.
+In the QTSP-Centric Model, the Relying Party's obligations are limited to the Relying Party ↔ QTSP interface, which is out of scope of this specification (see NOTE_CSRS_01).
+
+### 7.2.1 OpenID4VP
 
 In addition to all requirements in CS-02 [5] Section 7.2, Relying Parties MUST:
 
@@ -624,6 +641,20 @@ In addition to all requirements in CS-02 [5] Section 7.2, Relying Parties MUST:
 Relying Parties MUST NOT:
 
 - Omit `signatureQualifier` from `qesRequest` objects.
+
+### 7.2.2 Dedicated Protocol
+
+Relying Parties MUST:
+
+1. Support transfer of `transferMechanisms` with deep link for same-device transfer (Section D.5.1.3 of ETSI DRAFT EN 319 432 [8])..
+2. Support transfer of `transferMechanisms` with QR code for cross-device transfer (Section D.5.1.5 of ETSI DRAFT EN 319 432 [8]).
+3. Encode QR codes as specified in Section D.5.1.4 of ETSI DRAFT EN 319 432 [8].
+4. Support transfer of `requestToSign` with "HTTP" transfer mechanism for remote retrieval (Section D.5.2.2.1 of ETSI DRAFT EN 319 432 [8]).
+5. Support transfer of `requestToSign` with Wi-Fi Aware transfer mechanism proximity retrieval (Section D.5.2.1.2 of ETSI DRAFT EN 319 432 [8]).
+6. Set expiry (`exp` property) of `requestToSign`.
+7. Restrict access to the `signatureRequest`.
+8. Restrict access to the document referenced by `documentReference`.
+9. Support OAuth2 authorisation for access to `signatureRequest` and document.
 
 ## 7.3 Remote Signing Service Provider Considerations
 
