@@ -180,9 +180,9 @@ The applicable lifecycle MUST be signalled by the `certificateLifecycle` member 
 
 # 5. Protocol Overview
 
-This specification applies the protocol baseline defined in CS-02 [5] Section 5 without modification, with the signing-specific additions in this section.
+## 5.1 Wallet-Centric Model with OpenID4VP
 
-## 5.1 Wallet-Centric Model
+This specification applies the protocol baseline defined in CS-02 [5] Section 5 without modification, with the signing-specific additions in this section.
 
 Additions on top of CS-02:
 
@@ -239,6 +239,8 @@ sequenceDiagram
 <br>
 
 ## 5.2 QTSP-Centric Model
+
+This specification applies the protocol baseline defined in CS-02 [5] Section 5 without modification, with the additions in this section.
 
 Additions on top of CS-02:
 
@@ -305,6 +307,64 @@ sequenceDiagram
 > **NOTE_CSRS_03** CSC-DMB [3] Section 7.1 Note 16 explicitly warns that the `qesApprovalRequest` transaction data type may change in future versions. Implementations of this specification SHOULD be prepared to track those changes.
 
 > **NOTE_CSRS_04** ISO/IEC 18013-5 and ISO/IEC 18013-7 credential formats will be considered in subsequent versions based on use case requirements.
+
+## 5.3 Wallet-Centric Model with Dedicated Protocol
+
+The protocol is described in Annex D of ETSI DRAFT EN 319 432 [8].
+All requirements from Annex D of ETSI DRAFT EN 319 432 [8] apply.
+
+High-level steps:
+
+1. Relying Party creates `signatureRequest`, `requestToSign`, and `transferMechanisms` data objects.
+   Note that the data objects may be hosted at different locations. 
+2. Wallet Unit is invoked with the `transferMechanisms` data object.
+   Invocation could be done via deep link (same-device) or QR code (cross-device) or one of the other engagement protocols described in ETSI DRAFT EN 319 432 [8].
+3. Wallet Unit retrieves `requestToSign` according to one of the methods described in the `transferMechanisms` data object.
+4. Wallet Unit sends `requestToSign` to Signature Creation Application.
+   The Signature Creation Application may be integrated into the Wallet Unit, external on the same device, or remote.
+5. Signature Creation Application retrieves `signatureRequest` from the URI described in `requestToSign`.
+6. Signer reviews documents and consents.
+7. Signature Creation Application signs the document.
+   Signing can be done with a key stored in the wallet unit or at a remote QSCD.
+8. Signature Creation Application submits the signed document(s) to `responseURI` specified in the `signatureRequest`.
+
+The above flow is illustrated below:
+
+```mermaid
+sequenceDiagram
+  actor Signer
+  participant RP as Relying Party
+  participant WU as Wallet Unit
+  participant SCA as Signature Creation Application
+  activate RP
+  note over RP: 1. Prepares signatureRequest (signatureQualifier, doc hashes, checksums),<br/>requestToSign (signatureRequestLocation), and<br/>transferMechanisms data objects.
+  alt Same-device
+    RP->>+WU: 2. Present Deeplink or URI
+  else Cross-device
+    RP-->>Signer: 2. Display QR code or broadcast NFC tag
+    Signer->>WU: 2.1. Scan QR code or NFC tag
+  end
+  alt HTTPS
+    WU->>+RP: 3. Request requestToSign via HTTPS
+    RP-->>-WU: 3.1. requestToSign
+  else Wifi
+    WU->>+RP: 3. Request requestToSign via Wi-Fi Aware
+    RP-->>-WU: 3.1. requestToSign
+  else BLE
+  WU->>+RP: 3. Request requestToSign via Bluetooth
+  RP-->>-WU: 3.1. requestToSign
+  end
+  WU->>+SCA: 4. requestToSign
+  SCA->>+RP: 5. Request signatureRequest
+  RP-->>-SCA: 5.1. signatureRequest
+  SCA->>+Signer: 6. Review and consent 
+  Signer-->>-SCA: 6.1. Approve
+  SCA->>SCA: 7. Sign
+  SCA->>RP: 8. Signed Document
+  deactivate RP
+  SCA-->>-WU: Status OK
+  deactivate WU
+```
 
 # 6. High-level Flows
 
