@@ -66,20 +66,28 @@ Date: 29 April 2026
 
 # 1. Introduction
 
-This document defines the **WE BUILD Conformance Specification: Remote Qualified Signing with Wallet Units**, describing how Wallet Units (WU) and other actors interoperate to create qualified electronic signatures using OpenID for Verifiable Presentations (OpenID4VP) 1.0 [1] and the CSC Data Model Bindings [3].
+This document defines the **WE BUILD Conformance Specification: Remote Qualified Signing with Wallet Units**, describing how Wallet Units (WU) interact with other actors to create qualified electronic signatures.
+
+<!--
+TODO
+
+ using OpenID for Verifiable Presentations (OpenID4VP) 1.0 [1] and the CSC Data Model Bindings [3]
 
 This specification extends the WE BUILD Conformance Specification: Credential Presentation [5] (hereafter CS-02). All requirements defined in CS-02 apply unless explicitly superseded here. This document defines only the signing-specific additions.
+-->
 
 Two interaction models are specified:
 
-- **Wallet-Centric Model** — the Wallet Unit holds the signing key, and the signature is generated locally on the Signer's device using the CSC X.509 credential format and the `qesRequest` transaction data type.
+- **Wallet-Centric Model** — the Relying Party interacts with the Wallet Unit to request a signature. 
+                             The Wallet Unit handles the signing process either by signing with a local key or by invoking a remote Qualified Signature Creation Device (QSCD). 
 - **QTSP-Centric Model** — the signing key is held in a Qualified Signature Creation Device (QSCD) operated by a Qualified Trust Service Provider (QTSP). The Wallet Unit is used for Signer identification and signature authorization, using an SD-JWT VC credential that carries a `qesApproval` binding as defined in CSC-DMB [3] Section 7.2.1.2. CSC-DMB [3] Section 7.3 refers to this as the "Provider-centric model".
 
 > **NOTE_CSRS_00** In this specification, "remote" refers to the interaction pattern between the Signer and the other parties, in which signing-related requests and responses are exchanged over the network via OpenID4VP. In the Wallet-Centric Model, the Wallet Unit holds the signing key and generates the signature locally — "remote" does not imply a remote signing service in this model. In the QTSP-Centric Model, the signing key is held in a QSCD operated by the QTSP, and the signature is generated remotely upon authorization from the Signer.
 
-It covers:
+This document covers:
 
 - Signing request and response flows using the CSC `qesRequest` transaction data type [3] for the Wallet-Centric Model.
+- Signing request and response flows using the CSC `signatureRequest` data type [3] with the signing flow in Annex D of ETSI DRAFT EN 319 432 [8].
 - Signature authorization flows using the CSC `qesApprovalRequest` transaction data type [3] for the QTSP-Centric Model.
 - Support for the CSC X.509 credential format (Wallet-Centric Model) and the SD-JWT VC credential format with `qesApproval` binding (QTSP-Centric Model).
 - Signer consent requirements specific to qualified electronic signatures.
@@ -87,24 +95,32 @@ It covers:
 
 # 2. Scope
 
-This specification defines the conformance profile for remote qualified electronic signature creation. It applies in addition to CS-02 [5].
+This specification defines the conformance profile for remote qualified electronic signature creation. 
+The conformance specification CS-02 [5] apply to all OpenID4VP profiles in this specification.
 
 Requirements are defined for:
 
 - Wallet Units that respond to signing requests (Wallet-Centric Model) and signature authorization requests (QTSP-Centric Model).
 - Relying Parties that initiate signing requests in the Wallet-Centric Model.
 
-Mandatory features beyond CS-02:
+Mandatory features:
 
-**Wallet-Centric Model**
+**Wallet-Centric Model with OpenID4VP**
 
+- All requirements from CS-02 [5].
 - CSC `qesRequest` transaction data type [3].
 - CSC X.509 credential format (`https://cloudsignatureconsortium.org/2025/x509`).
 - AdES signature generation in the Wallet Unit.
 - Inline and out-of-band (`responseURI`) response delivery.
 
+**Wallet-Centric Model with Dedicated Protocol**
+
+- All requirements from Annex D of ETSI DRAFT EN 319 432 [8].
+- CSC `signatureRequest` data object [4].
+
 **QTSP-Centric Model**
 
+- All requirements from CS-02 [5].
 - CSC `qesApprovalRequest` transaction data type [3] Section 7.1.
 - SD-JWT VC credential format carrying the `qesApproval` binding as defined in [3] Section 7.2.1.2.
 
@@ -115,6 +131,7 @@ Mandatory features beyond CS-02:
 Out of scope:
 
 - All requirements already covered by CS-02 [5].
+- All requirements from Annex D of ETSI DRAFT EN 319 432 [8].
 - The CSC API endpoints used between a Relying Party and a QTSP in the QTSP-Centric Model (for example `signatures/signDoc` and `signatures/signHash`), and any QTSP-proprietary API used for the same purpose.
 - The identification and registration procedures by which a Signer obtains a signing credential from a QTSP.
 - The credential used for signature request confirmation in the Wallet-Centric Model.
@@ -441,28 +458,36 @@ The protocol is not a credential presentation protocol like OID4VP, but a reques
 Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarifications and restrictions:
 
 * The Wallet Unit is Signer's driving application.
-* For transfer of the `requestToSign` object with same-device signing, the Relying Party and Wallet Unit:
+* For transfer of the `transferMechanisms` object with same-device signing, the Relying Party and Wallet Unit:
   * MUST support the deep link method (Section D.5.1.3 of ETSI DRAFT EN 319 432 [8]).
   * MAY support the URI method (Section D.5.1.4 of ETSI DRAFT EN 319 432 [8]).
-* For transfer of the `requestToSign` object with cross-device signing, the Relying Party and Wallet Unit:
+* For transfer of the `transferMechanisms` object with cross-device signing, the Relying Party and Wallet Unit:
   * MUST support the QR code method (Section D.5.1.5 of ETSI DRAFT EN 319 432 [8]).
   * MAY support the NFC tag method (Section D.5.1.6 of ETSI DRAFT EN 319 432 [8]).
-* The `requestToSign` MUST contain expiry (`exp` property).
-* TODO: Specify requirements for the certificate associated with the key that signs `requestToSign`. Specify the root of trust to use.
-* When transferring the `requestToSign` with QR code:
+* When transferring the `transferMechanisms` with QR code:
   * The QR code MUST encode a URI as specified in Section D.5.1.4 of ETSI DRAFT EN 319 432 [8].
   * The Wallet Unit MUST be used to scan the QR code.
-* For transfer of the `signatureRequest`
-  * Both Relying Party and Wallet Unit MUST support the "HTTP" transfer mechanism documented in Section D.5.2.2.1 of ETSI DRAFT EN 319 432 [8].
+* For remote transfer of the `requestToSign` the Relying Party and Wallet Unit:
+  * MUST support the "HTTP" transfer mechanism documented in Section D.5.2.2.1 of ETSI DRAFT EN 319 432 [8].
+  * MAY support other transfer methods.
+* For proximity transfer of the `requestToSign`:
   * Wallet Unit SHOULD support the Wi-Fi Aware transfer mechanism documented in Section D.5.2.1.2 of ETSI DRAFT EN 319 432 [8].
   * Relying Party SHALL support the Wi-Fi Aware transfer mechanism documented in Section D.5.2.1.2 of ETSI DRAFT EN 319 432 [8].
   * Both Relying Party and Wallet Unit MAY support other transfer mechanisms.
-* Access to `signatureRequest` MUST be protected with PID based access control as defined in Section D.4.3 of ETSI DRAFT EN 319 432 [8]): 
-  * The `signatureRequestLocation.access` property of the `requestToSign` MUST be `https://uri.etsi.org/19432/2026/access/pid` (TODO: WE BUILD may define another identifier until the ETSI identifier has been registered).
-  * The PID presentation MUST be done with OID4VP according to CS-02 [5].
-  * TODO: WE BUILD may define a specific set of PID/EAA.
-* TODO: Access control to `documentReference` 
+* The `requestToSign` MUST contain expiry (`exp` property).
+* TODO: Specify requirements for the certificate associated with the key that signs `requestToSign`. Specify the root of trust to use.
 * TODO: Will WE BUILD support the `whereToSign` field. If not, add the following: The `whereToSign` field MUST be omitted or empty. Signer's driving application MUST always use a pre-configured signature creation application (i.e., no choice is displayed to the signer).
+* Access to `signatureRequest` MUST be restricted to authorised clients.
+  * The Relying Party MUST support OAuth2 access control as defined in Section D.4.2 of ETSI DRAFT EN 319 432 [8]):
+    * The `signatureRequestLocation.access` property of the `requestToSign` MUST be `https://uri.etsi.org/19432/2026/access/oauth2` (TODO: WE BUILD may define another identifier until the ETSI identifier has been registered).
+    * The authorisation server MUST support both same-device and cross-device authentication. 
+    * The authorisation server MUST request PID presentation with OID4VP according to CS-02 [5].
+  * The Relying Party SHOULD support PID based access control as defined in Section D.4.3 of ETSI DRAFT EN 319 432 [8]): 
+    * The `signatureRequestLocation.access` property of the `requestToSign` MUST be `https://uri.etsi.org/19432/2026/access/pid` (TODO: WE BUILD may define another identifier until the ETSI identifier has been registered).
+    * The PID presentation MUST be done with OID4VP according to CS-02 [5].
+    * TODO: WE BUILD may define a specific set of PID/EAA.
+* Access to `documentReference` MUST be allowed to clients that have been authorised to access `signatureRequest`.
+* Access to `documentReference` MUST be denied to clients that have not been authorised.
 
 # 7. Normative Requirements
 
