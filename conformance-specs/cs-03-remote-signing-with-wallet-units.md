@@ -515,9 +515,14 @@ The subsections below apply to both the same-device and cross-device variants of
 The subsections below rely on the protocol for Wallet-Centric signing specified in Annex D of ETSI DRAFT EN 319 432 [8].
 The protocol is not a credential presentation protocol like OID4VP, but a request-response protocol for requesting a signature and retrieving the signed document.
 
-Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarifications and restrictions:
+Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the clarifications and restrictions in this section and subsections.
 
+Clarifications:
+* 
 * The Wallet Unit is Signer's driving application.
+
+### 6.3.1 Wallet Unit Invocation
+
 * For transfer of the `transferMechanisms` object with same-device signing, the Relying Party and Wallet Unit:
   * MUST support the deep link method (Section D.5.1.3 of ETSI DRAFT EN 319 432 [8]).
   * MAY support the URI method (Section D.5.1.4 of ETSI DRAFT EN 319 432 [8]).
@@ -527,6 +532,9 @@ Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarificatio
 * When transferring the `transferMechanisms` with QR code:
   * The QR code MUST encode a URI as specified in Section D.5.1.4 of ETSI DRAFT EN 319 432 [8].
   * The Wallet Unit MUST be used to scan the QR code.
+
+### 6.3.2 Request Signing From the Wallet Unit
+
 * For remote transfer of the `requestToSign` the Relying Party and Wallet Unit:
   * MUST support the "HTTP" transfer mechanism documented in Section D.5.2.2.1 of ETSI DRAFT EN 319 432 [8].
   * MAY support other transfer methods.
@@ -537,6 +545,9 @@ Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarificatio
 * The `requestToSign` MUST contain expiry (`exp` property).
 * TODO: Specify requirements for the certificate associated with the key that signs `requestToSign`. Specify the root of trust to use.
 * TODO: Will WE BUILD support the `whereToSign` field. If not, add the following: The `whereToSign` field MUST be omitted or empty. Signer's driving application MUST always use a pre-configured signature creation application (i.e., no choice is displayed to the signer).
+ 
+### 6.3.3 Request Signing from Signature Creation Application
+ 
 * Access to `signatureRequest` MUST be restricted to authorised clients.
   * The Relying Party MUST support OAuth2 access control as defined in Section D.4.2 of ETSI DRAFT EN 319 432 [8]):
     * The `signatureRequestLocation.access` property of the `requestToSign` MUST be `https://uri.etsi.org/19432/2026/access/oauth2` (TODO: WE BUILD may define another identifier until the ETSI identifier has been registered).
@@ -548,6 +559,19 @@ Annex D of ETSI DRAFT EN 319 432 [8] SHALL apply with the following clarificatio
     * TODO: WE BUILD may define a specific set of PID/EAA.
 * Access to the document referenced by `documentReference` MUST be allowed to clients that have been authorised to access `signatureRequest`.
 * Access to the document referenced by `documentReference` MUST be denied to clients that have not been authorised.
+
+### 6.1.4 Signer Consent
+
+The Signature Creation Application MUST display:
+
+- Relying Party identity.
+- A clear indication that a qualified electronic signature or seal will be created.
+- The trust framework identified by `signatureQualifier`.
+- The label of each document, or a clear indication that no label is provided.
+- Whether document integrity has been automatically verified.
+- The URI to which the signed response will be sent.
+
+The Signature Creation Application SHOULD provide a preview or rendering of the to-be-signed document(s) where technically feasible, to allow the Signer to verify the content before approving.
 
 # 7. Normative Requirements
 
