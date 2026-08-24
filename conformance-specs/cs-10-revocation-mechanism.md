@@ -46,7 +46,8 @@ This specification translates the ADR decision and the applicable legal and ARF 
 This specification defines the conformance expectations for the revocation of attestations issued within the WE BUILD ecosystem.
 
 * **In scope:**
-  * Revocation of PID, EBWOID and other attestations with a validity period longer than 24 hours
+  * Revocation of PID, EBWOID, QEAA and PuB-EAA with a validity period longer than 24 hours ([4] VCR_01, VCR_01b)
+  * Revocation of non-qualified EAAs whose Rulebook requires that EAA type to be revocable ([4] VCR_02)
   * Assignment of a status list reference at issuance time (herd-privacy-preserving allocation)
   * Publication of revocation status as signed Status List Tokens by the Issuer
   * Retrieval, caching and verification of revocation status by Relying Parties
@@ -61,7 +62,7 @@ This specification defines the conformance expectations for the revocation of at
   * The Attestation Revocation List (identifier/serial-number list) mechanism — see §9
   * The notification protocol between Authentic Sources and Issuers — see §9
   * Cascade revocation of attestations issued in reliance on a PID/EBWOID — see §9
-  * Non-revocable EAAs whose rulebooks exempt them from revocation
+  * Non-qualified EAAs whose Rulebook does not require that EAA type to be revocable ([4] VCR_02)
 
 # 3. Normative Language
 
@@ -171,7 +172,8 @@ Participating actors: Issuer, Wallet Provider, Wallet Unit, Holder.
 
 | ID | Requirement | Reference |
 |----|-------------|-----------|
-| ISS-RV-01 | The Issuer MUST implement this revocation mechanism for every attestation it issues with a validity period longer than 24 hours. | [2], [4] VCR_01, [5] |
+| ISS-RV-01 | The Issuer MUST implement this revocation mechanism for every PID, EBWOID, QEAA and PuB-EAA it issues with a validity period longer than 24 hours. | [2], [4] VCR_01, VCR_01b, [5] |
+| ISS-RV-01a | For a non-qualified EAA, the Issuer MUST implement this revocation mechanism where the Rulebook of that EAA type requires the type to be revocable. Where a Rulebook does not require the EAA type to be revocable, this specification does not apply to attestations of that type. | [4] VCR_02 |
 | ISS-RV-02 | The Issuer MUST include a `status` claim with a `status_list` reference (`uri` and `idx`) in the signed payload of every revocable attestation. | [1] §6, [7] |
 | ISS-RV-03 | The Issuer MUST assign a random status list and a random unused index within it to each revocable attestation, before the attestation is signed. Batch pre-allocation of randomized indices is RECOMMENDED for performance. | [2], [4] VCR_17, VCR_18 |
 | ISS-RV-04 | The Issuer MUST publish revocation status as a Status List Token signed by itself, publicly accessible without requester authentication. | [1] §5, [5] Article 5(7) |
@@ -272,7 +274,7 @@ In line with the pre-flight process [3], the following topics are deliberately l
 1. **Authentic Source → Issuer notification.** No standardized protocol exists yet for Authentic Sources to notify Issuers of data changes requiring revocation (the pending ETSI TS 119 478 work may affect this). Pre-flight testing uses Issuer-specific channels; report on what interface would be needed.
 2. **Wallet Provider → Issuer notification.** Direct notification of WUA revocation (as an alternative to the polling in ISS-RV-10) would need a new protocol or endpoint.
 3. **Holder-initiated revocation requests.** Report on the suitability of the OpenID4VCI Notification Endpoint versus dedicated endpoints for WU-RV-03.
-4. **Attestation Revocation List fallback.** ARF Topic 7 also describes an identifier-based Attestation Revocation List. The ADR [2] selects the Token Status List for WE BUILD; feedback is sought on whether an ARL fallback for constrained Relying Parties is needed.
+4. **Attestation Revocation List fallback.** ARF Topic 7 also describes an identifier-based Attestation Revocation List, but offers it only for ISO/IEC 18013-5-compliant attestations (VCR_01); VCR_01b does not list it among the methods available for the SD-JWT VC format used here. The ADR [2] selects the Token Status List for WE BUILD; feedback is sought on whether an ARL fallback for constrained Relying Parties is nevertheless needed.
 5. **Cascade revocation of dependent attestations.** Whether attestations issued in reliance on a PID/EBWOID (e.g. a professional permit) should be automatically revoked when the underlying PID/EBWOID is revoked remains under discussion in Task 5.
 6. **Publication latency.** Whether the 1-hour target of ISS-RV-05 is achievable and sufficient in practice.
 
@@ -293,7 +295,7 @@ Conformance testing for this pre-flight specification will be defined as part of
 | [1] | IETF (2026) OAuth Token Status List, draft-ietf-oauth-status-list-20 (Internet-Draft, OAuth WG). Available at: https://datatracker.ietf.org/doc/draft-ietf-oauth-status-list/20/ (Accessed: 10 July 2026). This specification pins this revision, aligned with CS-004 [8]. |
 | [2] | WE BUILD (2026) ADR: Attestation Revocation Mechanism. Available at: [../adr/attestation-revocation-mechanism.md](../adr/attestation-revocation-mechanism.md) |
 | [3] | WE BUILD (2026) ADR (pending): Pre-flight CS. Available at: [pre-flight CS ADR](https://github.com/webuild-consortium/wp4-architecture/pull/245) |
-| [4] | European Commission (2026) EUDI Wallet Architecture and Reference Framework, Annex 2, Topic 7: Attestation validity checks and revocation (VCR_xx requirements). Available at: https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/ (Accessed: 10 July 2026). |
+| [4] | European Commission (2026) EUDI Wallet Architecture and Reference Framework, Annex 2, Topic 7: Attestation revocation and revocation checking (VCR_xx requirements). Available at: https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/ (Accessed: 24 August 2026). |
 | [5] | European Commission (2024) Commission Implementing Regulation (EU) 2024/2977 on person identification data and electronic attestations of attributes, Article 5 (Revocation of person identification data). Available at: https://eur-lex.europa.eu/eli/reg_impl/2024/2977/oj (Accessed: 10 July 2026). |
 | [6] | European Commission (2024) Commission Implementing Regulation (EU) 2024/2979 on integrity and core functionalities, Article 7 (Revocation of wallet unit attestations). Available at: https://eur-lex.europa.eu/eli/reg_impl/2024/2979/oj (Accessed: 10 July 2026). |
 | [7] | OpenID Foundation (2025) OpenID4VC High Assurance Interoperability Profile (HAIP) 1.0. Available at: https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0.html (Accessed: 10 July 2026). |
