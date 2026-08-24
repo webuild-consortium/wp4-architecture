@@ -14,7 +14,8 @@ Date: 29 April 2026
 - Andrew Freund, D-Trust, Germany
 - Michelle Ludovici, DIGG, Sweden
 
-**Table of Contents**
+## Table of Contents
+
 - [WE BUILD - Conformance Specification: Remote Qualified Signing with Wallet Units](#we-build---conformance-specification-remote-qualified-signing-with-wallet-units)
 - [1. Introduction](#1-introduction)
 - [2. Scope](#2-scope)

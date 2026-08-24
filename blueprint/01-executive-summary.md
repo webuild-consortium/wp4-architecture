@@ -1,3 +1,7 @@
+---
+title: WE BUILD — Architecture & Integration Blueprint (D4.1)
+---
+
 # Executive Summary and Project Context
 ## Background
 [WE BUILD](https://webuildconsortium.eu/) is a [Large Scale Pilot (LSP)](https://ec.europa.eu/digital-building-blocks/sites/spaces/EUDIGITALIDENTITYWALLET/pages/694487808/What+are+the+Large+Scale+Pilot+Projects) funded by the European Commission. The project tests how the European Digital Identity (EUDI) Wallet and the European Business Wallet (EBW) can support cross-border business processes across the EU.

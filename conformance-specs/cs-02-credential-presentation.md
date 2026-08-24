@@ -11,7 +11,7 @@ Date: 30 April 2026
 * Nikolaos Triantafyllou, University of Aegean, Greece
 * Malin Norlander, Bolagsverket, Sweden
 
-Table Of Contents
+## Table Of Contents
 
 - [WE BUILD - Conformance Specification:  Credential Presentation](#we-build---conformance-specification--credential-presentation)
 - [1. Introduction](#1-introduction)
@@ -140,7 +140,7 @@ The request MUST be integrity‑protected (JAR‑style or equivalent).
 The Verifier redirects the user-agent to the WU using:
 
 ```
-openid4vp://present?request_uri=<URL>
+openid4vp://?request_uri=<URL>
 ```
 
 Wallet retrieves or validates the signed Presentation Request Object.
@@ -246,7 +246,7 @@ Wallets MUST:
 
 1. Support HAIP‑compliant OpenID4VP.
 2. Support the same‑device and cross‑device flows.
-3. Support openid4vp://present invocation.
+3. Support invocation via the `openid4vp://` custom URL scheme.
 4. Validate signed Presentation Requests.
 5. Implement SD‑JWT‑VC selective disclosure.
 6. Provide transparent Holder consent.
@@ -304,7 +304,7 @@ Example:
 
 
 ```
-openid4vp://present?request_uri=https://verifier.example.org/request/123
+openid4vp://?request_uri=https://verifier.example.org/request/123
 ```
 
 

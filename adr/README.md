@@ -27,6 +27,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 18. [QEAA Attestations and QERDS Documents](adr-qeaa-attestations-qerds-documents.md)
 19. [Credential Offer Endpoint Registry and Lookup Service](ebw-endpoint-lookup-service.md)
 20. [Business Wallet Unit Attestation based on TS3](bwua-ts3-attestation.md)
+21. [Pre-flight CS](pre-flight-CS.md)
 <!--END INDEX-->
 
 ## Supporting analysis
@@ -36,19 +37,47 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 
 ## ADR process for WE BUILD
 
+ADRs are handled through a timeboxed process to avoid proposals remaining open indefinitely.
+
+### 1. Intake – next Architecture Group (AG) meeting (max. 14 days)
+
+* checks that the ADR is ready for review;
+* identifies required stakeholders/reviewers; and
+* identifies whether additional approval is required for high-risk decisions.
+
+### 2. Review – max. 12 days
+
+Required stakeholders are requested as reviewers in GitHub.
+
+Feedback should identify any **blocking issues**. No response by the deadline is treated as no blocking objection.
+
+### 3. Decision – next AG meeting
+
+The AG decides to:
+
+* **Approve** – no unresolved blocking issues → merge.
+* **Iterate** – blocking issues remain → one iteration allowed.
+* **Reject** – insufficient support, maturity or relevance → close.
+
+Additional stakeholder engagement may exceptionally be requested if a required stakeholder has not had a reasonable opportunity to respond.
+
+After one iteration, the ADR is **approved or rejected**.
+
 ```mermaid
 stateDiagram-v2
-    state "Pull request (PR) with new ADR" as pr
-    state "PR ready to merge" as ready
-    state "Consortium decision" as merged
-    state "Proposal rejected" as rejected
+    [*] --> Intake: PR opened by any consortium member
+    Intake --> Review: Ready for review
+    Intake --> Rejected: Not ready / out of scope
 
-    [*] --> pr: Any consortium participant proposes
-    pr --> ready: Consortium participants review and share advice, authors improve the ADR including summarised advice
+    Review --> Decision: Max. 12 days
 
-    ready --> merged: WP4 Architecture group merges the PR
-    merged --> [*]
+    Decision --> Approved: No blocking issues
+    Decision --> Iteration: Blocking issues
+    Decision --> Rejected: Insufficient support
 
-    ready --> rejected: WP4 Architecture group closes the PR
-    rejected --> [*]
+    Iteration --> Approved: Issues resolved
+    Iteration --> Rejected: Issues remain
+
+    Approved --> [*]
+    Rejected --> [*]
 ```

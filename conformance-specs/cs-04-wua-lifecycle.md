@@ -12,7 +12,7 @@ Date: 15-June-2026
 - Miriam Weber, Procivis, Switzerland
 - Eelco Klaver, Credenco, Netherlands
 
-# Table of Contents
+## Table of Contents
 
 - [WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle](#we-build---conformance-specification-cs-04-individual-wallet-unit-attestation-wua-lifecycle)
 - [Table of Contents](#table-of-contents)

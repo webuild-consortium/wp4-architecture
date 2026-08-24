@@ -84,7 +84,7 @@ The [WE BUILD Conformance Specification for Credential Presentation](https://git
 
 ## Signature and Seal Integration
 
-Wallets in WE BUILD provide the ability to create qualified electronic signatures and seals. This section describes the various integration models. For reference, see the [QES documentation](#qes-documentation).
+Wallets in WE BUILD provide the ability to create qualified electronic signatures and seals. This section describes the various integration models. For reference, see the [QES documentation](https://github.com/webuild-consortium/wp4-qtsp-group/tree/main/docs/qes).
 
 WE BUILD supports both wallet-centric and QTSP-operated approaches for electronic signatures and seals. In both models, the wallet provides the user interaction layer, while cryptographic operations may take place either locally or in remote infrastructure operated by a QTSP.
 

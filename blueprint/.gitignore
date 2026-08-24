@@ -1,2 +1,11 @@
 *~
+*.html
+cs-*.md
+cs-*.qmd
+quarto-*.deb
+qtsp-main.zip
+wp4-qtsp-group-main/
 .venv/
+
+/.quarto/
+**/*.quarto_ipynb
