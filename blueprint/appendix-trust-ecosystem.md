@@ -80,7 +80,12 @@ graph TB
         RP[Relying Party<br/>Reg_25]
         EntitiesTitle ~~~ PID
         EntitiesTitle ~~~ AP
+        RP[Relying Party<br/>Reg_25]
+        RPI[Relying Party Intermediary<br/>Reg_25, RPI_01]
+        EntitiesTitle ~~~ PID
+        EntitiesTitle ~~~ AP
         EntitiesTitle ~~~ RP
+        EntitiesTitle ~~~ RPI
     end
 
     subgraph TL["Published Trusted Lists"]
