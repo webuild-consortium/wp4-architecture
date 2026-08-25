@@ -318,7 +318,7 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 *Blueprint steps 10-11: authenticate + retrieve.*
 
 1.	Optionally CA issues RPRC.
-2.	The CA issues RPAC as a PKCS#12 enciphered by the password selected at step 5.
+2.	The CA issues RPAC as a PKCS#12 enciphered by the password selected at §6.2.2 step 4.
 3.	The RA sends the RPAC together with the optional RPRC if produced by e-mail to the certificate receiver.
 4.	The RA send to the certificate receiver its revocation credentials and procedure.
 
