@@ -42,7 +42,7 @@ In line with the EUDI Wallet ARF, the WP4 Trust Group focuses on defining **arch
 
 - **[MVP+] (Extended prototype)**:  
   - Completes the remaining Task 1 onboarding and trust‑registry scenarios, including more advanced **evaluation, maintenance, revocation and discovery** cases.  
-  - Covers **richer combinations of participants and roles** (e.g. multiple types of Attestation Providers and more complex Relying Party ecosystems) while staying within the Task 2 trust framework and trust‑infrastructure schema.  
+  - Covers **richer combinations of participants and roles** (e.g. multiple types of Attestation Providers and more complex Relying Party ecosystems, including **Topic 52** intermediated presentation: Wallet ↔ RPI on behalf of RP; Wallet authenticates the intermediary WRPAC (**Reg_34a**) and **SHALL NOT** display intermediary trade names (**RPI_07**)) while staying within the WP4 Trust Registry Task 2 trust framework and trust-infrastructure schema.
   - May introduce **pilot‑specific configurations or conventions** (e.g. additional metadata, policy examples, or Trusted List extensions) as long as these remain compatible with the underlying ARF and ETSI models and are clearly marked as non‑normative.
 
 The **boundary of the working group** is therefore to: (a) define the trust‑infrastructure architecture, profiles, and flows needed for [MVP] and [MVP+]; (b) document how to apply ETSI TS 119 602/119 612/119 615 and the ARF in these scenarios; and (c) leave Member State policy choices (approval criteria, national extensions, operational SLAs) and long‑term production operation out of scope.
