@@ -36,7 +36,7 @@ This blueprint section mirrors the Task 2 responsibilities matrix so that archit
 In line with the EUDI Wallet ARF, the WP4 Trust Group focuses on defining **architectural patterns and profiles**, not on specifying Member State-specific policies or operating production infrastructure. To make this concrete, the trust and security work is scoped in two steps:
 
 - **[MVP] (Minimum Viable Prototype)**:  
-  - Implements the **core onboarding scenarios** from Task 1 (Subtask 1.1) for PID Providers, Attestation Providers, Wallet Providers, Relying Parties, and Certificate Authorities.  
+  - Implements the **core onboarding scenarios** from Task 1 (Subtask 1.1) for PID Providers, Attestation Providers, Wallet Providers, Relying Parties, and Certificate Authorities. **[MVP]** currently covers direct RP presentation (Wallet ↔ RP WRPAC / WRPRC in the request, **RPRC_19**). The WP4 Trust Registry Task 1 already includes intermediary indication and intermediary reference(s), including Service identifier (**RPRC_04**, **Reg_34a**). See WP4 Trust Group **UC-RPI-01**.
   - Implements the **basic trust‑registry scenarios** from Task 1 (Subtask 1.2) needed to create, publish and consume Trusted Lists / Lists of Trusted Entities and registry entries for these actors.  
   - Demonstrates end‑to‑end flows for **registration, access‑certificate issuance, trust‑anchor publication and consumption**, reusing the ARF and ETSI TS 119 602/119 612/119 615 patterns without introducing new normative profiles.
 
