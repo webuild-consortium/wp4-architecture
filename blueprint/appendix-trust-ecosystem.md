@@ -98,7 +98,8 @@ graph TB
 
     PID -->|Register with identification & entitlements<br/>Reg_01, Reg_19| Registrar
     AP -->|Register with identification & entitlements<br/>Reg_01, Reg_21| Registrar
-    RP -->|Register with identification & entitlements<br/>Reg_01, Reg_25| Registrar
+    RP -->|Register with identification, Services and entitlements<br/>Reg_01, Reg_10a, Reg_25| Registrar
+    RPI -->|Register self + each intermediated RP<br/>RPI_01, RPI_03, RPI_04, Reg_34a| Registrar
 
     WP -.->|MS notifies WP to Commission<br/>GenNot_01, WPNot_01, WPNot_02| ECNotify
     PID -.->|After registration, MS notifies PID Provider to Commission<br/>GenNot_01, PPNot_01, PPNot_02| ECNotify
