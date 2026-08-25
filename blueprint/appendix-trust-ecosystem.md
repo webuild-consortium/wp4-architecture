@@ -275,21 +275,56 @@ flowchart TB
 ```
 ### Relying Party Intermediaries in the Trust Ecosystem
 
-RPIs introduce an additional trust relationship layer:
+Intermediaries are a special class of Relying Party. Article 5b(10) of the European Digital Identity Regulation states that intermediaries acting on behalf of relying parties shall be deemed to be relying parties and shall not store data about the content of the transaction. An intermediary connects to Wallet Units on behalf of one or more **intermediated Relying Parties**, requests the attributes those parties need, forwards the presented attributes, and then deletes them. High-level requirements are in ARF Topic 52 (v3.0.0); certificate binding follows ETSI TS 119 475 and CIR (EU) 2025/848 as amended by CIR (EU) 2026/1730.
 
-**Direct Trust Relationships:**
-- RP → RPI (contractual service relationship)
-- RPI → QTSP/EAASP (trust list verification)
-- Wallet → Registration Authority or Registrar (RP-RPI relationship verification)
+**Protocol split:** **RPI WRPAC authenticates the channel** (bound to this RP/Service per **Reg_34a**); **RP WRPRC identifies the beneficiary**. Do not write that intermediated RPs “do not receive a WRPAC”. They do not **present** one in this flow and **will not need** one **for that role** (ARF §6.6.5).
 
-**Indirect Trust Relationships:**
-- Wallet → RP (via RPI validation and RP registration)
-- RP → Issuer (via RPI trust status checking)
+**Registration (two distinct acts):**
 
-**Critical Trust Requirements:**
-- RPIs must not store attribute data (Article 5b(10))
-- RPIs should meet TSP-equivalent security requirements
-- Validation performed by RPI must be reliably communicated to RP
+- The intermediary registers **itself** as a Relying Party, indicating that it intends to act as an intermediary (**RPI_01**, **Reg_26**). It obtains a **separate set of access certificates per intermediated RP**, each associated to that RP’s unique identifier and Service identifier (**Reg_34a**). A WRPRC may be issued to the intermediary for **direct** use of its own Services; it is **not** used in intermediated presentation (ARF §6.6.5; ETSI TS 119 475 §5.2.4 NOTE 4: WRPRCs are not issued for WRPs registered solely as intermediaries).
+- The intermediary then registers **each intermediated Relying Party** at a Registrar in the Member State where that Relying Party is established (**RPI_03**), providing legally valid evidence of the contractual relationship (**RPI_04**). WRPRCs are issued **automatically** per intended use × Service of the intermediated RP (**RPRC_09**), containing the association to the intermediary (**RPRC_04**). The intermediated RP indicates **which single WRPRC** to include (**RPI_05**).
+
+**Direct vs indirect trust.** Trust mediated by a trusted third party (Access CA, Trusted List / LoTE, Registrar, CAB / certification scheme) is **indirect**. Direct trust is only the bilateral operational or contractual relationship that is not established through those third parties.
+
+| Relationship | Kind | Mechanism |
+| :--- | :--- | :--- |
+| Intermediary ↔ intermediated Relying Party | **Direct** (contractual) | Principal–agent service contract. The Registrar records evidence of that contract (**RPI_04**); it does not create the relationship. |
+| Wallet Provider ↔ Wallet Instances | **Direct** (operational) | Deployment, WUA issuance, and instance lifecycle under the Wallet Provider. |
+| Wallet Unit → intermediary identity (channel) | **Indirect** | Validate the intermediary’s **WRPAC** against Access CA LoTE(s) (**RPA_04**, **RPI_06**, **Reg_34a**). |
+| Wallet Unit → intermediated RP identity, Service, intended use, and RPI–RP binding | **Indirect** | WRPRC **in the request** (**RPRC_19**, **RPRC_17**, **RPRC_17a**, **RPRC_21**). WRPRC association must match the intermediary WRPAC (**RPRC_04**; ETSI TS 119 475 §4.5). **RPRC_16**, **RPRC_18**, **RPRC_19a**, and **RPI_07a** are empty. |
+| Wallet Unit / RP / RPI → Credential Issuer | **Indirect** | PID Provider LoTE, MS QTSP TL, or Attestation Provider TL plus CAs (**OIA_12**–**OIA_15**). |
+| Credential Issuer → Wallet Solution | **Indirect** | Wallet Provider Trusted List compiled by the Commission from MS notification (**ISSU_19**, **ISSU_21** / **ISSU_28**, **ISSU_30**), after certification-scheme evaluation (CAB → scheme authority). |
+
+**Presentation transaction (ARF §6.6.5, RPI_05–RPI_10):**
+
+1. The intermediated RP asks the intermediary to request attributes and indicates **which single WRPRC** to include (**RPI_05**).
+2. The intermediary sends the presentation request with the **applicable WRPAC** (**Reg_34a**) and that **WRPRC by value** (**RPI_06**, **RPRC_19**).
+3. The Wallet Unit authenticates the intermediary via the WRPAC / Access CA LoTE, and verifies the intermediated RP and the RPI–RP association from the WRPRC (**RPRC_17**, **RPRC_17a**, **RPRC_04**). If the WRPRC is absent or invalid, warn the User at approval (**RPRC_17**).
+4. The Wallet Unit **SHALL NOT** display the intermediary or intermediary-Service trade names (**RPI_07**). It displays the **intermediated RP** and its Service.
+5. If the parties so agreed, the intermediary may perform PID/attestation validation on behalf of the RP (delegation of Article 5b(9) checks: **OIA_12**–**OIA_15**). What is validated is a contractual choice; the ARF does not mandate the RPI–RP interface, nor end-to-end encryption to the RP. Forward only to that RP; verify if agreed; delete immediately (**RPI_08**–**RPI_10**).
+6. The intermediary forwards attributes to the RP and **deletes** PIDs, attestations, and transaction-content data immediately (Article 5b(10); ARF §6.6.5).
+
+~~~~
+```mermaid
+sequenceDiagram
+    participant RP as Intermediated RP
+    participant RPI as Intermediary
+    participant W as Wallet Unit
+    participant ACA as Access CA LoTE
+    participant RCP as WRPRC Provider LoTE
+    participant ITL as Issuer TLs / LoTEs
+
+    RP->>RPI: Which WRPRC to include (RPI_05)
+    RPI->>W: Presentation request<br/>RPI WRPAC (Reg_34a) + RP WRPRC (RPRC_19)
+    W->>ACA: Validate RPI WRPAC (RPA_04)
+    W->>RCP: Validate RP WRPRC (RPRC_17, RPRC_17a, RPRC_04)
+    Note over W: Display intermediated RP only (RPI_07)
+    W-->>RPI: Presented attributes
+    opt Contractual delegation of Art. 5b(9)
+        RPI->>ITL: Validate PID / QEAA / PuB-EAA / EAA
+    end
+    RPI->>RP: Forward attributes (RPI_08/09)
+    Note over RPI: Delete transaction content (Art. 5b(10), RPI_10)
 - Wallet holders must be able to verify both RPI and RP identities
 
 ## Governance Responsibilities
