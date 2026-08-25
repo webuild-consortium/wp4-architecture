@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification: Issuance of Relying Party Access and Registration Certificates
 
 Version 1.0
-Date: 31 juillet 2026
+Date: 25 Août 2026
 Original Author: Jilles Van Oossanen
 Modified Proposal by : François CHASSERY
 
@@ -16,13 +16,9 @@ Modified Proposal by : François CHASSERY
   - [5.2 WRPAC Identifier Type](#52-wrpac-identifier-type)
   - [5.3 EBW-based Account Binding](#53-ebw-based-account-binding)
 - [6. High-level Flows](#6-high-level-flows)
-  - [6.1 Directory Discovery](#61-directory-discovery)
-  - [6.2 Account Creation with EBW Authentication](#62-account-creation-with-ebw-authentication)
-  - [6.3 Order Creation](#63-order-creation)
-  - [6.4 Order Finalization](#64-order-finalization)
-  - [6.5 Certificate Download](#65-certificate-download)
-  - [6.6 Certificate Revocation](#66-certificate-revocation)
-- [7. Normative Requirements](#7-normative-requirements)
+  - [6.1 Automated Issuance Process](#61-automated-issuance-process)
+  - [6.2 Direct Isssuance Process](#62-direct-issuance-process)
+ - [7. Normative Requirements](#7-normative-requirements)
   - [7.1 Common Requirements](#71-common-requirements)
   - [7.2 ACME Server (CA / RA)](#72-acme-server-ca--ra)
   - [7.3 ACME Client (WRP / EBW)](#73-acme-client-wrp--ebw)
@@ -45,7 +41,7 @@ Modified Proposal by : François CHASSERY
 
 # 1. Introduction
 
-This document defines the **WE BUILD Consortium Conformance Specification (CS)** for the issuance of Wallet-Relying Party Access Certificates (WRPACs) and, where applicable, Wallet-Relying Party Registration Certificates (WRPRCs) within the European Digital Identity Wallet ecosystem, using a protocol based on the Automatic Certificate Management Environment (ACME) as defined in RFC 8555 [1].
+This document defines the **WE BUILD Consortium Conformance Specification (CS)** for the issuance of Wallet-Relying Party Access Certificates (WRPACs) and, where applicable, Wallet-Relying Party Registration Certificates (WRPRCs) within the European Digital Identity Wallet ecosystem, and proposes either an automated issuance process using a protocol based on the Automatic Certificate Management Environment (ACME) as defined in RFC 8555 [1], or a direct issuance process relying on Web interfaces, electronic identifications means and digital signature.
 
 It profiles:
 
@@ -56,6 +52,8 @@ It profiles:
 * IETF RFC 8555 [1] — Automatic Certificate Management Environment (ACME)
 
 This specification uses the ACME protocol as a **technical implementation** for automation of the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4], as adopted by the WE BUILD Blueprint [5]. Section 9 provides an explicit mapping between the WE BUILD Blueprint issuance workflow and the ACME protocol operations.
+
+An alternative issuance process is described to allow WRP to obtain WRPC without using EBW nor ACME client.
 
 This specification focuses **only on direct issuance** of WRPACs to registered Wallet-Relying Parties. The ACME flow is preceded with EBW-based authentication and EBWOID verification to align with the Blueprint's requirements for user authentication via European Business Wallets. This document is used to build the WE BUILD Interoperability Test Bed Plus (ITB+) [6].
 
@@ -72,7 +70,7 @@ This specification defines:
 * An ACME protocol profile (based on RFC 8555) for the automated issuance of X.509-based Wallet-Relying Party Access Certificates, aligned with the WE BUILD Blueprint issuance process
 * Support for multi-instance issuance, enabling a single WRP to obtain separate WRPACs for multiple Relying Party Instances per the EUDI Wallet ARF v2.8 [15]
 * Requirements for:
-    * ACME Servers (TSP Certificate Authorities and Registration Authorities)
+    * ACME Servers operated by TSP acting as Certificate Authorities and Registration Authorities)
     * ACME Clients (Wallet-Relying Parties)
 * Protocol flows for:
     * Optional WRPRC issuance after registration of an authorized WRP
@@ -83,7 +81,7 @@ This specification defines:
 This specification does **not** cover:
 
 * Intermediary or multi-party issuance
-* Standalone WRPRC issuance (covered in a separate CS)
+* Standalone WRPRC issuance 
 * Production deployment requirements (conformity assessment, CAB audits, national policy extensions)
 * Proximity use cases for certificate presentation
 
@@ -103,6 +101,8 @@ The following terminology applies throughout this specification:
 * **EAA** — Electronic Attestation of Attributes.
 * **EBWOID** — European Business Wallet Organisational Identification Data, as defined in the WE BUILD EBWOID Attestation Rulebook [20]. Carries the organisation's unique identifier (`id`) and official name (`name`).
 * **Authorised representative** or **RP representative**: Individual acting on behalf of the RP
+* **Legal Representative** or **LR**: a natural person authorized by law or record registration to act on behalf of a legal person.
+* **Power of Attorney** or **POA**: written document digitally signed by the RL with an advanced or qualified signature to establish that RP representative is appointed to act on behalf of the RP.
 * **RP’s BACKEND**: IS of RP
 * **RP’s FRONTEND**: ACME client of RP
 * **TRUST LIST**: Trusted registry of accredited Relying Parties
@@ -113,23 +113,26 @@ This specification uses the following roles, mapped to both the ACME protocol an
 
 | ACME Role | Blueprint Role | Description |
 |---|---|---|
+| **User + EID** | The RP representative using an Electronic Identification Means of level substantial or higher as per eIDAS regulation. The EID needs to be completed by POA in this specification in the aim of user-authentication and proof of authority for account creation|
 | **User + EBW** | The RP representative using an European Business Wallet. The EBW plays a role in this specification of a user-authentication authority for EBW-based External Account Binding per RFC 8555 §7.3.4 [1]. |
-| **ACME Server** | **RA + CA** | The combined Registration Authority and Certificate Authority. The RA function handles identity verification, EBWOID validation, and RP list checks. The CA function handles certificate generation and signing. These MAY be separate systems behind a single ACME endpoint. |
+| **ACME Server** | **RA + CA** | The combined Registration Authority and Certificate Authority. For automated issuance process, the RA function handles identity verification, EBWOID validation, and RP list checks. The CA function handles certificate generation and signing. These MAY be separate systems behind a single ACME endpoint. |
 |**ACME CLIENT** **RP’s FRONTEND**| — | host or invocation environment for the ACME Client software |
 | — | **Mock Registrar (RA/TSP)** | In the WE BUILD pilot, participating TSPs acting as mock Registrars maintain the Lists of authorised RPs. This role is functionally equivalent to the Member State Registrar in the production eIDAS ecosystem. In production, this function is performed by the national Registrar of the Member State concerned per the eIDAS framework. |
 | **Wallet Unit** | — | The EUDI/Business Wallet that verifies WRPACs during RP authentication. Not involved in issuance. |
 
 Detailed role descriptions:
 
-* **User (RP Representative or authorised representative):** A natural person operating on behalf of the Wallet-Relying Party via the organisation's EBW. Authenticates via the EBW, which presents the organisation's EBWOID attestation (an EAA). Authorisation to obtain a certificate for the WRP follows from control of the organisation's EBW; this profile does not require a separate Power of Attorney or representative attestation.
-* **European Business Wallet (EBW):** The wallet application used to authenticate to the RA
-* **Registration Authority (RA):** The TSP component that verifies the organisation's identity by validating the EBWOID, requests additional attributes for the RPRC, and checks the RP's presence in the authorised RP lists. 
-* **Certificate Authority (CA):** The TSP component that generates and signs WRPAC and WRPRC certificates. Implemented as the ACME Server's certificate issuance backend.
+* **User (RP Representative or authorised representative):** A natural person operating on behalf of the Wallet-Relying Party via the organisation's EBW, or on interfaces of RPC Provider. 
+When WRP is using an EBW, User  Authenticates via the EBW, which presents the organisation's EBWOID attestation (an EAA). Authorisation to obtain a certificate for the WRP results from control of the organisation's EBW; this profile does not require a separate Power of Attorney or representative attestation.
+When the WRP does not use EBW, User Authenticates via its EID, and presents its POA. Authorisation to obtain a certificate for the WRP results from control of the POA together with the identity of the User. 
+* **European Business Wallet (EBW):** The wallet application used to authenticate to the RA in the automated issuance process.
+* **Registration Authority (RA):** The TSP component that verifies the organisation's identity, requests additional attributes for the RPRC, and checks the RP's presence in the authorised RP lists. 
+* **Certificate Authority (CA):** The TSP component that generates and signs WRPAC and WRPRC certificates. Implemented as the ACME Server's certificate issuance backend in the automated issuance process.
 * **Mock Registrar:** In the WE BUILD pilot, participating TSPs acting as mock Registrars establish and maintain the Lists of authorized Relying Parties. These lists serve as the functional equivalent of the national register of wallet-relying parties per the Blueprint [5] MVP governance model. The RA checks these lists during authorization. During ITB+ conformance testing, the WE BUILD RP List is served by the mock Registrar; in production, by the national Registrar of the Member State concerned.
 
 # 5. Protocol Overview
 
-The WE BUILD WRPAC issuance protocol uses the standard ACME framework (RFC 8555) where FQDN challenge will be disabled, in order to implement the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4] as adopted by the WE BUILD Blueprint [5].
+The WE BUILD WRPAC automated issuance protocol uses the standard ACME framework (RFC 8555) where domain-control challenge will be disabled, in order to implement the integrated issuance model described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 [4] as adopted by the WE BUILD Blueprint [5].
 
 The key adaptations are:
 
@@ -140,15 +143,15 @@ Trust List verification SHALL occur before EAB issuance.
 * **Multi-instance issuance**: a single WRP (`wrp-id`) MAY obtain multiple WRPACs, one per Relying Party Instance. Each instance is identified by an optional `instanceId` in the order (see §5.2).
 * * **Certificate profile**: the issued certificate is an X.509 v3 WRPAC conforming to CIR 2025/848 Annex IV and ETSI TS 119 411-8 v1.1.1 [3], with attribute content as specified in ETSI TS 119 475 v1.2.1 clause 5 [4].
 * **Certificate Transparency**: the ACME Server logs all issued certificates per RFC 9162 [7] (see §7.5 for deployment guidance).
-* **ACME Challenge**: this challenge is disabled and replaced by an internal control by CA that the DN of RPAC contains EBWOID without any change. 
+* **ACME Challenge**: this challenge is not used and replaced by an internal control by CA that the DN of RPAC contains EBWOID without any change. 
 
 All ACME messages are JSON payloads signed via JWS (RFC 7515 [8]), using JWK Thumbprints as specified in RFC 7638 [17], transported over HTTPS.
 
 > [!NOTE]
-> CS-RPAC_03: The choice of ACME provides a proven, standardised, and automatable protocol for certificate lifecycle management. It implements the integrated issuance workflow described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 (see Section 9) while enabling interoperability testing with off-the-shelf ACME tooling. The RA functions defined in the Blueprint are encapsulated within the ACME Server.
+> CS-RPAC_03: The choice of ACME provides a proven, standardised, and automatable protocol for automated certificate lifecycle management. It implements the integrated issuance workflow described in ETSI TS 119 475 v1.2.1 Annex D, Use Case 1 (see Section 9) while enabling interoperability testing with off-the-shelf ACME tooling. The RA functions defined in the Blueprint may be encapsulated within the ACME Server.
 > CS-RPAC_04: The choice of keeping standard ACME protocol but adding wrp-identifier will avoid to use a specific EWB for RP, and leave opened the opportunity of a complete ID and mandate verification by RA in the future.
->CS-RPAC_05: In the context of WEBUILD, RA will presume that the Id of the RP’s representative is true without performing a true identity verification conform to NCP Policy.
->CS-RPAC_06: In the context of WEBUILD, RA will consider that the authorised representative has an implicit mandate for requesting an NCP certificate.
+>CS-RPAC_05: In the context of automated issuance for WEBUILD, RA will presume that the Id of the RP’s representative is true without performing a true identity verification conform to NCP Policy.
+>CS-RPAC_06: In the context of automated issuance for WEBUILD, RA will consider that the authorised representative has an implicit mandate for requesting an NCP certificate.
 
 ## 5.1 ACME Resource Model
 
@@ -170,7 +173,7 @@ newAccount  newOrder  revokeCert  keyChange
               
 ```
 
-This profile follows RFC 8555 with the extensions defined in §5.2, §5.3. except that ACME Authorization and Challenge resources are not used. Authorization is performed during EAB provisioning and account creation.
+This profile follows RFC 8555 with the extensions defined in §5.2, §5.3. except that it intentionally replaces domain control validation with organisation control validation performed during EAB provisioning. Authorization is performed during EAB provisioning and account creation.
 
 ## 5.2 WRPAC Identifier Type
 
@@ -190,7 +193,7 @@ This profile follows RFC 8555 with the extensions defined in §5.2, §5.3. excep
 **Multi-instance issuance**: A single WRP identified by one `wrp-id` value MAY obtain multiple WRPACs, one per Relying Party Instance, in accordance with the Relying Party Instance model described in the EUDI Wallet ARF v2.8 [15]. Each order MAY include an optional `instanceId` string that uniquely identifies the specific Relying Party Instance within the WRP's deployment. When `instanceId` is provided:
 
 * If multi issuance is advertised the ACME Server MUST verify that the `instanceId` is distinct from all other currently valid WRPACs issued to the same `wrp-id`.
-* If multi issuance is advertised the issued WRPAC MUST include the `instanceId` as an Organisational Unit in the Subject's Common Name.
+* If multi issuance is advertised the issued WRPAC MUST include the `instanceId` as an Organisational Unit in the Subject's Distinguished Name.
 
 ## 5.3 EBW-based Account Binding
 
@@ -225,12 +228,14 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 
 # 6. High-level Flows
 
-## 6.1 Directory Discovery
+## 6.1 Automated Issuance Process
+
+### 6.1.1 Directory Discovery
 
 1. The ACME Client fetches the directory document via HTTPS GET.
 2. The directory includes metadata: `externalAccountRequired: true`
 
-## 6.2 Account Creation with EBW Authentication
+### 6.1.2 Account Creation with EBW Authentication
 
 **Pre-ACME phase (Blueprint steps 1-3):**
 
@@ -243,17 +248,13 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 7. Optionally CA issues RPRC.
 8. The RA issues EAB credentials to the EBW together with the optional RPRC if produced.
 
-
-> [!NOTE]
-> CS-RPAC_08: RPRC can be seen as a structured export of registration data, for instance formatted as a signed JWT. It seems then opportune to issue these just at the end of registration steps that check the content of the Trust List.
-
 **ACME phase:**
 
 8. The ACME Client generates an account key pair. 
 9. The ACME Client sends `newAccount` with the EAB binding.
 10. The ACME Server validates the EAB and creates the account.
 
-## 6.3 Order Creation
+### 6.1.3 Order Creation
 
 1. The ACME Client sends `newOrder` whose “identifier” value is ‘wrp-id’ and instanceID as an attribute
 
@@ -263,7 +264,7 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 3. For multi-instance issuance: the ACME Server MAY verify that the `instanceId` (if provided) is not already in use by a currently valid WRPAC for the same `wrp-id`.
 
 
-## 6.4 Order Finalization
+### 6.1.4 Order Finalization
 
 *Blueprint steps 6-9: order, issue, transmit, notify.*
 
@@ -275,20 +276,58 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 6. The order transitions to `valid` with a `certificate` URL.
 7. The ACME Server MAY send out-of-band notification to the RP representative.
 
-## 6.5 Certificate Download
+### 6.1.5 Certificate Download
 
 *Blueprint steps 10-11: authenticate + retrieve.*
 
 1. The ACME Client sends POST-as-GET to the `certificate` URL (authenticated via account key bound to EBW).
 2. The ACME Server returns the PEM certificate chain.
 
-## 6.6 Certificate Revocation
+### 6.1.6 Certificate Revocation
 
 1. Client-initiated: `revokeCert` request.
 2. Server-initiated: upon RP removal from the RP List, or upon revocation of a specific Relying Party Instance.
 3. For multi-instance deployments: revocation of one instance's WRPAC MUST NOT affect WRPACs issued to other instances of the same WRP.
 
+## 6.2 Direct Issuance Process
+
+### 6.2.1 Account Creation with EID Authentication
+
+**Registration phase (Blueprint steps 1-3):**
+
+1.	The User connects to the TSP's RA portal/service.
+2.	The User fills in RP identification information (i.e. Company Name, Organisation Identifier, address and points of contact).
+3.	The User registers himself as the Authorised Representative
+4.	The User uploads WRP evidences (proof of existence or registration, depending on the RP’s country regulation, and the POA)
+
+### 6.2.2 Order Creation
+
+1.	The User describes the certificate receiver.
+2.	The User fills in a RPAC certificate application
+3.	Optionally the User fills in a RPRC certificate application.
+4.	The user set a complex password for certificate retrieval.
+
+### 6.2.3 Order Validation
+
+1.	The RA validates the RP Identifier and verifies the organisation's identity.
+2.	The RA validates the presence of RP in Trust Lists (*Blueprint step 5: RP list check.*)
+3.	Optionally (Blueprint step 4): **[MVP+]** the RA collects  entitlements or types of entitlements in Trust Lists for WRPRC production. **[MVP]** RA MAY collects this information from RP out of band.
+
+### 6.2.4 Certificate Issuance
+
+*Blueprint steps 10-11: authenticate + retrieve.*
+
+1.	Optionally CA issues RPRC.
+2.	The CA issues RPAC as a PKCS#12 enciphered by the password selected at step 5.
+3.	The RA sends the RPAC together with the optional RPRC if produced by e-mail to the certificate receiver.
+4.	The RA send to the certificate receiver its revocation credentials and procedure.
+
+### 6.2.5 Certificate Revocation
+
+1.	Certificate receiver may use its revocation credentials to revoke RPAC according to RPC issuer procedure.
+
 > [!NOTE]
+> CS-RPAC_08: RPRC can be seen as a structured export of registration data, for instance formatted as a signed JWT. It seems then opportune to issue these just at the end of registration steps that check the content of the Trust List.
 > CS-RPAC_09: Renewal is out of scope of this specification; implementations are only required to support initial issuance and revocation.
 
 # 7. Normative Requirements
@@ -317,7 +356,6 @@ The ACME Server **MUST**:
 5. Support the order state transitions defined in RFC 8555 §7.1.6 "Status Changes" [1].
 6. Support `revokeCert`.
 7. Accept instanceId when multi-instance support is advertised
-
 
 The ACME Server **SHOULD**:
 
@@ -400,7 +438,7 @@ The ACME Server **MUST** support client-initiated (`revokeCert`) and server-init
 For multi-instance deployments, revocation of one instance's WRPAC MUST be scoped to that instance and MUST NOT affect WRPACs issued to other instances of the same WRP.
 
 As per notification of removal of an RP from Trust List, RA SHALL without delay:
-1.Delete EAB
+1.Delete EAB when RP has registered with the automated process
 2.Order revocation of all RP’s RPAC.
 
 > [!NOTE]
