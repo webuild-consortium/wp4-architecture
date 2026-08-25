@@ -160,7 +160,7 @@ According to the [EUDI Wallet ARF v3.0.0](https://eudi.dev/3.0.0/architecture-an
 
 - **Trusted Lists / Lists of Trusted Entities (LoTE)** (ETSI TS 119 612, TS 119 602) are pivotal trust anchors in the ecosystem. LoTE entries publish the keys and related metadata for the entity types described in the [Trust Ecosystem](#trust-ecosystem) (Wallet Providers, PID Providers, Attestation Providers, Access CAs, Registration Cert Providers). Validation of trust service outputs against these lists SHALL follow **ETSI TS 119 615** (procedures for using and interpreting EUMS national trusted lists).
 - **Access certificates** are issued by the Access Certificate Authority to registered PID Providers, Attestation Providers, Relying Parties, and intermediaries. Issuance SHALL comply with **ETSI TS 119 411-8**; the Authority SHALL comply with at least **ETSI EN 319 411-1** Normalised Certificate Policy (NCP) requirements. Each registering entity receives **at least one access certificate per Service** (**Reg_10a**, **Reg_33**, **Reg_34**). Intermediaries receive a **separate WRPAC set per intermediated RP** (**Reg_34a**, **RPI_01**). Access certificates authenticate entities in protocol exchanges and are validated by Wallet Units using the trust anchors in the Access CA LoTE entries.
-- **Registration certificates** (optional) may be issued by the Provider of Registration Certificates to detail registration status and entitlements. When the User opts to verify RP (or issuer) registration, Wallet Units use the registration certificate when provided and/or registry lookup, as specified in ARF RPRC_16 to RPRC_21.
+- **Registration certificates** **SHALL** be issued by the Provider of Registration Certificates after registration: one per intended use × Service for Relying Parties (**RPRC_09**); one per Service for PID/Attestation Providers (**RPRC_13**). The presentation request **SHALL** include a single WRPRC **by value** (**RPRC_19**). The Wallet SHALL verify that WRPRC (**RPRC_17**, **RPRC_17a**, **RPRC_21**); if it is absent or invalid, warn the User at approval. **RPRC_16**, **RPRC_18**, and **RPRC_19a** are empty in ARF v3.0.0. Registry APIs remain for publication (**Reg_03**, **Reg_06**).
 
 ### Key lifecycle and Trusted Lists
 
@@ -170,7 +170,9 @@ Key lifecycle for trust anchors and for services listed in Trusted Lists is refl
 
 Relying Parties (verifiers) **register with the Member State Registrar** before being able to securely identify themselves to Wallet Units. Registration includes identification data, the **attributes** the RP intends to request from Wallet Units, the **intended use** (purpose), and, if applicable, use of intermediaries. The Registrar approves the RP (per ARF Reg_25) and publishes the entry in the **Registry**. The **Access Certificate Authority** then issues access certificates to the RP as described under [Certificates and cryptographic anchors](#certificates-and-cryptographic-anchors), with a **separate access certificate per Relying Party Instance** (Reg_10a). Optionally, the Registrar may request a **registration certificate** from the Provider of Registration Certificates (RPRC_09) that summarises registration status and entitlements. Wallet Units authenticate RPs by validating RP access certificates against the Access CA trust anchors and by verifying registration and requested attributes in the Registry (RPA_04, RPRC_16, RPRC_21). The common API for RP registration information (e.g. TS5) and the common set of RP information (e.g. TS6) are specified in the EUDI Wallet technical specifications. Detailed flows and diagrams are in the WP4 Trust Group trust-infrastructure schema. Certificate issuance aspects are coordinated with the QTSP group.
 
-The following sequence illustrates how a Wallet Instance discovers and validates Relying Party policy during presentation (WRPAC = Relying Party Access Certificate; WRPRC = Relying Party Registration Certificate). Source: WP4 Trust Group, [wallet-policy-discovery](https://github.com/webuild-consortium/wp4-trust-group/blob/pol-disc/task2-trust-framework/wallet-policy-discovery.md).
+Relying Parties (verifiers) **register with the Member State Registrar** before being able to securely identify themselves to Wallet Units. Registration includes identification data, **Services** (**Reg_10a**), the **attributes** the RP intends to request, the **intended use** mapped to each Service (**Reg_10d**), and, if applicable, use of intermediaries. The Registrar approves the RP (per ARF **Reg_25**) and publishes the entry in the **Registry**. An intermediary registers itself as a Relying Party (**RPI_01**) and registers each intermediated RP with evidence of the contract (**RPI_03**, **RPI_04**). The **Access Certificate Authority** then issues access certificates **per Service** (**Reg_10a**, **Reg_33**, **Reg_34**); an intermediary receives a separate set per intermediated RP (**Reg_34a**). WRPRCs are issued **automatically** (**RPRC_09**). In an intermediated transaction the Wallet Unit authenticates the **intermediary’s WRPAC**, not the intermediated RP’s (**RPI_06**, **RPA_04**, **Reg_34a**); the intermediated RP is identified from the **WRPRC in the request** (**RPRC_19**, **RPRC_04**). Wallet Units authenticate a direct RP by validating its WRPAC against the Access CA trust anchors and by verifying the WRPRC in the same request (**RPA_04**, **RPRC_17**, **RPRC_21**). The common API for RP registration information (e.g. TS5) and the common set of RP information (e.g. TS6) are specified in the EUDI Wallet technical specifications. Detailed flows and diagrams are in the WP4 Trust Group trust-infrastructure schema (v0.9). Certificate issuance aspects are coordinated with the QTSP group.
+
+The following sequence illustrates how a Wallet Instance discovers and validates Relying Party policy during presentation (WRPAC = access certificate; WRPRC = registration certificate). Source: WP4 Trust Group, [EUDI Wallet Trust and Entitlement Discovery](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task2-trust-framework/eudi-wallet-trust-and-entitlement-discovery.md).
 
 ```mermaid
 sequenceDiagram
@@ -195,13 +197,31 @@ sequenceDiagram
         W->>NR: 8b. Query National Register<br/>by RP identifier from WRPAC
         NR-->>W: 9. Return RP WRPRC(s)
         Note over W: 10. Validate WRPRC signature
-    end
+    participant RP as Relying Party or Intermediary
+    participant TL as Trusted List
+    participant OCSP as OCSP/CRL Responder
+    participant RCStatus as WRPRC Status List API
+
+    RP->>W: 1. Presentation Request (WRPAC + WRPRC by value)
+    Note over W: 2. Extract WRPAC of the Wallet-facing party<br/>(RP or intermediary per Reg_34a)
+    W->>TL: 3. Fetch Trusted List
+    TL-->>W: 4. Trusted List Response
+    Note over W: 5. Validate WRPAC<br/>- Check CA in Access CA LoTE<br/>- Verify service status: granted
+    W->>OCSP: 6. HTTPS GET /ocsp or /crl<br/>for WRPAC status
+    OCSP-->>W: 7. OCSP/CRL HTTP Response
+
+    Note over W: 8. Validate WRPRC in the request (RPRC_17)<br/>- Verify WRPRC Provider in Trusted List<br/>- If intermediated: WRPRC shows this intermediary (RPRC_04, RPRC_17a)<br/>- If absent or invalid: warn User at approval
+    W->>RCStatus: 9. HTTPS GET /wrprc/status-list<br/>(WRPRC status check)
+    RCStatus-->>W: 10. Status List HTTP Response
+    Note over W: 11. Verify requested attributes in the same WRPRC (RPRC_21)
 
     W->>RCStatus: 11. HTTPS GET /wrprc/status-list<br/>(WRPRC status check)
     RCStatus-->>W: 12. Status List HTTP Response
 
     Note over W: 13. Extract and Verify Entitlements from WRPRC<br/>- Parse entitlements<br/>- Validate requested attributes against entitlements
 ```
+
+If the presentation is intermediated, the Wallet Unit authenticates the **intermediary’s WRPAC**, not the intermediated RP’s. The intermediated RP is identified from the **WRPRC in the request** (**RPRC_19**); the WRPRC association to the intermediary must match the authenticated WRPAC (**RPI_06**, **RPRC_04**, **RPRC_17a**; ETSI TS 119 475 §4.5). The Wallet **SHALL NOT** display the intermediary’s trade names (**RPI_07**). See [Relying Party Intermediaries in the Trust Ecosystem](#relying-party-intermediaries-in-the-trust-ecosystem).
 
 ## Validation Functions for Relying Parties
 
