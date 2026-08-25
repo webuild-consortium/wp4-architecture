@@ -1,6 +1,6 @@
 # WE BUILD - Conformance Specification: Issuance of Relying Party Access and Registration Certificates
 
-Version 1.0
+Version 1.1
 Date: 25 Août 2026
 Original Author: Jilles Van Oossanen
 Modified Proposal by : François CHASSERY
