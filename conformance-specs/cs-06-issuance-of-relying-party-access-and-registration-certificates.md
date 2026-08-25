@@ -20,8 +20,8 @@ Modified Proposal by : François CHASSERY
   - [6.2 Direct Isssuance Process](#62-direct-issuance-process)
  - [7. Normative Requirements](#7-normative-requirements)
   - [7.1 Common Requirements](#71-common-requirements)
-  - [7.2 ACME Server (CA / RA)](#72-acme-server-ca--ra)
-  - [7.3 ACME Client (WRP / EBW)](#73-acme-client-wrp--ebw)
+  - [7.2 ACME Server (CA / RA)](#72-acme-server-ca-ra)
+  - [7.3 ACME Client (WRP / EBW)](#73-acme-client-wrp-ebw)
   - [7.4 Certificate Profile](#74-certificate-profile)
   - [7.5 Certificate Transparency](#75-certificate-transparency)
   - [7.6 Revocation](#76-revocation)
@@ -113,8 +113,8 @@ This specification uses the following roles, mapped to both the ACME protocol an
 
 | ACME Role | Blueprint Role | Description |
 |---|---|---|
-| **User + EID** | The RP representative using an Electronic Identification Means of level substantial or higher as per eIDAS regulation. The EID needs to be completed by POA in this specification in the aim of user-authentication and proof of authority for account creation|
-| **User + EBW** | The RP representative using an European Business Wallet. The EBW plays a role in this specification of a user-authentication authority for EBW-based External Account Binding per RFC 8555 §7.3.4 [1]. |
+| **User + EID** | User EID |The RP representative using an Electronic Identification Means of level substantial or higher as per eIDAS regulation. The EID needs to be completed by POA in this specification in the aim of user-authentication and proof of authority for account creation|
+| **User + EBW** | User EBW |The RP representative using an European Business Wallet. The EBW plays a role in this specification of a user-authentication authority for EBW-based External Account Binding per RFC 8555 §7.3.4 [1]. |
 | **ACME Server** | **RA + CA** | The combined Registration Authority and Certificate Authority. For automated issuance process, the RA function handles identity verification, EBWOID validation, and RP list checks. The CA function handles certificate generation and signing. These MAY be separate systems behind a single ACME endpoint. |
 |**ACME CLIENT** **RP’s FRONTEND**| — | host or invocation environment for the ACME Client software |
 | — | **Mock Registrar (RA/TSP)** | In the WE BUILD pilot, participating TSPs acting as mock Registrars maintain the Lists of authorised RPs. This role is functionally equivalent to the Member State Registrar in the production eIDAS ecosystem. In production, this function is performed by the national Registrar of the Member State concerned per the eIDAS framework. |
@@ -342,11 +342,11 @@ Both ACME Client and ACME Server **MUST**:
 4. Implement nonce-based replay protection.
 
 ## 7.2 CA / RA
-###7.2.1 RA
-1.**MVP+** RA MUST authenticate RP and authorised representative through OID4VP protocol; **MVP** SHOULD authenticate RP and authorised representative through OID4VP protocol.
+### 7.2.1 RA
+1. **MVP+** RA MUST authenticate RP and authorised representative through OID4VP protocol; **MVP** SHOULD authenticate RP and authorised representative through OID4VP protocol.
 2. RA MUST verify WRP presence in the WE BUILD RP Lists before EAB credentials issuance (Blueprint step 5).
 
-###7.2.2 ACME Server
+### 7.2.2 ACME Server
 The ACME Server **MUST**:
 
 1. Publish an ACME directory at a well-known URL (see §7.9 for IANA considerations).
