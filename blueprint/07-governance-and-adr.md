@@ -11,19 +11,21 @@ To maintain alignment, the project uses a technical governance model based on co
 
 ```mermaid
 stateDiagram-v2
-    state "New ADR candidate" as pr
-    state "PR ready to merge" as ready
-    state "Consortium decision" as merged
-    state "Proposal rejected" as rejected
+    [*] --> Intake: PR opened by any consortium member
+    Intake --> Review: Ready for review
+    Intake --> Rejected: Not ready / out of scope
 
-    [*] --> pr: Any consortium participant proposes
-    pr --> ready: Review
+    Review --> Decision: Max. 12 days
 
-    ready --> merged: Merge the PR
-    merged --> [*]
+    Decision --> Approved: No blocking issues
+    Decision --> Iteration: Blocking issues
+    Decision --> Rejected: Insufficient support
 
-    ready --> rejected: Closes the PR
-    rejected --> [*]
+    Iteration --> Approved: Issues resolved
+    Iteration --> Rejected: Issues remain
+
+    Approved --> [*]
+    Rejected --> [*]
 ```
 
 ## WE BUILD Conformance Specifications (WBCS)
