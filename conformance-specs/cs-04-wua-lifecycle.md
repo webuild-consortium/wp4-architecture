@@ -415,7 +415,7 @@ Where each element comes from:
 JOSE header:
 
 ```json
-{ "alg": "ES256", "typ": "keyattestation+jwt", "x5c": ["<wallet provider signing certificate chain>"] }
+{ "alg": "ES256", "typ": "key-attestation+jwt", "x5c": ["<wallet provider signing certificate chain>"] }
 ```
 
 Payload:
@@ -437,6 +437,7 @@ Payload:
 
 Where each element comes from:
 - `alg` (ES256, ES384 or ES512) - TS-03 [3], clause 2.6.
+- `typ` (`key-attestation+jwt`) - OpenID4VCI [5], Appendix D.1
 - `attested_keys`, `key_storage`, `certification`, `key_storage_status` - TS-03 [3], clause 2.3.2.
 - `user_authentication` - OpenID4VCI [5], Appendix D, as referenced by TS-03 [3], clause 2.3.2.
 - Signing a `jwt` proof with the key at index 0 of `attested_keys` - TS-03 [3], clause 2.2.2.1.

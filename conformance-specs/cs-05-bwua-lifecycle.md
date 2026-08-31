@@ -626,7 +626,7 @@ JOSE header:
 ```json
 {
   "alg": "ES256",
-  "typ": "keyattestation+jwt",
+  "typ": "key-attestation+jwt",
   "x5c": ["<Business Wallet Provider signing certificate chain>"]
 }
 ```
@@ -651,6 +651,7 @@ Payload:
 Where each element comes from:
 
 - `alg` (ES256, ES384 or ES512) - TS3 [3], clause 2.6, as required by section 7.1.
+- `typ` (`key-attestation+jwt`) - OpenID4VCI [5], Appendix D.1
 - `attested_keys`, `key_storage`, `certification` and `key_storage_status` - TS3 [3], clause 2.3.2, applied to a cloud- or organisation-controlled HSM rather than a device WSCD.
 - `user_authentication` - OpenID4VCI [5], Appendix D, as referenced by TS3 [3], clause 2.3.2. For a business wallet it expresses the authentication level applied to the administrator or user operating the BWU (section 4), not that of a single device holder.
 - `key_storage_status.status` (type-shared or per-SKA index) - TS3 [3], clause 2.5.2, using the Token Status List [9], as required by section 7.2.
