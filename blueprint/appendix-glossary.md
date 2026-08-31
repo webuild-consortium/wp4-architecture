@@ -13,7 +13,9 @@ While this document avoids abbreviations as much as possible, commonly used abbr
 | **Attestation Rulebook**| - | A document describing the governance, requirements and semantic interpretation of a specific attestation type, including how credential data maps to vocabulary terms and schemas. |
 | **Authorised representative** | - | A person acting on behalf of the owner on the basis of an authorisation granted by the owner. |
 | **Blueprint** | — | The high-level architecture and integration document (D4.1) describing the WE BUILD ecosystem, architectural patterns, interaction flows and governance model. |
+| **Business document** | — | A document exchanged in a business transaction whose content is asserted by a party within a process (e.g. an invoice, despatch advice, catalogue). Distinct from an EAA: it is not an issuer-asserted, independently verifiable claim. |
 | **Business Wallet Unit Attestation** | BWUA | A specific type of Wallet Unit Attestation issued for a European Business Wallet (EBW) instance. |
+| **Data** | — | Facts represented in a formalised, machine-processable form, independent of any container or evidential role; the base layer that documents contain and EAAs carry as attributes. |
 | **EAA Provider** | — | An entity that relies on authentic sources of information to issue attestations to a wallet. |
 | **EBW Instance** | — | A unique deployment or installation of a European Business Wallet (EBW) solution, controlled by an Owner (legal person or economic operator). |
 | **EBW Provider** | — | A Wallet Provider specifically authorized to issue and manage European Business Wallets (EBW). |
@@ -21,6 +23,7 @@ While this document avoids abbreviations as much as possible, commonly used abbr
 | **EBW Owner Identification Data** | EBWOID | A set of attributes used to uniquely identify a legal person or economic operator within the European Business Wallet ecosystem. |
 | **Economic operator** | — | Any natural or legal person or public entity which offers products or services on the market; the primary user of the European Business Wallet. |
 | **Electronic Attestation of Attributes** | EAA / QEAA / PuB-EAA | Digital credentials that prove specific attributes (e.g., professional qualifications, representation rights) with either qualified (QEAA) or public sector body-issued (PuB-EAA) or non-qualified (EAA) legal status. |
+| **Electronic document** | — | A bounded container of content in electronic form (text, sound, visual or audiovisual); also referred to as a *digital document*. The generic concept, which also covers an EAA. A *structured document* is one whose content is also machine-actionable data (e.g. a Peppol BIS invoice). |
 | **Electronic Identification, Authentication and Trust Services** | eIDAS / eIDAS 2.0 | The legal framework for electronic identification and trust services for electronic transactions in the European Single Market. |
 | **European Business Wallet** | EBW | A wallet designed for economic operators or public sector bodies to manage business data such as mandates, electronic invoices, and administrative and professional documents and notifications. |
 | **European Digital Identity Wallet** | EUDI Wallet | A mobile or cloud-based solution for natural persons to manage and share identity data. |
@@ -34,12 +37,14 @@ While this document avoids abbreviations as much as possible, commonly used abbr
 | <del>**Legal Person Identification Data**</del> | LPID | See **EBW Owner Identification Data** instead. |
 | **Level of Assurance** | LoA | A classification of the degree of confidence in the electronic identification of a natural person, a legal person, or a natural person representing a legal person. Recognised levels are: Low, Substantial, High. |
 | **List of Trusted Lists** | LoTL | A list that references national or ecosystem Trusted Lists, allowing participants to discover and validate trusted entities. |
+| **Message** | — | A transport-level envelope carrying content between parties, distinct from its payload. In WE BUILD, legal-grade delivery of messages is provided through QERDS. |
 | **Natural Person** | — | An individual human being acting in their own capacity. |
 | **Owner** | — | The legal person or economic operator that has legal control over and responsibility for an EBW Instance. |
 | **Personal Identification Data** | PID | A mandatory set of attributes issued to a natural person to uniquely identify them at Level of Assurance (LoA) High. |
 | **PID Provider** | — | An entity responsible for verifying the identity of a natural person and issuing Personal Identification Data (PID). |
 | **Qualified Electronic Registered Delivery Service** | QERDS | A secure communication channel that provides legal evidence of the handling of transmitted data. |
 | **Qualified Trust Service Provider** | QTSP | A regulated entity providing electronic trust services (e.g., signatures, seals, or delivery services) with full legal effect under eIDAS. |
+| **Record** | — | A document or data retained as evidence of an activity or obligation, with fixity, context and retention; defined by its evidential role and lifecycle, not its format. |
 | **Relying Party** | RP | An entity that requests and receives attestations from a wallet to verify specific attributes or identities. |
 | **Selective Disclosure JSON Web Token** | SD-JWT | A format allowing holders to share only specific parts of a credential while keeping other data private. |
 | **Trust Framework** | — | The set of governance rules, standards, and trust infrastructure used to establish and verify trust relationships between ecosystem participants. |

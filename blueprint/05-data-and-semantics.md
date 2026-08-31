@@ -2,6 +2,8 @@
 
 While the previous chapter describes how wallets interact with services, this chapter describes the data and semantic structures used inside the wallet and in the exchanged attestations.
 
+The types of information the wallet handles — data, electronic and business documents, records, messages and EAAs — are defined in the glossary; this chapter describes how the meaning of that information is modelled.
+
 ## Semantic Model of the European Business Wallet
 
 The semantic model is organised into three layers:
