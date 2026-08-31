@@ -93,3 +93,7 @@ The principle has clear limits:
 - At the same time, such requirements may not be applied in a way that excludes the use of the wallet's core functionalities **solely because of their digital nature**.
 
 Related principles: information validly transmitted via an EBW should not have to be submitted again through physical or alternative digital means, and vice versa; the Regulation is without prejudice to the once-only right of legal persons and to existing systems for exchanges between competent authorities; and Member States should not add national requirements on matters within the Regulation's scope.
+
+### European Business Wallet Owner Identification Data (EBWOID) 
+To uniquely bootstrap and identify an economic operator, the WE BUILD architecture formally replaces the concept of Legal Person Identification Data (LPID) with **European Business Wallet Owner Identification Data (EBWOID)**. The EBWOID consists of a stable, minimal set of identity attributes (primarily the official company name and its European Unique Identifier, EUID). For economic operators not covered by EUID/BRIS, such as sole traders and self-employed persons, national registration codes are used as the identifier baseline to ensure inclusive representation across use cases.
+
