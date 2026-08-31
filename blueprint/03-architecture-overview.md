@@ -108,10 +108,9 @@ From a deployment perspective, wallet solutions can be implemented in several wa
 
 The user interface is a separate question. The ARF notes that a Wallet Instance can also be a web application, so a browser-based interface can sit on top of any of the three approaches.
 
-The underlying cryptographic architecture of wallets is defined in the ARF and related standards. This Blueprint therefore focuses on the interactions and interoperability patterns relevant for WE BUILD rather than repeating the detailed wallet architecture definitions.
+The underlying cryptographic architecture of EUDI wallets is defined in the ARF and related standards. This Blueprint therefore focuses on the interactions and interoperability patterns relevant for WE BUILD rather than repeating the detailed wallet architecture definitions.
 
 In practice, most deployments follow a mobile-first approach for natural persons and a server-based or enterprise-integrated approach for economic operators. Hybrid architectures may also be used to combine device-based user interaction with backend cryptographic services. Appendix E sets out the deployment patterns reported by WE BUILD wallet providers.
-
 
 ```mermaid
 flowchart TB
@@ -124,3 +123,5 @@ flowchart TB
     LE -.-> |registered with| EP
     BReg["Business registry"] -.-> |issues EU Company Certificate to| EBW
 ```
+
+Unlike natural person wallets which reside on mobile devices, the EBW typically operates in cloud or on-premise server environments. To secure these deployments, the ecosystem mandates a **Business Wallet Unit Attestation (BWUA)** based on the ETSI TS3 framework. The BWUA cryptographically binds the wallet to a secure server-side cryptographic environment—such as a cloud HSM or organisation-controlled HSM. It comprises a Business Wallet Instance Attestation (BWIA) issued by the Wallet Provider and a Server Key Attestation (SKA) proving that private keys are securely protected.
