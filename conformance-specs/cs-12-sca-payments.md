@@ -151,7 +151,7 @@ Applicable when the RP is not the Attestation Provider (e.g. a Merchant, or a TP
 5. The WU **SHALL** render the payment confirmation screen per the visualisation levels declared in the attestation's Claim Metadata, defaulting to level `3` where unset (TS12 [1] §3.3.1–3.3.2).
 6. The WU **SHALL** display the `affirmative_action_label` and, if present, `denial_action_label`, `transaction_title`, and `security_hint` UI elements per TS12 [1] §3.3.3.
 7. The WU **SHALL NOT** present more than one SCA Attestation, across `sca-card-dpc`, `sca-iban`, and `sca-user`, in response to a single Authorization Request; combined presentation of these types is out of scope (§2).
-8. For every KB-JWT generated in an SCA presentation, the WU **SHALL** include a fresh, cryptographically random `jti`, a `response_mode` claim echoing the request's `response_mode`, and an `amr` array containing **at least two** entries from different categories (`knowledge`, `possession`, `inherence`) per TS12 [1] §3.6.
+8. For every KB-JWT generated in an SCA presentation, the WU **SHALL** include a fresh, cryptographically random `jti`, a `response_mode` claim echoing the request's `response_mode`, an `amr` array containing **at least two** entries from different categories (`knowledge`, `possession`, `inherence`), each entry an object pairing the category with the specific method used (e.g. `{"knowledge": "pin_6_or_more_digits"}`), per TS12 [1] §3.6, and `transaction_data_hashes`/`transaction_data_hashes_alg` values calculated over the presented `transaction_data` per OpenID4VP [10].
 9. The WU **SHALL** support processing of encrypted Authorization Requests per TS12 [1] §3.5 and JAR [11].
 10. The WU **MAY** reject any request declaring a transaction type other than `urn:eudi:sca:payment:1` (§7.1.1).
 11. The WU **MAY**, for every SCA presentation (successful or not), log at least the `transaction_data.payload.transaction_id`, the `payee.name`, and, where available, the `pisp.legal_name`, consistent with the Transaction Log Inclusion requirement of TS12 [1] §5.3. WE BUILD relaxes this from a mandatory to an optional requirement: Wallet Providers are not required to implement this logging capability to conform to this CS.
@@ -162,7 +162,7 @@ Applicable when the RP is not the Attestation Provider (e.g. a Merchant, or a TP
 2. Where the RP is the Attestation Provider (Issuer-requested flow, §6.1) and requests an `sca-user` attestation, the RP **SHALL** ensure its identifier is present in the attestation's `aud` claim, per the `rb-sca-user` Rulebook.
 3. The RP **SHALL** treat the `jti` of a validated KB-JWT as the PSD2 Authentication Code for the corresponding transaction.
 4. The RP **SHALL** verify that the `amr` array of each validated KB-JWT contains at least two entries from different categories before treating SCA as satisfied.
-5. The RP **SHALL** verify presentation and attestation validity (signature, `cnf` key binding, and revocation status where a `status_list` claim is present) before accepting an SCA presentation, and **SHALL** cease the payment process on a negative result.
+5. The RP **SHALL** verify presentation and attestation validity (signature, `cnf` key binding, and revocation status where a `status_list` claim is present) before accepting an SCA presentation, **SHALL** recompute and verify `transaction_data_hashes` against the exact `transaction_data` sent in the Authorization Request, and **SHALL** cease the payment process on a negative result.
 6. The RP **SHALL NOT** construct an Authorization Request querying for more than one of `sca-card-dpc`, `sca-iban`, or `sca-user` (§2).
 
 ## 8. Interface Definitions
@@ -180,7 +180,7 @@ Applicable when the RP is not the Attestation Provider (e.g. a Merchant, or a TP
 - **`transaction_data`** (array, present in every Authorization Request): exactly one entry with:
   - `type`: `urn:eudi:sca:payment:1`
   - `credential_ids`: references exactly one credential ID, corresponding to the single SCA Attestation matched by the DCQL query (§2)
-  - `transaction_data_hashes_alg`: as per OpenID4VP [10]
+  - `transaction_data_hashes_alg`: REQUIRED, consistent with TS12 [1] §4.2; values and processing as defined by OpenID4VP [10]
   - `payload`: object per TS12 [1] §4.3.1, restricted in this profile to the fields below
 
 **Example (illustrative, non-normative) `payload`:**
@@ -222,7 +222,7 @@ Applicable when the RP is not the Attestation Provider (e.g. a Merchant, or a TP
   "sd_hash": "s0me_base64url_hash_of_the_disclosed_sd_jwt",
   "jti": "7a1e4c2b-5f6d-4a3b-9c8e-1d2f3a4b5c6d",
   "response_mode": "direct_post.jwt",
-  "amr": ["pin", "face"],
+  "amr": [{"knowledge": "pin_6_or_more_digits"}, {"inherence": "face_device"}],
   "transaction_data_hashes": ["b3JpZ2luYWxfcGF5bG9hZF9oYXNo"],
   "transaction_data_hashes_alg": "sha-256"
 }
