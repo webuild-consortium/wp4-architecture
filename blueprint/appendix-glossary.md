@@ -12,13 +12,14 @@ While this document avoids abbreviations as much as possible, commonly used abbr
 | **Architecture and Reference Framework** | ARF | The reference architecture for the European Digital Identity Wallet ecosystem published by the European Commission in cooperation with the Member States. It defines roles, trust models, protocols and interoperability requirements for the ecosystem. |
 | **Attestation Rulebook**| - | A document describing the governance, requirements and semantic interpretation of a specific attestation type, including how credential data maps to vocabulary terms and schemas. |
 | **Authorised representative** | - | A person acting on behalf of the owner on the basis of an authorisation granted by the owner. |
-| **Blueprint** | — | The high-level architecture and integration document (D4.1) describing the WE BUILD ecosystem, architectural patterns, interaction flows and governance model. |
-| **Business Wallet Unit Attestation** | BWUA | A specific type of Wallet Unit Attestation issued for a European Business Wallet (EBW) instance. |
+| **Blueprint** | — | The high-level architecture and integration document (D4.1) describing the WE BUILD ecosystem, architectural patterns, interaction flows and governance model. 
+| **Business Wallet Instance Attestation** | BWIA | A signed JWT-based data object issued by a Wallet Provider that attests the integrity, security properties, and compliance of a specific Business Wallet Unit (BWU) deployment, acting in the role of the TS3 Wallet Instance Attestation (WIA). |
+| **Business Wallet Unit Attestation** | BWUA | The complete cryptographic attestation mechanism for a European Business Wallet (EBW) instance. Formally composed of the Business Wallet Instance Attestation (BWIA) and the Server Key Attestation (SKA). |
 | **EAA Provider** | — | An entity that relies on authentic sources of information to issue attestations to a wallet. |
 | **EBW Instance** | — | A unique deployment or installation of a European Business Wallet (EBW) solution, controlled by an Owner (legal person or economic operator). |
 | **EBW Provider** | — | A Wallet Provider specifically authorized to issue and manage European Business Wallets (EBW). |
+| **EBW Owner Identification Data** | EBWOID | A mandatory, stable, and minimal set of core identity attributes (primarily legal name and EUID or national register code) used to uniquely bootstrap and identify a legal person or economic operator within the EBW ecosystem. Unlike personal identification data, it represents the organization itself, not any individual representative. |
 | **EBWOID Provider** | — | An entity responsible for verifying the identity of a legal person or economic operator and issuing EBW Owner Identification Data (EBWOID). |
-| **EBW Owner Identification Data** | EBWOID | A set of attributes used to uniquely identify a legal person or economic operator within the European Business Wallet ecosystem. |
 | **Economic operator** | — | Any natural or legal person or public entity which offers products or services on the market; the primary user of the European Business Wallet. |
 | **Electronic Attestation of Attributes** | EAA / QEAA / PuB-EAA | Digital credentials that prove specific attributes (e.g., professional qualifications, representation rights) with either qualified (QEAA) or public sector body-issued (PuB-EAA) or non-qualified (EAA) legal status. |
 | **Electronic Identification, Authentication and Trust Services** | eIDAS / eIDAS 2.0 | The legal framework for electronic identification and trust services for electronic transactions in the European Single Market. |
@@ -36,12 +37,16 @@ While this document avoids abbreviations as much as possible, commonly used abbr
 | **List of Trusted Lists** | LoTL | A list that references national or ecosystem Trusted Lists, allowing participants to discover and validate trusted entities. |
 | **Natural Person** | — | An individual human being acting in their own capacity. |
 | **Owner** | — | The legal person or economic operator that has legal control over and responsibility for an EBW Instance. |
-| **Personal Identification Data** | PID | A mandatory set of attributes issued to a natural person to uniquely identify them at Level of Assurance (LoA) High. |
+| **Personal Identification Data** | PID | A mandatory set of core identity attributes issued by a Member State authority to uniquely identify a natural person at Level of Assurance (LoA) High. Used in the EBW ecosystem to onboard authorized representatives and bind their natural-person identity to organizational actions. |
 | **PID Provider** | — | An entity responsible for verifying the identity of a natural person and issuing Personal Identification Data (PID). |
 | **Qualified Electronic Registered Delivery Service** | QERDS | A secure communication channel that provides legal evidence of the handling of transmitted data. |
+| **QERDS Delivery Agent** | — | A core functional component of the QERDS infrastructure that produces, consumes, and delivers encrypted transport packages while enforcing strict access control and registering formal evidence of submission or notification. |
+| **QERDS Delivery Log** | — | A QERDS database or ledger component designed to ensure the secure long-term retention of registered transaction and delivery evidence, allowing stakeholders to audit delivery events and resolve disputes. |
+| **QERDS Delivery Relay** | — | A secure transport routing service that handles the physical and cryptographic transmission of encrypted packages between different QERDS providers operating in a federated four-corner network model. |
 | **Qualified Trust Service Provider** | QTSP | A regulated entity providing electronic trust services (e.g., signatures, seals, or delivery services) with full legal effect under eIDAS. |
 | **Relying Party** | RP | An entity that requests and receives attestations from a wallet to verify specific attributes or identities. |
 | **Selective Disclosure JSON Web Token** | SD-JWT | A format allowing holders to share only specific parts of a credential while keeping other data private. |
+| **Server Key Attestation** | SKA | A cryptographic attestation that proves that the private keys used for credential binding are securely protected inside a cloud-hosted or organization-controlled hardware security module (HSM), acting as a server-side counterpart to the TS3 Key Attestation (KA)-|
 | **Trust Framework** | — | The set of governance rules, standards, and trust infrastructure used to establish and verify trust relationships between ecosystem participants. |
 | **Trusted List** | TL | A machine-readable list of trusted service providers or entities used to validate trust relationships within the ecosystem. |
 | **European Unique Identifier** | EUID | The official unique identifier assigned to a wallet owner; or a similar identifier created under the Regulation. |
