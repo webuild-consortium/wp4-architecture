@@ -50,6 +50,58 @@ On terminology: the Commission proposal used the term "mandate" for the permissi
 1. Authorisations in the wallet are **technical**. They do not create, limit or otherwise affect any power of attorney or legal mandate under national or Union law.
 2. The authorisation system should remain compatible with the EU digital power of attorney established by Directive (EU) 2025/25.
 
+## Authorisation and mandate terminology
+
+Legal status note: Council document ST 7659/26 is the Council General Approach on the proposed European Business Wallet Regulation. It is a negotiating position and not yet binding Union law.
+For the purposes of WE BUILD, authorisations governing access to and operation of a European Business Wallet should be distinguished from internal business authorisations and from legal powers of representation towards third parties. This distinction allows the technical model to support efficient delegation without altering the legal source or effect of representation under applicable Union or national law.
+
+## Wallet-level / technical authorisation
+
+A wallet-level or technical authorisation is an authorisation granted by the European Business Wallet owner to a natural or legal person, or to a system acting on its behalf, for the purpose of accessing or operating specific functions, services or resources of the European Business Wallet. Such authorisations form part of the organisation's internal access-control, identity-management and governance framework.
+A wallet-level or technical authorisation does not, by itself, create, modify or prove a legal power of representation towards third parties.
+Legal basis: Article 2(3) of Regulation (EU) No 910/2014 (eIDAS) preserves Union and national rules on the conclusion and validity of contracts and other legal, procedural or sector-specific requirements relating to form. In addition, Recital 18 and Article 5(1)(j) of the Council General Approach ST 7659/26 state that EBW authorisations for access to and operation of the wallet are technical in nature and are without prejudice to any powers of attorney or legal mandates.
+
+## Administrative authorisation
+
+An administrative authorisation is a specific wallet-level authorisation allowing a European Business Wallet user to manage users, roles, permissions or other authorisations within the European Business Wallet in accordance with the organisation's internal governance.
+Administrative and technical authorisations are functional WE BUILD concepts and should not be treated as autonomous categories of legal representation. They must be distinguished from powers of attorney and other forms of legal representation governed by applicable Union or national law.
+
+## Organisation-issued internal authorisation
+
+An organisation-issued internal authorisation is a business permission granted by the organisation, through a person entitled under its internal governance to grant it, to an employee, contractor, service provider or other person for specified actions. It may be documented in an electronically signed or sealed document and, where appropriate, exchanged through a secure channel such as QERDS.
+Such an internal authorisation may be sufficient where the relying party accepts it on the basis of the parties' contractual relationship or mutual trust. Its legal sufficiency for a transaction nevertheless remains subject to the applicable law and to any evidentiary or formal requirements imposed for that transaction.
+An organisation-issued internal authorisation should not automatically be described as an electronic attestation of attributes (EAA). Recital 55 of Regulation (EU) 2024/1183 states that any service provider issuing attested attributes in electronic form, including powers and mandates, should be considered a trust service provider of electronic attestation of attributes. Article 3(45) eIDAS further defines a qualified electronic attestation of attributes (QEAA) as an EAA issued by a qualified trust service provider. Accordingly, an organisation acting merely as EBW owner should not be assumed to issue an EAA unless the applicable eIDAS requirements for the corresponding trust service are satisfied.
+
+## Legal representation
+
+Legal representation is the authority of a natural or legal person to act for and legally bind an organisation towards third parties in accordance with applicable Union or national law.
+•	Power of Representation (PoR): representation deriving from the legal, statutory or corporate position of a person authorised to represent the organisation. Evidence may derive, where applicable, from a business register, an EU Company Certificate or another authentic source as the notariat.
+•	Power of Attorney (PoA): voluntary representation deriving from powers granted by a person legally entitled to confer those powers. The creation, amendment and revocation of a PoA remain governed by applicable national law.
+Directive (EU) 2017/1132, in particular Articles 8, 9 and 14(d), addresses the effects, scope and disclosure of corporate representation towards third parties. The creation, validity, form, scope, modification and revocation of legal representation remain governed by applicable law.
+Roles relevant to PoA
+•	Principal / Grantor: the person legally entitled to grant, amend or revoke the power of attorney.
+•	Attorney / Authorised Person: the natural or legal person empowered to act under the power of attorney.
+•	Competent Authority: a court, notary, business register or other authority competent under the applicable national law to perform the relevant verification or legal control.
+
+## Representation mode, cardinality and role
+
+The representation model should be capable of expressing whether a representative may act alone or must act jointly, the number of representatives required and, where relevant, role-specific requirements. This is relevant, for example, where joint representation requires persons holding specified corporate roles rather than any two representatives.
+Legal basis: Article 14(d)(i) of Directive (EU) 2017/1132 requires disclosure of whether persons authorised to represent a company may act alone or must act jointly, while Article 9(3) addresses joint representation under national law. Article 16c of Directive (EU) 2025/25 provides a relevant model for PoA by requiring national rules for the Digital EU Power of Attorney to include, at minimum, verification by courts, notaries or other competent authorities of the identity, legal capacity and authority to represent the company of the person granting, amending or revoking the power.
+
+## Proof of Employment (PoE)
+
+A Proof of Employment (PoE) is an electronic attestation evidencing the existence of an employment relationship between a natural person and an organisation. A PoE does not, by itself, establish authority to legally represent or bind the organisation, although it may be used as an input into access-control or authorisation decisions.
+Authentic source
+For WE BUILD, authentic source should be understood in accordance with Article 3(47) eIDAS: a repository or system held under the responsibility of a public sector body or private entity that contains and provides attributes and is considered a primary source of that information or is recognised as authentic under Union or national law, including administrative practice.
+Where recognised under applicable national law, a repository or information system held under the responsibility of the notariat may constitute an authentic source within the meaning of Article 3(47) eIDAS. Separately, notarial intervention may establish or verify the authoritative legal evidence on which an Authorisation Attestation concerning legal representation is based.
+Directive (EU) 2025/25 provides a relevant model through the Digital EU Power of Attorney. Article 16c requires national rules for drawing up, amending or revoking that power to include, at minimum, verification by courts, notaries or other competent authorities of the identity, legal capacity and authority to represent the company of the person granting, amending or revoking the power. Recital 28 preserves national rules on legal and statutory representation and other powers of attorney.
+WE BUILD should accommodate different national legal traditions without requiring harmonisation of national representation systems. Depending on the applicable law, the relevant evidence may derive from a business register, a notarial system, a court or another competent authority or authentic source.
+
+## Clarification of the authorised representative role
+
+In this working definition, an authorised representative should be understood functionally for wallet access and operation. Where a wallet user purports to perform an act that legally binds the organisation towards third parties, the applicable requirements for PoR, PoA or other legally recognised representation must also be satisfied. A relying party may therefore accept an internal authorisation for some services while requiring evidence of legal representation for others.
+
+
 ## Relationship with the EUDI Wallet
 
 The EBW builds on and complements the European Digital Identity Framework:
