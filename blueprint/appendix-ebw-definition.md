@@ -315,6 +315,19 @@ The wallet owner can **export** its data — including issued EBW-OID, electroni
 
 Portability of data does not by itself settle the continuity of cryptographic keys, provider-bound attestations, wallet unit attestations, authorisation structures or directory and delivery addresses across a migration; these remain design questions.
 
+### User and permission management
+WE BUILD supports signing scenarios where an individual signs on behalf of an organisation. This model reuses the wallet-centric and QTSP-operated signing approaches described in chapter 4. The wallet provides the user interface for document review and approval, while the QTSP performs the signature or seal creation within its controlled environment.  In addition WE BUILD may also support other signing scenarios enabled by the use of QERDS and the EU Business Wallet. 
+
+### Delegation of authority
+In scenarios where the transaction must bind both the natural person and the organisation represented the natural person identity is represented by the PID, while the organisation context is represented through the EBWOID.
+
+At signing time, identifiers or references to both the PID and the EBWOID are included in the transaction data presented to the user and subsequently authorised or signed. This ensures that the resulting signature or seal can be unambiguously linked to both the individual and the organisation.
+
+The exact representation of these bindings is use-case specific and will be defined in rulebooks and WBCS.
+
+#### Credential catalog and schema management
+To support a wide range of business use cases, the European Business Wallet must functionally maintain an internal credential catalog and schema management capability. This allows the wallet unit to dynamically discover, download, and resolve schemas for different electronic attestations of attributes (such as company certificates, tax registrations, or industry-specific permits). By managing these schemas using TS11 APIs, the wallet can properly validate the integrity of incoming credentials, correctly map data fields to shared semantic vocabularies, and render them in a user-friendly way for administrators.
+
 # Ecosystem and governance
 
 ## Wallet providers and supervision
