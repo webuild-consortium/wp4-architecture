@@ -8,13 +8,15 @@ The trust infrastructure for the EU Digital Identity and European Business Walle
 
 ## Trust infrastructure authorities and registries
 
-- **Member State Registrar:** Manages registration and operational authorization of **PID Providers**, **Attestation Providers**, and **Relying Parties**. Registration yields registry entries (used for entitlement verification and online lookup via common APIs such as TS5/TS6) and triggers access certificate issuance.
+- **Member State Registrar:** Manages registration and operational authorization of **PID Providers**, **Attestation Providers**, **Relying Parties**, and **Relying Party Intermediaries**. Registering entities register one or more **Services** (**Reg_10a**). Registration yields registry entries (publication and transparency via common APIs such as TS5/TS6: **Reg_03**, **Reg_06**) and triggers access certificate issuance **per Service** (**Reg_33**, **Reg_34**). The Registrar records whether a Relying Party uses an intermediary and which one, and verifies legally valid evidence of the RPI–RP relationship (**RPI_01**, **RPI_04**, **Reg_26**). Registry lookup is **not** a presentation-time substitute for a missing WRPRC.
 - **European Commission:** Compiles, signs/seals, and publishes Trusted Lists for Wallet Providers, PID Providers, Access Certificate Authorities (Access CAs), and Providers of Registration Certificates. It maintains the **List of Trusted Lists (LoTL)** and publishes LoTL location and trust anchors in the Official Journal of the European Union (OJEU).
 - **Member State Trusted List Provider (MS TLP):** Compiles, signs, and publishes national Trusted Lists for **non-qualified EAA Providers** and **Member State QTSP Trusted Lists** for **QEAA Providers** (per Article 22 eIDAS), and submits the Trusted List URLs to the Commission for inclusion in the LoTL.
-- **Access Certificate Authority:** Issues access certificates to registered entities (PID Providers, Attestation Providers, Relying Parties). Notified by Member States to the Commission; does not register with Registrars.
-- **Provider of Registration Certificates:** Optionally issues registration certificates that detail entitlements; notified by Member States to the Commission.
+- **Access Certificate Authority:** Issues access certificates to registered entities (PID Providers, Attestation Providers, Relying Parties, and intermediaries). Notified by Member States to the Commission; does not register with Registrars. At least one access certificate **per registered Service** (**Reg_10a**, **Reg_33**, **Reg_34**). An intermediary receives a **separate WRPAC set per intermediated RP**, bound to that RP’s unique identifier and Service identifier (**Reg_34a**). In an intermediated transaction the Wallet authenticates the **intermediary’s WRPAC**; the intermediated RP does not present a WRPAC in that flow and **does not need one for that role** (ARF §6.6.5, **RPI_06**). If that RP also registers Services that talk to Wallet Units directly, **Reg_10a** still applies.
 
-**Registration vs Trusted List publication:** Registration defines *who is allowed to do what* (entitlements, attributes, intended use) and is consumed via registries and optional registration certificates. Trusted List publication establishes *cryptographic trust anchors* (keys, certificates) and, via profile-specific extensions defined in **ETSI TS 119 602** (for example the Pub-EAA and national non-qualified EAA Provider LoTE profile in Annex H, including its additionalInfo structures), can also publish **which attestation types an Attestation Provider is authorised to issue**. Trusted Lists follow ETSI TS 119 612 and TS 119 602 (Lists of Trusted Entities) and are consumed per ETSI TS 119 615. Wallet Providers, Access CAs, and Providers of Registration Certificates are **not** registered with Registrars; these entities are notified by Member States to the Commission.
+
+- **Provider of Registration Certificates:** Issues registration certificates **automatically** after registration (**RPRC_09** SHALL for Relying Parties: one certificate per intended use × Service; **RPRC_13** SHALL for PID/Attestation Providers: one certificate per Service). Notified by Member States to the Commission.
+
+**Registration vs Trusted List publication:** Registration defines *who is allowed to do what* (entitlements, attributes, intended use, **Services**) and is consumed via registries (**Reg_03**, **Reg_06**) and registration certificates. For **presentation**, the Wallet verifies the **WRPRC included in the request** (**RPRC_17**, **RPRC_19**, **RPRC_21**); **RPRC_16**, **RPRC_18**, and **RPRC_19a** are empty in ARF v3.0.0. Trusted List publication establishes *cryptographic trust anchors* (keys, certificates) and, via profile-specific extensions defined in **ETSI TS 119 602** (for example the Pub-EAA and national non-qualified EAA Provider LoTE profile in Annex H, including its additionalInfo structures), can also publish **which attestation types an Attestation Provider is authorised to issue**. Trusted Lists follow ETSI TS 119 612 and TS 119 602 (Lists of Trusted Entities) and are consumed per ETSI TS 119 615. Wallet Providers, Access CAs, and Providers of Registration Certificates are **not** registered with Registrars; these entities are notified by Member States to the Commission.
 
 ### Responsibilities matrix
 
@@ -24,7 +26,9 @@ The Task 2 trust-infrastructure schema defines the following responsibilities ma
 | :--- | :--- | :--- | :--- |
 | **PID Provider** | Register with MS Registrar | European Commission (EU-level TL for PID Providers) | None (no national TL for PID Providers) |
 | **Attestation Provider** | Register with MS Registrar | Member State / MS TLP (national QTSP TL for QEAA Providers; national TL for non-qualified EAA Providers) | Compiles, signs, and publishes national Trusted Lists (QTSP TL for QEAA Providers per Article 22; EAA Provider TL for non-qualified EAA Providers) |
-| **Relying Party (RP)** | Register with MS Registrar | N/A (uses Access Certificates and Registry) | None (not listed in Trusted Lists) |
+| **Relying Party Intermediary (RPI)** | Registers as a Relying Party (**RPI_01**), then registers each intermediated RP in the RP’s Member State with evidence of the contract (**RPI_03**, **RPI_04**). Receives a separate WRPAC set per intermediated RP (**Reg_34a**) | N/A (uses Access Certificates and WRPRC in the presentation request; Registry for publication) | None (not listed in Trusted Lists) |
+| **Relying Party (RP)** | Register with MS Registrar; register Services and intended uses (**Reg_10a**, **Reg_10d**). If it uses an intermediary, the Registrar records which one. In an intermediated flow the RP does **not present** a WRPAC and does **not need one for that role** (ARF §6.6.5); it still needs WRPACs for any of its own Wallet-facing Services (**Reg_10a**) | N/A (uses Access Certificates and WRPRC; Registry for publication) | None (not listed in Trusted Lists) |
+
 | **Wallet Provider** | Notification only (by MS to EC) | European Commission (EU-level TL for Wallet Providers) | Not applicable in [MVP](#working-group-scope-mvp-and-mvp) (notification from MS to EC only) |
 | **Access CA** | Notification only (by MS to EC) | European Commission (EU-level TL for Access CAs) | Not applicable in [MVP](#working-group-scope-mvp-and-mvp) (notification from MS to EC only) |
 | **Reg. Cert. Provider** | Notification only (by MS to EC) | European Commission (EU-level TL for Reg. Cert. Providers) | Not applicable in [MVP](#working-group-scope-mvp-and-mvp) (notification from MS to EC only) |
@@ -36,13 +40,13 @@ This blueprint section mirrors the Task 2 responsibilities matrix so that archit
 In line with the EUDI Wallet ARF, the WP4 Trust Group focuses on defining **architectural patterns and profiles**, not on specifying Member State-specific policies or operating production infrastructure. To make this concrete, the trust and security work is scoped in two steps:
 
 - **[MVP] (Minimum Viable Prototype)**:  
-  - Implements the **core onboarding scenarios** from Task 1 (Subtask 1.1) for PID Providers, Attestation Providers, Wallet Providers, Relying Parties, and Certificate Authorities.  
+  - Implements the **core onboarding scenarios** from Task 1 (Subtask 1.1) for PID Providers, Attestation Providers, Wallet Providers, Relying Parties, and Certificate Authorities. **[MVP]** currently covers direct RP presentation (Wallet ↔ RP WRPAC / WRPRC in the request, **RPRC_19**). The WP4 Trust Registry Task 1 already includes intermediary indication and intermediary reference(s), including Service identifier (**RPRC_04**, **Reg_34a**). See WP4 Trust Group **UC-RPI-01**.
   - Implements the **basic trust‑registry scenarios** from Task 1 (Subtask 1.2) needed to create, publish and consume Trusted Lists / Lists of Trusted Entities and registry entries for these actors.  
   - Demonstrates end‑to‑end flows for **registration, access‑certificate issuance, trust‑anchor publication and consumption**, reusing the ARF and ETSI TS 119 602/119 612/119 615 patterns without introducing new normative profiles.
 
 - **[MVP+] (Extended prototype)**:  
   - Completes the remaining Task 1 onboarding and trust‑registry scenarios, including more advanced **evaluation, maintenance, revocation and discovery** cases.  
-  - Covers **richer combinations of participants and roles** (e.g. multiple types of Attestation Providers and more complex Relying Party ecosystems) while staying within the Task 2 trust framework and trust‑infrastructure schema.  
+  - Covers **richer combinations of participants and roles** (e.g. multiple types of Attestation Providers and more complex Relying Party ecosystems, including **Topic 52** intermediated presentation: Wallet ↔ RPI on behalf of RP; Wallet authenticates the intermediary WRPAC (**Reg_34a**) and **SHALL NOT** display intermediary trade names (**RPI_07**)) while staying within the WP4 Trust Registry Task 2 trust framework and trust-infrastructure schema.
   - May introduce **pilot‑specific configurations or conventions** (e.g. additional metadata, policy examples, or Trusted List extensions) as long as these remain compatible with the underlying ARF and ETSI models and are clearly marked as non‑normative.
 
 The **boundary of the working group** is therefore to: (a) define the trust‑infrastructure architecture, profiles, and flows needed for [MVP] and [MVP+]; (b) document how to apply ETSI TS 119 602/119 612/119 615 and the ARF in these scenarios; and (c) leave Member State policy choices (approval criteria, national extensions, operational SLAs) and long‑term production operation out of scope.
@@ -80,7 +84,12 @@ graph TB
         RP[Relying Party<br/>Reg_25]
         EntitiesTitle ~~~ PID
         EntitiesTitle ~~~ AP
+        RP[Relying Party<br/>Reg_25]
+        RPI[Relying Party Intermediary<br/>Reg_25, RPI_01]
+        EntitiesTitle ~~~ PID
+        EntitiesTitle ~~~ AP
         EntitiesTitle ~~~ RP
+        EntitiesTitle ~~~ RPI
     end
 
     subgraph TL["Published Trusted Lists"]
@@ -93,7 +102,8 @@ graph TB
 
     PID -->|Register with identification & entitlements<br/>Reg_01, Reg_19| Registrar
     AP -->|Register with identification & entitlements<br/>Reg_01, Reg_21| Registrar
-    RP -->|Register with identification & entitlements<br/>Reg_01, Reg_25| Registrar
+    RP -->|Register with identification, Services and entitlements<br/>Reg_01, Reg_10a, Reg_25| Registrar
+    RPI -->|Register self + each intermediated RP<br/>RPI_01, RPI_03, RPI_04, Reg_34a| Registrar
 
     WP -.->|MS notifies WP to Commission<br/>GenNot_01, WPNot_01, WPNot_02| ECNotify
     PID -.->|After registration, MS notifies PID Provider to Commission<br/>GenNot_01, PPNot_01, PPNot_02| ECNotify
@@ -135,7 +145,7 @@ graph TB
 
 Authentication in the WE BUILD architecture closely follows the standards and flows of the underlying protocols (**OpenID for Verifiable Credentials**, **ISO 18013-5**, and other application-specific communication protocols).
 
-For **organizational entities** that register with the Registrar (PID Providers, Attestation Providers, Relying Parties), authentication is primarily established using **access certificates** issued by the Access Certificate Authority, validated against up-to-date Trusted Lists or Lists of Trusted Entities (ARF and ETSI TS 119 602 / 119 612 / 119 615). **Wallet Providers** are notified by Member States to the European Commission (they do not register with the Registrar); their authenticity is established via the Wallet Provider Trusted List and related attestations (e.g. Wallet Unit Attestation). Mutual trust is strictly required in application-specific protocol flow specifications, and consolidated through OpenID HAIP and ARF HLRs, with certificate-bound tokens and protocol-level message signatures along with endpoint authentication and message integrity.
+For **organizational entities** that register with the Registrar (PID Providers, Attestation Providers, Relying Parties, and intermediaries), authentication is primarily established using **access certificates** issued by the Access Certificate Authority, validated against up-to-date Trusted Lists or Lists of Trusted Entities (ARF and ETSI TS 119 602 / 119 612 / 119 615). In an intermediated presentation the Wallet Unit authenticates the **intermediary’s WRPAC** associated to that RP/Service (**RPI_06**, **RPA_04**, **Reg_34a**). **Wallet Providers** are notified by Member States to the European Commission (they do not register with the Registrar); their authenticity is established via the Wallet Provider Trusted List and related attestations (e.g. Wallet Unit Attestation). Mutual trust is strictly required in application-specific protocol flow specifications, and consolidated through OpenID HAIP and ARF HLRs, with certificate-bound tokens and protocol-level message signatures along with endpoint authentication and message integrity.
 
 According to the ARF, the Relying Party **cannot request the Wallet Unit Attestation (WUA) during the presentation flow**. Presentation requests address **PID and attestations** only (ARF Topic 1, **OIA_01**); the WUA is presented to the PID Provider or Attestation Provider **during issuance** of a PID or device-bound attestation, not to the Relying Party (ARF Topic 9, **WUA_03**, **WUA_05**, **WUA_05a**). The ARF explicitly states that there is no separate mechanism for the Relying Party to verify the revocation status of a Wallet Unit directly with the Wallet Provider (ARF Section 6.6.3.12). Trust in the Wallet Unit is therefore **mediated by a trusted third party**: the PID Provider or Attestation Provider that belongs to a Trust Anchor (Trusted List) and that received the WUA at issuance. That trust is **indirect** from the Relying Party’s perspective. The PID Provider or EAA Provider **periodically checks the revocation status** of the Wallet Unit to which it has issued credentials (using the revocation information in the WUA received at issuance; ARF Topic 9 **WUA_02**, ARF Section 6.6.2.4). If the Wallet Unit is revoked, the PID Provider or Attestation Provider **SHALL revoke** the credentials it issued to that Wallet Unit (Article 5, 4.(b), European Digital Identity Regulation; ARF Section 6.6.2.4). By verifying the revocation status of the PID or attestation, the Relying Party implicitly relies on the issuer’s verification of the Wallet Unit.
 
@@ -148,13 +158,13 @@ Wallet Units are expected to combine protocol-specific authentication mechanisms
 
 Authorization determines what actions a subject is permitted to perform after authentication. In line with the Task 2 trust framework and the EUDI Wallet ARF, WE BUILD **assumes** that **the default is “allow all”** at the ecosystem level, and that **policies (expressed via Trusted List extensions, registration/entitlement data, and optional registration certificates) can tighten this to an effective “deny all except explicitly allowed”** model for specific contexts and participants. When such policies apply, only the actions and attribute uses listed in the applicable allow‑lists are permitted; all others are denied. Trust marks (for Credential Issuers, Wallet Solutions, and Relying Parties), together with Trusted List extensions and registration certificates, carry authorization semantics (e.g. authorised credential types, attribute groups, purposes, scope restrictions) and are used in policy evaluation and collision prevention as specified in the Task 2 trust framework and the trust‑infrastructure schema. 
 
-According to the [EUDI Wallet ARF v2.8](https://eudi.dev/), when present and applicable, policies and default authorisations may be overridden by **user will**: the Wallet Unit SHALL ensure the User approved the presentation of any attribute(s) prior to presenting those attributes and SHALL always allow the User to refuse presenting an attribute requested by the Relying Party or Verifier Wallet Unit (ARF Topic 6, **RPA_07**); if Relying Party authentication fails, the Wallet Unit SHALL either not present the requested attributes or give the User the choice to present or not (**RPA_06a**).
+According to the [EUDI Wallet ARF v3.0.0](https://eudi.dev/3.0.0/architecture-and-reference-framework-main/), when present and applicable, policies and default authorisations may be overridden by **user will**: the Wallet Unit SHALL ensure the User approved the presentation of any attribute(s) prior to presenting those attributes and SHALL always allow the User to refuse presenting an attribute requested by the Relying Party or Verifier Wallet Unit (ARF Topic 6, **RPA_07**); if Relying Party authentication fails, the Wallet Unit SHALL either not present the requested attributes or give the User the choice to present or not (**RPA_06a**). For an intermediary, the Wallet **SHALL NOT** display the intermediary or intermediary-Service trade names (**RPI_07** / **RPA_06** note b).
 
 ### Certificates and cryptographic anchors
 
 - **Trusted Lists / Lists of Trusted Entities (LoTE)** (ETSI TS 119 612, TS 119 602) are pivotal trust anchors in the ecosystem. LoTE entries publish the keys and related metadata for the entity types described in the [Trust Ecosystem](#trust-ecosystem) (Wallet Providers, PID Providers, Attestation Providers, Access CAs, Registration Cert Providers). Validation of trust service outputs against these lists SHALL follow **ETSI TS 119 615** (procedures for using and interpreting EUMS national trusted lists).
-- **Access certificates** are issued by the Access Certificate Authority to registered PID Providers, Attestation Providers, and Relying Parties. Issuance SHALL comply with **ETSI TS 119 411-8**; the Authority SHALL comply with at least **ETSI EN 319 411-1** Normalised Certificate Policy (NCP) requirements. Each Relying Party receives a **separate access certificate per Relying Party Instance**. Access certificates authenticate entities in protocol exchanges and are validated by Wallet Units using the trust anchors in the Access CA LoTE entries.
-- **Registration certificates** (optional) may be issued by the Provider of Registration Certificates to detail registration status and entitlements. When the User opts to verify RP (or issuer) registration, Wallet Units use the registration certificate when provided and/or registry lookup, as specified in ARF RPRC_16 to RPRC_21.
+- **Access certificates** are issued by the Access Certificate Authority to registered PID Providers, Attestation Providers, Relying Parties, and intermediaries. Issuance SHALL comply with **ETSI TS 119 411-8**; the Authority SHALL comply with at least **ETSI EN 319 411-1** Normalised Certificate Policy (NCP) requirements. Each registering entity receives **at least one access certificate per Service** (**Reg_10a**, **Reg_33**, **Reg_34**). Intermediaries receive a **separate WRPAC set per intermediated RP** (**Reg_34a**, **RPI_01**). Access certificates authenticate entities in protocol exchanges and are validated by Wallet Units using the trust anchors in the Access CA LoTE entries.
+- **Registration certificates** **SHALL** be issued by the Provider of Registration Certificates after registration: one per intended use × Service for Relying Parties (**RPRC_09**); one per Service for PID/Attestation Providers (**RPRC_13**). The presentation request **SHALL** include a single WRPRC **by value** (**RPRC_19**). The Wallet SHALL verify that WRPRC (**RPRC_17**, **RPRC_17a**, **RPRC_21**); if it is absent or invalid, warn the User at approval. **RPRC_16**, **RPRC_18**, and **RPRC_19a** are empty in ARF v3.0.0. Registry APIs remain for publication (**Reg_03**, **Reg_06**).
 
 For reference on relying party access certificates and relying party registration certificates, see the [RPAC/RPRC documentation](#rpacrprc-documentation).
 
@@ -166,7 +176,9 @@ Key lifecycle for trust anchors and for services listed in Trusted Lists is refl
 
 Relying Parties (verifiers) **register with the Member State Registrar** before being able to securely identify themselves to Wallet Units. Registration includes identification data, the **attributes** the RP intends to request from Wallet Units, the **intended use** (purpose), and, if applicable, use of intermediaries. The Registrar approves the RP (per ARF Reg_25) and publishes the entry in the **Registry**. The **Access Certificate Authority** then issues access certificates to the RP as described under [Certificates and cryptographic anchors](#certificates-and-cryptographic-anchors), with a **separate access certificate per Relying Party Instance** (Reg_10a). Optionally, the Registrar may request a **registration certificate** from the Provider of Registration Certificates (RPRC_09) that summarises registration status and entitlements. Wallet Units authenticate RPs by validating RP access certificates against the Access CA trust anchors and by verifying registration and requested attributes in the Registry (RPA_04, RPRC_16, RPRC_21). The common API for RP registration information (e.g. TS5) and the common set of RP information (e.g. TS6) are specified in the EUDI Wallet technical specifications. Detailed flows and diagrams are in the WP4 Trust Group trust-infrastructure schema. Certificate issuance aspects are coordinated with the QTSP group.
 
-The following sequence illustrates how a Wallet Instance discovers and validates Relying Party policy during presentation (WRPAC = Relying Party Access Certificate; WRPRC = Relying Party Registration Certificate). Source: WP4 Trust Group, [wallet-policy-discovery](https://github.com/webuild-consortium/wp4-trust-group/blob/pol-disc/task2-trust-framework/wallet-policy-discovery.md).
+Relying Parties (verifiers) **register with the Member State Registrar** before being able to securely identify themselves to Wallet Units. Registration includes identification data, **Services** (**Reg_10a**), the **attributes** the RP intends to request, the **intended use** mapped to each Service (**Reg_10d**), and, if applicable, use of intermediaries. The Registrar approves the RP (per ARF **Reg_25**) and publishes the entry in the **Registry**. An intermediary registers itself as a Relying Party (**RPI_01**) and registers each intermediated RP with evidence of the contract (**RPI_03**, **RPI_04**). The **Access Certificate Authority** then issues access certificates **per Service** (**Reg_10a**, **Reg_33**, **Reg_34**); an intermediary receives a separate set per intermediated RP (**Reg_34a**). WRPRCs are issued **automatically** (**RPRC_09**). In an intermediated transaction the Wallet Unit authenticates the **intermediary’s WRPAC**, not the intermediated RP’s (**RPI_06**, **RPA_04**, **Reg_34a**); the intermediated RP is identified from the **WRPRC in the request** (**RPRC_19**, **RPRC_04**). Wallet Units authenticate a direct RP by validating its WRPAC against the Access CA trust anchors and by verifying the WRPRC in the same request (**RPA_04**, **RPRC_17**, **RPRC_21**). The common API for RP registration information (e.g. TS5) and the common set of RP information (e.g. TS6) are specified in the EUDI Wallet technical specifications. Detailed flows and diagrams are in the WP4 Trust Group trust-infrastructure schema (v0.9). Certificate issuance aspects are coordinated with the QTSP group.
+
+The following sequence illustrates how a Wallet Instance discovers and validates Relying Party policy during presentation (WRPAC = access certificate; WRPRC = registration certificate). Source: WP4 Trust Group, [EUDI Wallet Trust and Entitlement Discovery](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task2-trust-framework/eudi-wallet-trust-and-entitlement-discovery.md).
 
 ```mermaid
 sequenceDiagram
@@ -191,13 +203,31 @@ sequenceDiagram
         W->>NR: 8b. Query National Register<br/>by RP identifier from WRPAC
         NR-->>W: 9. Return RP WRPRC(s)
         Note over W: 10. Validate WRPRC signature
-    end
+    participant RP as Relying Party or Intermediary
+    participant TL as Trusted List
+    participant OCSP as OCSP/CRL Responder
+    participant RCStatus as WRPRC Status List API
+
+    RP->>W: 1. Presentation Request (WRPAC + WRPRC by value)
+    Note over W: 2. Extract WRPAC of the Wallet-facing party<br/>(RP or intermediary per Reg_34a)
+    W->>TL: 3. Fetch Trusted List
+    TL-->>W: 4. Trusted List Response
+    Note over W: 5. Validate WRPAC<br/>- Check CA in Access CA LoTE<br/>- Verify service status: granted
+    W->>OCSP: 6. HTTPS GET /ocsp or /crl<br/>for WRPAC status
+    OCSP-->>W: 7. OCSP/CRL HTTP Response
+
+    Note over W: 8. Validate WRPRC in the request (RPRC_17)<br/>- Verify WRPRC Provider in Trusted List<br/>- If intermediated: WRPRC shows this intermediary (RPRC_04, RPRC_17a)<br/>- If absent or invalid: warn User at approval
+    W->>RCStatus: 9. HTTPS GET /wrprc/status-list<br/>(WRPRC status check)
+    RCStatus-->>W: 10. Status List HTTP Response
+    Note over W: 11. Verify requested attributes in the same WRPRC (RPRC_21)
 
     W->>RCStatus: 11. HTTPS GET /wrprc/status-list<br/>(WRPRC status check)
     RCStatus-->>W: 12. Status List HTTP Response
 
     Note over W: 13. Extract and Verify Entitlements from WRPRC<br/>- Parse entitlements<br/>- Validate requested attributes against entitlements
 ```
+
+If the presentation is intermediated, the Wallet Unit authenticates the **intermediary’s WRPAC**, not the intermediated RP’s. The intermediated RP is identified from the **WRPRC in the request** (**RPRC_19**); the WRPRC association to the intermediary must match the authenticated WRPAC (**RPI_06**, **RPRC_04**, **RPRC_17a**; ETSI TS 119 475 §4.5). The Wallet **SHALL NOT** display the intermediary’s trade names (**RPI_07**). See [Relying Party Intermediaries in the Trust Ecosystem](#relying-party-intermediaries-in-the-trust-ecosystem).
 
 ## Validation Functions for Relying Parties
 
@@ -206,6 +236,8 @@ Relying Parties need to **authenticate and validate** the Person Identification 
 - **PID and LPID/EBWOID:** Relying Parties validate the PID (or equivalent) signature using the **List of Trusted Entities (LoTE)** for PID Providers, i.e. the PID Provider Trusted List compiled by the European Commission and referenced from the LoTL. Procedures for authenticating the LoTL and national/EU trusted lists and for obtaining listed services are given in **ETSI TS 119 615**.
 - **Attestations (EAA):** Relying Parties validate **qualified EAA (QEAA)** signatures using the **Member State QTSP Trusted Lists** (per Article 22 eIDAS) and **PuB-EAA** (and, where applicable, national non-qualified EAA) using the relevant Attestation Provider Trusted Lists. Trust anchors and service types are defined in ETSI TS 119 602 profiles (e.g. Annex H for Pub-EAA and national EAA provider lists).
 - **Wallet and RP side:** Wallet Units verify RPs via the Registry and Access CA Trusted Lists (see [Relying Party Registration & Access Certificates](#relying-party-registration--access-certificates)). PID Providers and Attestation Providers verify Wallet Providers against the Wallet Provider Trusted List before issuing credentials.
+- **Wallet and RP side:** Wallet Units verify RPs via the **WRPRC in the presentation request** and Access CA Trusted Lists (see [Relying Party Registration & Access Certificates](#relying-party-registration--access-certificates)). Registry APIs remain for publication. PID Providers and Attestation Providers verify Wallet Providers against the Wallet Provider Trusted List before issuing credentials.
+- **Intermediated presentation:** PID/QEAA/PuB-EAA/EAA validation (**OIA_12**–**OIA_15**) may be performed by the intermediary if contractually agreed. That does not make issuer trust “direct”: it remains TL/LoTE-based. The Wallet Unit’s trust in the requestor is the Access CA LoTE (intermediary WRPAC, **Reg_34a**) plus the intermediated RP’s **WRPRC in the request**.
 
 The PID Providers group defines validation semantics for PID/LPID/EBWOID; the QTSP group covers EAA and certificate aspects. Exact validation requirements (e.g. OIA_12, OIA_13, OIA_14) and consumption procedures are documented in the WP4 Trust Group trust-infrastructure schema and ETSI trusted lists implementation profile.
 
@@ -278,6 +310,59 @@ flowchart TB
     WPTL -.-> Issuance
     Issuer -->|5. Trust established?<br/>Issue credential| WU
 ```
+### Relying Party Intermediaries in the Trust Ecosystem
+
+Intermediaries are a special class of Relying Party. Article 5b(10) of the European Digital Identity Regulation states that intermediaries acting on behalf of relying parties shall be deemed to be relying parties and shall not store data about the content of the transaction. An intermediary connects to Wallet Units on behalf of one or more **intermediated Relying Parties**, requests the attributes those parties need, forwards the presented attributes, and then deletes them. High-level requirements are in ARF Topic 52 (v3.0.0); certificate binding follows ETSI TS 119 475 and CIR (EU) 2025/848 as amended by CIR (EU) 2026/1730.
+
+**Protocol split:** **RPI WRPAC authenticates the channel** (bound to this RP/Service per **Reg_34a**); **RP WRPRC identifies the beneficiary**. Do not write that intermediated RPs “do not receive a WRPAC”. They do not **present** one in this flow and **will not need** one **for that role** (ARF §6.6.5).
+
+**Registration (two distinct acts):**
+
+- The intermediary registers **itself** as a Relying Party, indicating that it intends to act as an intermediary (**RPI_01**, **Reg_26**). It obtains a **separate set of access certificates per intermediated RP**, each associated to that RP’s unique identifier and Service identifier (**Reg_34a**). A WRPRC may be issued to the intermediary for **direct** use of its own Services; it is **not** used in intermediated presentation (ARF §6.6.5; ETSI TS 119 475 §5.2.4 NOTE 4: WRPRCs are not issued for WRPs registered solely as intermediaries).
+- The intermediary then registers **each intermediated Relying Party** at a Registrar in the Member State where that Relying Party is established (**RPI_03**), providing legally valid evidence of the contractual relationship (**RPI_04**). WRPRCs are issued **automatically** per intended use × Service of the intermediated RP (**RPRC_09**), containing the association to the intermediary (**RPRC_04**). The intermediated RP indicates **which single WRPRC** to include (**RPI_05**).
+
+**Direct vs indirect trust.** Trust mediated by a trusted third party (Access CA, Trusted List / LoTE, Registrar, CAB / certification scheme) is **indirect**. Direct trust is only the bilateral operational or contractual relationship that is not established through those third parties.
+
+| Relationship | Kind | Mechanism |
+| :--- | :--- | :--- |
+| Intermediary ↔ intermediated Relying Party | **Direct** (contractual) | Principal–agent service contract. The Registrar records evidence of that contract (**RPI_04**); it does not create the relationship. |
+| Wallet Provider ↔ Wallet Instances | **Direct** (operational) | Deployment, WUA issuance, and instance lifecycle under the Wallet Provider. |
+| Wallet Unit → intermediary identity (channel) | **Indirect** | Validate the intermediary’s **WRPAC** against Access CA LoTE(s) (**RPA_04**, **RPI_06**, **Reg_34a**). |
+| Wallet Unit → intermediated RP identity, Service, intended use, and RPI–RP binding | **Indirect** | WRPRC **in the request** (**RPRC_19**, **RPRC_17**, **RPRC_17a**, **RPRC_21**). WRPRC association must match the intermediary WRPAC (**RPRC_04**; ETSI TS 119 475 §4.5). **RPRC_16**, **RPRC_18**, **RPRC_19a**, and **RPI_07a** are empty. |
+| Wallet Unit / RP / RPI → Credential Issuer | **Indirect** | PID Provider LoTE, MS QTSP TL, or Attestation Provider TL plus CAs (**OIA_12**–**OIA_15**). |
+| Credential Issuer → Wallet Solution | **Indirect** | Wallet Provider Trusted List compiled by the Commission from MS notification (**ISSU_19**, **ISSU_21** / **ISSU_28**, **ISSU_30**), after certification-scheme evaluation (CAB → scheme authority). |
+
+**Presentation transaction (ARF §6.6.5, RPI_05–RPI_10):**
+
+1. The intermediated RP asks the intermediary to request attributes and indicates **which single WRPRC** to include (**RPI_05**).
+2. The intermediary sends the presentation request with the **applicable WRPAC** (**Reg_34a**) and that **WRPRC by value** (**RPI_06**, **RPRC_19**).
+3. The Wallet Unit authenticates the intermediary via the WRPAC / Access CA LoTE, and verifies the intermediated RP and the RPI–RP association from the WRPRC (**RPRC_17**, **RPRC_17a**, **RPRC_04**). If the WRPRC is absent or invalid, warn the User at approval (**RPRC_17**).
+4. The Wallet Unit **SHALL NOT** display the intermediary or intermediary-Service trade names (**RPI_07**). It displays the **intermediated RP** and its Service.
+5. If the parties so agreed, the intermediary may perform PID/attestation validation on behalf of the RP (delegation of Article 5b(9) checks: **OIA_12**–**OIA_15**). What is validated is a contractual choice; the ARF does not mandate the RPI–RP interface, nor end-to-end encryption to the RP. Forward only to that RP; verify if agreed; delete immediately (**RPI_08**–**RPI_10**).
+6. The intermediary forwards attributes to the RP and **deletes** PIDs, attestations, and transaction-content data immediately (Article 5b(10); ARF §6.6.5).
+
+~~~~
+```mermaid
+sequenceDiagram
+    participant RP as Intermediated RP
+    participant RPI as Intermediary
+    participant W as Wallet Unit
+    participant ACA as Access CA LoTE
+    participant RCP as WRPRC Provider LoTE
+    participant ITL as Issuer TLs / LoTEs
+
+    RP->>RPI: Which WRPRC to include (RPI_05)
+    RPI->>W: Presentation request<br/>RPI WRPAC (Reg_34a) + RP WRPRC (RPRC_19)
+    W->>ACA: Validate RPI WRPAC (RPA_04)
+    W->>RCP: Validate RP WRPRC (RPRC_17, RPRC_17a, RPRC_04)
+    Note over W: Display intermediated RP only (RPI_07)
+    W-->>RPI: Presented attributes
+    opt Contractual delegation of Art. 5b(9)
+        RPI->>ITL: Validate PID / QEAA / PuB-EAA / EAA
+    end
+    RPI->>RP: Forward attributes (RPI_08/09)
+    Note over RPI: Delete transaction content (Art. 5b(10), RPI_10)
+- Wallet holders must be able to verify both RPI and RP identities
 
 ## Governance Responsibilities
 
