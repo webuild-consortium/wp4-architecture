@@ -67,36 +67,28 @@ Intermediated presentation operates on a **protocol split**:
 ## 6. High-Level Flows
 
 ### 6.1 Intermediary and Intermediated RP Registration Flow
-```
-Intermediary (RPI)         Intermediated RP          MS Registrar           Access CA / RegCert Provider
-       |                          |                       |                               |
-       |--- 1. Register as RPI -->|                       |                               |
-       |    (RPI_01, Reg_26)      |                       |                               |
-       |                          |                       |                               |
-       |--- 2. Register RP w/ Contractual Evidence ------>|                               |
-       |    (RPI_03, RPI_04, Reg_10a, Reg_10d)            |                               |
-       |                          |                       |                               |
-       |                          |                       |<-- 3. Issue WRPAC per RP ----|
-       |                          |                       |    (Reg_34a, TS 119 411-8)   |
-       |                          |                       |                               |
-       |                          |                       |<-- 4. Issue WRPRC ------------|
-       |                          |                       |    (RPRC_09, TS 119 475)      |
-```
 
 ```mermaid
 sequenceDiagram
-    participant RPI as Relying Party Intermediary
-    participant IRP as Intermediated RP
-    participant REG as Member State Registrar
-    participant CA as Access CA / RegCert Provider
+    autonumber
+    actor User as RP Representative (EBW)
+    participant RA as TSP Registration Authority
+    participant List as WP Leader Authorized List
+    participant CA as Certificate Authority (CA)
 
-    RPI->>REG: 1. Register as RPI (RPI_01, Reg_26)
-    IRP-->>RPI: Provide contractual evidence
-    RPI->>REG: 2. Register RP with Contractual Evidence (RPI_03, RPI_04, Reg_10a)
-    REG->>CA: 3. Trigger WRPAC set per RP (Reg_34a, TS 119 411-8)
-    CA-->>RPI: Issue WRPAC set per intermediated RP
-    REG->>CA: 4. Trigger WRPRC issuance (RPRC_09, TS 119 475)
-    CA-->>RPI: Issue WRPRC with RPI association
+    User->>RA: 1. Connect & authenticate using EBW
+    RA->>User: 2. Request credentials
+    User-->>RA: 3. Present EAA granting Power of Attorney (PoA)
+    RA->>User: 4. Request additional attributes for RPRC
+    User-->>RA: Provide additional attributes
+    RA->>List: 5. Check presence in WP Leaders authorized lists
+    List-->>RA: Confirm authorized status
+    RA->>CA: 6. Order issuance of RPAC & RPRC
+    CA->>CA: 7. Issue RPAC and RPRC
+    CA-->>RA: 8. Transmit certificates to RA
+    RA-->>User: 9. Notify user (e.g., via email)
+    User->>RA: 10. Re-authenticate via EBW
+    RA-->>User: 11. Retrieve RPAC & RPRC
 ```
 
 ### 6.2 Intermediated Credential Presentation Flow
@@ -214,11 +206,13 @@ To achieve conformance with **CS-013**, implementations must pass the **ITB+ Int
    - Verifies 11-step issuance of RPAC/RPRC per ETSI TS 119 475 Annex D1.
 
 ## 10. References
-1. Regulation (EU) No 910/2014 as amended by Regulation (EU) 2024/1183 (eIDAS 2.0).
-2. Commission Implementing Regulation (EU) 2025/848 as amended by **CIR (EU) 2026/1730** (RP Access Certificates).
-3. **Commission Implementing Regulation (EU) 2026/1731** (Protocols and interfaces, HAIP profile, WRPRC validation).
-4. EUDI Wallet Architecture Reference Framework (ARF) v3.0.0 — Topic 52 (Intermediaries) & Topic 31.
-5. ETSI TS 119 475 V1.1.1 — Selection of execution profiles for RPAC and WRPRC.
-6. ETSI TS 119 411-8 V1.1.1 — Access Certificate Profiles.
-7. WE BUILD Conformance Specification CS-002 (Credential Presentation v1.1).
-8. WE BUILD Blueprint D4.1 — Appendix C (Trust Ecosystem) & Appendix F (QTSP RPAC/RPRC)
+1. [Technical Report: Relying Party Intermediaries in OpenID4VP Remote Presentation Flows](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task2-trust-framework/rp-intermediary-openid4vp-technical-report.md))
+2. Regulation (EU) No 910/2014 as amended by Regulation (EU) 2024/1183 (eIDAS 2.0).
+3. Commission Implementing Regulation (EU) 2025/848 as amended by **CIR (EU) 2026/1730** (RP Access Certificates).
+4. **Commission Implementing Regulation (EU) 2026/1731** (Protocols and interfaces, HAIP profile, WRPRC validation).
+5. EUDI Wallet Architecture Reference Framework (ARF) v3.0.0 — Topic 52 (Intermediaries) & Topic 31.
+6. ETSI TS 119 475 V1.1.1 — Selection of execution profiles for RPAC and WRPRC.
+7. ETSI TS 119 411-8 V1.1.1 — Access Certificate Profiles.
+8. [WE BUILD Conformance Specification CS-002 (Credential Presentation v1.1)](https://github.com/webuild-consortium/wp4-architecture/blob/main/conformance-specs/cs-02-credential-presentation.md)
+9. WE BUILD Blueprint D4.1 — [Appendix C (Trust Ecosystem)](https://github.com/webuild-consortium/wp4-architecture/blob/main/blueprint/appendix-trust-ecosystem.md) & [Appendix F (QTSP RPAC/RPRC)](appendix-qtsp.md)
+
