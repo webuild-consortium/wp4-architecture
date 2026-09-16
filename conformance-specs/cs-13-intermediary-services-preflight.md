@@ -34,6 +34,9 @@ In accordance with Article 5b(10) of Regulation (EU) No 910/2014 (amended eIDAS)
 
 This is a **pre-flight specification** as defined in ADR-21 (Pre-flight CS ADR), designed to enable immediate implementation and deployment of a dedicated **ITB+ test suite** for intermediary workflows.
 
+An Intermediary sits between a Relying Party and the wallet to handle the technical work of presentation requests so the Relying Party doesn't have to implement it directly.
+
+Technically, participating in the EUDI Wallet ecosystem requires a Relying Party to implement the OpenID4VP protocol, manage cryptographic request signing, hold and rotate the certificates needed to authenticate to wallets, validate returned credentials (signature checks, revocation status, trust-chain verification against issuer trust lists), and stay conformant as the specs evolve. An Intermediary implements this stack once and exposes it as a service, so a Relying Party can request and receive verified attributes through a simpler API instead of building and maintaining a full verifier itself.
 ## 2. Scope
 This specification covers:
 - **Registration Architecture**: Two-step registration acts for intermediaries and intermediated RPs at Member State Registrars.
