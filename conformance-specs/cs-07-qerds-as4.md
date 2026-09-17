@@ -20,7 +20,7 @@ This document does not itself define a new protocol. Every normative requirement
 
 **In scope**: the C2→C3 AS4 User Message exchange and the C3→C2 AS4 Receipt Signal Message response; the WS-Security signing and encryption applied to that exchange; the full set of QeRDS evidence artifacts corresponding to the 22 ERDS events defined in ETSI EN 319 522-1 Table 1 (§7.3) and their JSON representation; the same-provider (C2 = C3) topology variant.
 
-**Out of scope**: the C1↔C2 (user-to-provider submission) interface and the C3↔C4 (provider-to-recipient-application delivery) interface — both are left to local implementation choice by the source standards and are not profiled here (note: the *evidence obligations* C3 carries toward events that occur at the C3–C4 boundary, e.g. consignment/handover, ARE in scope per §7.3 categories D/E, even though the C3–C4 wire protocol itself is not). Also out of scope: the identity-proofing, service/identifier discovery, and trusted-list registration interfaces that [WEBUILD-ARCH] places around the QERDS core (its interfaces 1–5, 7–9, 12, 15) — these govern the wallet/QTSP ecosystem this channel operates within, but not the C2–C3 wire exchange itself. Automated conformance test tooling is likewise out of scope; §9 defines *what* to check, not a test harness.
+**Out of scope**: the C1↔C2 (user-to-provider submission) interface and the C3↔C4 (provider-to-recipient-application delivery) interface — both are left to local implementation choice by the source standards and are not profiled here (note: the *evidence obligations* C3 carries toward events that occur at the C3–C4 boundary, e.g. consignment/handover, ARE in scope per §7.3 categories D/E, even though the C3–C4 wire protocol itself is not). Also out of scope: the identity-proofing, service/identifier discovery, and trusted-list registration interfaces that [WEBUILD-ARCH] places around the QERDS core (its interfaces 1–5, 7–9, 12, 15) — these govern the wallet/QTSP ecosystem this channel operates within, but not the C2–C3 wire exchange itself. The counterparty QERDS provider, that is, C3 from C2's perspective and vice versa, and its AS4 endpoint, encryption certificate, and trust status, are out of scope and it is the responsibility of the European Digital Directory identification/discovery/connection layer (see EDD conformance specification, [#253](https://github.com/webuild-consortium/wp4-architecture/issues/253)). This profile assumes that resolution has already been completed successfully and, for the pilot, that these values are statically provisioned. All AS4CONF-SEC-* and Receipt-verification requirements presuppose it. Automated conformance test tooling is likewise out of scope; §9 defines *what* to check, not a test harness.
 
 **Evidence event taxonomy**: ETSI EN 319 522-1 Table 1 ("ERDS Events") defines 22 named events across 6 categories (submission, inter-ERDS relay, recipient acceptance/rejection, consignment, handover, non-ERDS interop) — see [ETSI-319-522] §6.2. §7.3 below intentionally does not restate the semantics of each event; see [ETSI-319-522] directly for the normative definition of what each event means, and treat §7.3 as a citation-ID mapping plus this project's own profiling decisions (which categories are mandatory for this deployment, and what additional evidence-artifact requirements apply on top of the base standard).
 
@@ -49,8 +49,6 @@ Once published, an ID's area/sequence pair MUST NOT be reassigned to a different
 **`AS4CONF-SCOPE-004`** [MUST]: Implementations MUST comply with all requirements in [CEF-AS4-2.0] for AS4/ebMS3 message structure, WS-Security signing and encryption, and transport layer handling, except where this document explicitly profiles or overrides those requirements (e.g., `AS4CONF-SEC-008` mandates encryption for all User Messages).
 
 **`AS4CONF-SCOPE-005`** [MUST]: Implementations MUST comply with all requirements in [AS4-PROFILE-1.0] (the OASIS AS4 Profile of ebMS 3.0 v1.0) for features not superseded by [CEF-AS4-2.0] or this document, in the compliance chain: [AS4-PROFILE-1.0] ← [CEF-AS4-2.0] ← this document (later profiles override earlier ones).
-
-**`AS4CONF-SCOPE-006`** [MUST]: Implementations MUST comply with the PEPPOL AS4 Profile where applicable, using [CEF-AS4-2.0] as the underlying AS4 implementation baseline instead of the version mandated within the PEPPOL Profile specification itself. This ensures PEPPOL interoperability while anchoring to the CEF AS4 2.0 security, cryptographic, and message-structure requirements specified in §7.
 
 ## §4 Roles and Components
 
@@ -385,6 +383,10 @@ The following example demonstrates the structure of a `wsse:Security` header use
 ```
 
 **Note**: This example reflects the signature algorithm **`eddsa-ed25519`** (per `AS4CONF-SEC-004`) and digest algorithm **`sha256`** (per `AS4CONF-SEC-003`), not the legacy RSA-SHA1 shown in some OASIS examples. Encryption elements (xenc:EncryptedKey, xenc:EncryptedData) follow analogous XML Encryption structures per §7.2 requirements.
+
+---
+
+
 
 ---
 
