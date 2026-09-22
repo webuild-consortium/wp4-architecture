@@ -22,7 +22,7 @@ Rather than use that generic subject/resource shape directly, this ADR profiles 
 
 ## Decision
 
-An EAA issuer's key binding to its EBWOID MAY be verified by the validator calling a trust registry endpoint conforming to draft-johansson-authzen-trust, operated by (or on behalf of) the registration office that issued that EBWOID, instead of by chaining a public key or certificate into the EAA header.
+An EAA issuer's key binding to its EBWOID MAY be verified by the validator calling a trust registry endpoint conforming to draft-johansson-authzen-trust, operated by or on behalf of the member state that issued that EBWOID, instead of by chaining a public key or certificate into the EAA header.
 
 1. From the presented EAA, the validator extracts the issuer's EBWOID unique identifier (EUID) and the key that signed the EAA, as a JWK or an x.509 certificate (chain).
 2. The validator resolves the trust registry's Policy Decision Point endpoint for the issuing registration office through an EU directory service (see the straw-man below). This is a distinct lookup from the [Digital Directory Lookup Service](ebw-endpoint-lookup-service.md), which resolves a Wallet Unit's credential offer endpoint; here the directory is keyed by issuing authority (e.g. by EUID country and register prefix), not by Wallet Unit.
