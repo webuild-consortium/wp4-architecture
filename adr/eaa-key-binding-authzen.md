@@ -25,7 +25,7 @@ Rather than use that generic subject/resource shape directly, this ADR profiles 
 An EAA issuer's key binding to its EBWOID MAY be verified by the validator calling a trust registry endpoint conforming to draft-johansson-authzen-trust, operated by or on behalf of the member state that issued that EBWOID, instead of by chaining a public key or certificate into the EAA header.
 
 1. From the presented EAA, the validator extracts the issuer's EBWOID unique identifier (EUID) and the key that signed the EAA, as a JWK or an x.509 certificate (chain).
-2. The validator resolves the trust registry's Policy Decision Point endpoint for the issuing registration office through an EU directory service (see the straw-man below). This is a distinct lookup from the [Digital Directory Lookup Service](ebw-endpoint-lookup-service.md), which resolves a Wallet Unit's credential offer endpoint; here the directory is keyed by issuing authority (e.g. by EUID country and register prefix), not by Wallet Unit.
+2. The validator resolves the trust registry's Policy Decision Point endpoint for the issuing Member State's trust register through an EU directory service (see the straw-man below), and authenticates that endpoint against a Trusted List or List of Trusted Entities (LoTE) for Member State trust registers, per ETSI TS 119 615 (see "Authenticating the endpoint" below) — not on TLS/WebPKI alone. The directory lookup is distinct from the [Digital Directory Lookup Service](ebw-endpoint-lookup-service.md), which resolves a Wallet Unit's credential offer endpoint; here it is keyed by issuing authority (e.g. by EUID country and register prefix), not by Wallet Unit.
 3. The validator POSTs an access evaluation request to that endpoint's `/evaluation` path, shaped per draft-johansson-authzen-trust §4:
    - `subject`: `{"type": "key", "id": "<EUID>"}` — the *name* whose binding is being asked about is the legal person's EUID, per the draft's requirement that `subject.id` be "the name bound to the public key to be validated".
    - `resource`: `{"id": "<EUID>", "type": "jwk"|"x5c", "key": <the EAA's signing key or certificate chain>}` — `resource.id` MUST equal `subject.id` per §4.2; `resource.key` carries the material being checked.
@@ -40,16 +40,20 @@ sequenceDiagram
     participant Issuer as EAA Issuer (EBW)
     participant Validator as Validator (EBW)
     participant Directory as EU Directory<br/>(BRIS register routing, straw-man)
-    participant PDP as Registration Office<br/>trust registry PDP<br/>(draft-johansson-authzen-trust)
+    participant LoTE as MS Trust Register LoTE<br/>(ETSI TS 119 612/602/615)
+    participant PDP as MS Trust Register<br/>PDP (draft-johansson-authzen-trust)
 
     Issuer->>Validator: 1. Present EAA<br/>(signed by key K, issuer EBWOID/EUID in header)
     Note over Validator: 2. Extract EUID and<br/>K as JWK or x5c
     Validator->>Directory: 3. Resolve register for EUID prefix
     Directory-->>Validator: 4. authzen_endpoint base URL
-    Validator->>PDP: 5. POST /evaluation<br/>subject={type:key,id:EUID}<br/>resource={id:EUID,type:jwk,key:K}<br/>action={name:eaa-issuer-key}
-    Note over PDP: 6. Check name-to-key<br/>binding record
-    PDP-->>Validator: 7. {decision: true/false}
-    Note over Validator: 8. true = key bound to legal person<br/>false/unreachable = per trust policy
+    Validator->>LoTE: 5. Fetch trust register's LoTE entry
+    LoTE-->>Validator: 6. Trust anchor for authzen_endpoint
+    Note over Validator: 7. Authenticate endpoint/response<br/>against LoTE trust anchor
+    Validator->>PDP: 8. POST /evaluation<br/>subject={type:key,id:EUID}<br/>resource={id:EUID,type:jwk,key:K}<br/>action={name:eaa-issuer-key}
+    Note over PDP: 9. Check name-to-key<br/>binding record
+    PDP-->>Validator: 10. {decision: true/false}
+    Note over Validator: 11. true = key bound to legal person<br/>false/unreachable/unauthenticated = per trust policy
 ```
 
 ### Straw-man: endpoint lookup
@@ -60,6 +64,14 @@ Every EUID already encodes, per (EU) 2017/1132 and the Commission Implementing R
 
 A validator resolves the register for an EUID's country/register prefix exactly as BRIS already does, reads that register's `authzen_endpoint` if present, and appends `/evaluation`. If the field is absent, this ADR's mechanism simply isn't available for that register yet, and the validator falls back to whatever #168 lands on.
 
+
+### Authenticating the endpoint
+
+Resolving an `authzen_endpoint` URL only tells the validator where to send the request; it says nothing about whether the endpoint answering there is really operated by that EUID's Member State trust register. This is the same bootstrapping problem this consortium already solves elsewhere by anchoring an entity's endpoint in a Trusted List or List of Trusted Entities (LoTE) per ETSI TS 119 612 / TS 119 602, validated per ETSI TS 119 615 — the same mechanism a Wallet Unit already uses to validate an Access CA or a PID Provider (see [Publish consortium trusted lists](trusted-lists.md)).
+
+This ADR proposes the same pattern here rather than plain TLS/WebPKI: each trust register's `authzen_endpoint` (TLS server certificate, or a dedicated key used to sign decision responses) is published as a service entry in a Member State trust register LoTE — either a new LoTE profile analogous to the existing Access CA and PID Provider ones, or a `serviceInformationExtensions` addition to a national trusted list the trust register is already listed on, following the same pattern TS 119 602 Annex H already uses to publish which attestation types a Pub-EAA/EAA Provider is authorised to issue. A validator authenticates the endpoint (or its signed response) against that LoTE entry before trusting a `true` decision, exactly as it already does for a WRPAC or a PID Provider credential — and MUST refuse the decision if the endpoint does not authenticate this way, rather than trusting it on TLS/WebPKI alone.
+
+Folding the `authzen_endpoint` URL into that same LoTE entry's `serviceInformationExtensions`, instead of a separate BRIS-based directory, would answer discovery and authentication with a single lookup; that is left as an open choice alongside the straw-man above. Either way, a validator only ever needs the one LoTE entry for the trust register it is querying — not the bulk national TLoL of individual EBWOIDs that #168's options require.
 
 ### Point-in-time queries and archival
 
@@ -77,13 +89,15 @@ What becomes easier?
 - Key rotation and revocation of a *current* binding are answered live, from the registration office's current record, at the moment of verification — removing the need to design a retroactive-timestamp revocation mechanism, or to re-issue the EBWOID on every key rotation.
 - Because a trust register is far more durable than an individual EAA Provider, and could retain binding history rather than only current state, the same mechanism is positioned to eventually answer #168's own long-lived/archival example (a diploma verified after its issuer is gone) too — once the point-in-time extension noted above exists — something the static chaining options can only do by keeping the whole chain valid and reachable forever.
 - The mechanism reuses an already-drafted, purpose-built profile (draft-johansson-authzen-trust) of an existing OpenID standard for name-to-key binding decisions, rather than a bespoke chaining scheme invented per attestation format, and only needs to define the role name and the directory lookup, not the request/response shape.
+- The endpoint itself is authenticated the same way Wallet Units already authenticate an Access CA or a PID Provider — against a Trusted List/LoTE per ETSI TS 119 615 — so this ADR does not introduce a new, unaccountable trust bootstrap alongside the consortium's existing one.
 
 What becomes more difficult?
 
 - This breaks pure offline, holder-to-holder verification: the validator needs live reachability to the issuing registration office (or its delegate) at the moment it verifies.
 - As specified today, draft-johansson-authzen-trust-01's `context` field cannot carry anything decision-critical, so it cannot yet express a point-in-time query. Until the draft is extended, this ADR only answers "is this key bound now" — the archival case is not solved, only positioned to be solved.
 - The EU directory mapping a MS trust register (or EUID prefix) to its trust registry endpoint does not exist yet in this form. It is a different lookup from the Wallet Unit-keyed Digital Directory Lookup Service, and needs its own design or an explicit extension of that one — see the endpoint-lookup straw-man above.
-- Every Member State's trust register(s) office would need to expose and operate a conforming Policy Decision Point, and — once the point-in-time extension exists — commit to a retention period for historical bindings long enough to serve long-lived EAAs. Rolling this out consistently across roughly thirty registration offices of varying technical maturity is its own scaling problem, not obviously smaller than the standards changes #168 requires.
+- No LoTE profile for these trust registries' endpoints exists yet either; this is new scope for the WP4 Trust Registry Infrastructure group, on top of maintaining it once it does.
+- Every Member State's trust register(s) would need to expose and operate a conforming Policy Decision Point, and — once the point-in-time extension exists — commit to a retention period for historical bindings long enough to serve long-lived EAAs. Rolling this out consistently across roughly thirty registers of varying technical maturity is its own scaling problem, not obviously smaller than the standards changes #168 requires.
 - The `action` role name for this check must mean the same thing everywhere it is deployed; if registration offices diverge in how they interpret it, validators cannot rely on a `true` decision meaning the same thing across Member States.
 
 How do we address the risks introduced by this change?
@@ -92,6 +106,7 @@ How do we address the risks introduced by this change?
 - Once that extension lands, specify a minimum retention period for historical key-binding records as part of adopting this ADR, so the archival case is a defined guarantee rather than an incidental capability of whichever registration office happens to keep good records.
 - Bound the cache TTL for `true` decisions to the issuing registration office's stated revocation SLA, to reduce round-trip cost on repeat or warm relationships.
 - Treat the trust registry endpoint directory as an extension of the BRIS business-register routing table (see the straw-man above), rather than inventing a second, unrelated directory.
+- Require the endpoint to be authenticated against a Trusted List/LoTE before any decision from it is trusted (see "Authenticating the endpoint" above), so an unauthenticated or spoofed `authzen_endpoint` cannot be used to forge a `true` decision.
 - Pilot with a small number of registration offices (starting with Bolagsverket) and a fixed `action` role definition before asking all Member States to adopt it.
 
 ## Advice
