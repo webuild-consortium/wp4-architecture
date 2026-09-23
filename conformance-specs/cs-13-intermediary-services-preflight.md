@@ -1,9 +1,14 @@
 # WE BUILD - Pre-flight Conformance Specification CS-013: Intermediary Services
 
-**Version**: 0.1 / Pre-flight Draft  
-**Date**: 15 September 2026  
+**Version**: 0.2 / Pre-flight Draft  
+**Date**: 23 September 2026  
 **Authors / Contributors**: WP4 Architecture / Trust Infrastructure Group  
 - Sarah Amandusson, Digg
+- Leif Johansson, SIROS
+- Martin Micuch, IDUnion
+- Michal Stava, Arcoma
+- Filip Hladký, Bankid CZ
+- George Padayatti, iGrant.io
 
 ## Table of Contents
 - [1. Introduction](#1-introduction)
