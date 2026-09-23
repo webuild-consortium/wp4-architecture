@@ -102,7 +102,7 @@ sequenceDiagram
     participant W as Wallet Unit (WU)
     participant TL as Trust Infrastructure / Access CA
 
-    IRP->>INT: 1. Request attributes & specify WRPRC ref (RPI_05)
+    IRP->>INT: 1. Request claims & specify WRPRC ref (RPI_05)
     INT->>W: 2. Authorization Request / signed Request Object JWT
     Note over INT,W: x5c + signature = intermediary WRPAC (Reg_34a)
     Note over INT,W: verifier_info[euWrprc] = intermediated RP WRPRC (RPRC_19)
