@@ -151,7 +151,10 @@ Intermediated presentation requests MUST use the `x509_hash` client identifier s
   "client_id": "x509_hash:Base64UrlEncodedWrpacHash...",
   "response_type": "vp_token",
   "response_mode": "dc_api.jwt",
-  "client_metadata": {
+  "verifier_info": {
+    "format": "registration_cert",
+    "data": "BASE64EncodedJwtOrCborRegistrationCert"
+  }
     "verifier_info": {
       "euWrprc": "Base64CborEncodedWRPRC..."
     }
