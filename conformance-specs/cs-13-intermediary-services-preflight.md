@@ -111,7 +111,7 @@ sequenceDiagram
     W->>W: 4. Display Intermediated RP ONLY (RPI_07)
     W->>INT: 5. Encrypted Authorization Response (direct_post.jwt)
     INT->>IRP: 6. Forward normalized claims (if verifications succeed)
-    Note over INT: 7. Purge all PII immediately (Article 5b(10), RPI_08-10)
+    Note over INT: 7. Purge transaction content immediately (Article 5b(10), RPI_08-10)
 ```
 ## 7. Normative Requirements
 
