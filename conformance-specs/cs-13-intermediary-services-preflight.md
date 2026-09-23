@@ -137,7 +137,7 @@ sequenceDiagram
 2. **RP-INT-02**: Intermediated RPs **SHALL NOT** be required to present or hold a WRPAC for intermediated flows (`ARF §6.6.5`).
 
 ### 7.4 Registrar and Trust Infrastructure Requirements
-1. **REG-INT-01**: The Member State Registrar **MUST** record RPI–RP relationships upon verification of contractual evidence (`RPI_04`).
+1. **REG-INT-01**: The Registrar **MUST** record RPI–RP relationships upon verification of contractual evidence (`RPI_04`).
 2. **REG-INT-02**: The RegCert Provider **MUST** automatically issue WRPRCs containing the RPI association attribute (`RPRC_04`, `RPRC_09`) upon successful RP registration.
 3. **REG-INT-03**: Access CAs **MUST** issue WRPACs compliant with ETSI TS 119 411-8, embedding the RP association extension per `CIR (EU) 2026/1730 Annex I point 16`.
 
