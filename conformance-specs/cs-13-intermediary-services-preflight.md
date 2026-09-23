@@ -89,7 +89,7 @@ sequenceDiagram
     User-->>RA: 3. Present EAA granting Power of Attorney (PoA)
     RA->>User: 4. Request additional attributes for RPRC
     User-->>RA: Provide additional attributes
-    RA->>List: 5. Check presence in WP Leaders authorized lists
+    RA->>List: 5. Check authorization
     List-->>RA: Confirm authorized status
     RA->>CA: 6. Order issuance of RPAC & RPRC
     CA->>CA: 7. Issue RPAC and RPRC
