@@ -60,6 +60,7 @@ graph TB
 | CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.1](cs-05-bwua-lifecycle.md) |
 | CS-007   | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) |
 | CS-012   | [SCA Attestations for Payment Transactions (TS12 Profile) - v1.0](cs-12-sca-payments.md) |
+| CS-013   | [Intermediary services pre-flight] - v1.0(cs-13-intermediary-services-preflight.md |
 <!--END INDEX-->
 
 ### WBCS Under Development
@@ -69,10 +70,8 @@ graph TB
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------ | --------------- |
 | CS-006     | [Issuance of Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/issues/190) | 🟢 *In review*     | Must-have    | Aug 2026        |
 | CS-008     | [Identity Matching](https://github.com/webuild-consortium/wp4-architecture/issues/248)                                              | 🔵 *Investigating* | Must-have    | Aug 2026        |
-| CS-009     | [PID / EBWOID Issuance](https://github.com/webuild-consortium/wp4-architecture/issues/206)                                          | 🟡 *Drafting*      | Should-have  | Aug 2026        |
 | CS-010     | [Revocation mechanism](https://github.com/webuild-consortium/wp4-architecture/issues/188)                                           | 🟢 *In review*     | Should-have  | Aug 2026        |
 | CS-011     | [Remote QESeal creation](https://github.com/webuild-consortium/wp4-architecture/issues/167)                                         | 🟢 *In review*     | Must-have    | Sep 2026        |
-| CS-013     | [Intermediary services pre-flight](https://github.com/webuild-consortium/wp4-architecture/issues/185)                               | ⚪ *Not started*   | Must-have    | Sep 2026        |
 | CS-014     | [Proximity / Offline profile](https://github.com/webuild-consortium/wp4-architecture/issues/251)                                    | 🔵 *Investigating* | Should-have  | Sep 2026        |
 | CS-015     | [QERDS - EBW Interface](https://github.com/webuild-consortium/wp4-architecture/issues/252)                                          | 🟢 *In review*     | Must-have    | Aug 2026        |
 | CS-016     | [Inter-QTSP Message Relay (QeRDS AS4)](https://github.com/webuild-consortium/wp4-architecture/issues/159)                           | 🟢 *In review*     | Low          | Aug 2026        |
