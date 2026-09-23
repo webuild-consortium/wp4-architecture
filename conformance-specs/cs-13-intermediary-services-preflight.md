@@ -57,7 +57,7 @@ The keywords **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **S
 - **Relying Party Intermediary (RPI)**: An entity that connects to Wallet Units on behalf of one or more intermediated Relying Parties, constructs OpenID4VP presentation requests, forwards presented attributes, and immediately purges personal data.
 - **Intermediated Relying Party (RP)**: The legal person or economic operator that ultimately relies on the presented attributes to deliver a service or fulfill a legal obligation.
 - **Wallet Unit (WU)**: The wallet instance controlled by a user that validates presentation requests, enforces consent rules, and submits verifiable presentations.
-- **Member State Registrar**: The authority/registry managing registration and operational authorization for RPs and RPIs.
+- **Registrar**: The authority/registry managing registration and operational authorization for RPs and RPIs. This will be "Member State Registrar" but in WE BUILD we do not have Member States. ```
 - **Access Certificate Authority (Access CA)**: The CA issuing WRPAC access certificates to registered entities complying with ETSI TS 119 411-8 / EN 319 411-1 (NCP).
 - **Provider of Registration Certificates (RegCert Provider)**: The entity issuing WRPRC registration certificates per ETSI TS 119 475 / ARF specifications.
 
