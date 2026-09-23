@@ -74,7 +74,7 @@ Intermediated presentation operates on a **protocol split**:
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as RP Representative (EBW)
+    actor User as RP Representative
     participant RA as TSP Registration Authority
     participant List as WP Leader Authorized List
     participant CA as Certificate Authority (CA)
