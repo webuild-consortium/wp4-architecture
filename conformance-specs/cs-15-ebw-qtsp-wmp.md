@@ -178,7 +178,7 @@ The identifier maps bidirectionally to the ebCore Party ID URN and to the PEPPOL
 
 ### 6.2 QTSP Identifiers
 
-A QTSP **MUST** be identified by an `x509:san:dns:` identifier whose DNS SAN value is the QTSP's service domain, for example `x509:san:dns:qerds.qtsp.example`. The certificate carrying that SAN **MUST** be the QTSP's qualified certificate as listed on the EU Trusted List.
+A QTSP **MUST** be identified by an `x509:san:dns:` identifier whose DNS SAN value is the domain of its QERDS service, for example `x509:san:dns:qerds.qtsp.example`. The certificate carrying that SAN **MUST** be, or chain to, the `ServiceDigitalIdentity` of the QTSP's QERDS service (service type `http://uri.etsi.org/TrstSvc/Svctype/EDS/Q`) on the WE BUILD consortium trusted list.
 
 The QTSP identifier appears as the `wmp.sender` of every evidence notification the QTSP generates and as a `relay_chain` `relay_id` entry on every message it relays.
 
