@@ -11,7 +11,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 2. [Baseline protocols](base-protocols.md)
 3. [Specify PID and eAA formats](document-formats.md)
 4. [Provide EBWOID as a stable minimal basis](basic-lpid.md)
-5. [Wallet Unit Attestation and Lifecycle Management (For European Business Wallet)](wallet-unit-lifecycle-management.md)
+5. [Wallet Unit Attestation and Lifecycle Management (For EBW)](wallet-unit-lifecycle-management.md)
 6. [Replace LPID with EBWOID](001-replace-lpid-with-ebwoid.md)
 7. [Deliver business wallet data using QERDS](build-qerds.md)
 8. [Attestation Revocation Mechanism](attestation-revocation-mechanism.md)
@@ -29,7 +29,8 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 20. [Business Wallet Unit Attestation based on TS3](bwua-ts3-attestation.md)
 21. [Pre-flight CS](pre-flight-CS.md)
 22. [Pseudonyms for User Accounts](ar-pseudonyms.md)
-23. [Architectural Scoping of the European Business Wallet](ebw-scope.md)
+23. [Architectural Scoping of the EBW](ebw-scope.md)
+24. [Mutual identification for EBW presentation requests](mutual_identification.md)
 <!--END INDEX-->
 
 ## Supporting analysis
