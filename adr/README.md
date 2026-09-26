@@ -30,6 +30,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 21. [Pre-flight CS](pre-flight-CS.md)
 22. [Pseudonyms for User Accounts](ar-pseudonyms.md)
 23. [Architectural Scoping of the European Business Wallet](ebw-scope.md)
+24. [Verify QERDS Provider trust via Trusted Lists before and after delivery](qerds-delivery-trust-evaluation.md)
 <!--END INDEX-->
 
 ## Supporting analysis
