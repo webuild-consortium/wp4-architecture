@@ -260,8 +260,8 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 
 2. The ACME Server MUST validate wrp-id coherence with EAB. 
 
-2. The ACME Server creates the order in `pending` state(“201” created response) and returns `finalize` URL.
-3. For multi-instance issuance: the ACME Server MAY verify that the `instanceId` (if provided) is not already in use by a currently valid WRPAC for the same `wrp-id`.
+3. The ACME Server creates the order in `pending` state(“201” created response) and returns `finalize` URL.
+4. For multi-instance issuance: the ACME Server MAY verify that the `instanceId` (if provided) is not already in use by a currently valid WRPAC for the same `wrp-id`.
 
 
 ### 6.1.4 Order Finalization
@@ -628,7 +628,7 @@ Profiles for specific WE BUILD credential types MUST NOT relax these requirement
 | **3** | User supplies EAA (EBWOID) | EBW presents EBWOID to RA | §5.3 |
 | **4** | RA collects additional WRPRC attributes | Collected during EAB provisioning | §6.2 |
 | **5** | RA checks RP in authorized RP lists | — | §6.2 |
-| **6** | RA orders issuance of both certificates | ACME `finalize` (CSR submission) | §8.5 |
+| **6** | RA orders issuance of both certificates | ACME `finalize` (CSR submission) | §8.4 |
 | **7** | CA issues WRPAC| ACME Server generates certificates, order ? `valid` | §8.5 |
 | **7** | CA issues WRPRC| —| §6.2 |
 | **8** | CA transmits certificates to RA | Internal (ACME Server encapsulates RA+CA) | — |
