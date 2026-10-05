@@ -235,6 +235,16 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 1. The ACME Client fetches the directory document via HTTPS GET.
 2. The directory includes metadata: `externalAccountRequired: true`
 
+ACME Client
+|
+| HTTPS GET /directory
+v
+ACME Server
+|
+| Directory + externalAccountRequired=true
+v
+ACME Client
+
 ### 6.1.2 Account Creation with EBW Authentication
 
 **Pre-ACME phase (Blueprint steps 1-3):**
@@ -254,6 +264,30 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 9. The ACME Client sends `newAccount` with the EAB binding.
 10. The ACME Server validates the EAB and creates the account.
 
+RP Representative
+|
+v
+EBW
+|
+| Present EBWOID
+v
+RA
+|
+| Verify identity + Trust List
+v
+Issue EAB (+ optional RPRC)
+|
+v
+ACME Client
+|
+| newAccount + EAB
+v
+ACME Server
+|
+| Validate EAB
+v
+ACME Account Created
+
 ### 6.1.3 Order Creation
 
 1. The ACME Client sends `newOrder` whose “identifier” value is ‘wrp-id’ and instanceID as an attribute
@@ -263,6 +297,20 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 3. The ACME Server creates the order in `pending` state(“201” created response) and returns `finalize` URL.
 4. For multi-instance issuance: the ACME Server MAY verify that the `instanceId` (if provided) is not already in use by a currently valid WRPAC for the same `wrp-id`.
 
+ACME Client
+|
+| newOrder(wrp-id, instanceId)
+v
+ACME Server
+|
+| Check EAB / wrp-id
+| Check instanceId (optional)
+v
+Order = Pending
+|
+| Return finalize URL
+v
+ACME Client
 
 ### 6.1.4 Order Finalization
 
@@ -276,6 +324,28 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 6. The order transitions to `valid` with a `certificate` URL.
 7. The ACME Server MAY send out-of-band notification to the RP representative.
 
+RP Backend / ACME Client
+|
+| Generate Key Pair + CSR
+v
+ACME Client
+|
+| CSR --> finalize URL
+v
+ACME Server
+|
+| Validation
+v
+CA
+|
+| CT Logs + WRPAC issuance
+v
+Order = Valid
+|
+| certificate URL
+v
+ACME Client
+
 ### 6.1.5 Certificate Download
 
 *Blueprint steps 10-11: authenticate + retrieve.*
@@ -283,11 +353,43 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 1. The ACME Client sends POST-as-GET to the `certificate` URL (authenticated via account key bound to EBW).
 2. The ACME Server returns the PEM certificate chain.
 
+ACME Client
+|
+| POST-as-GET
+| certificate URL
+v
+ACME Server
+|
+| PEM Certificate Chain
+v
+ACME Client
+
 ### 6.1.6 Certificate Revocation
 
 1. Client-initiated: `revokeCert` request.
 2. Server-initiated: upon RP removal from the RP List, or upon revocation of a specific Relying Party Instance.
 3. For multi-instance deployments: revocation of one instance's WRPAC MUST NOT affect WRPACs issued to other instances of the same WRP.
+
+Client revokeCert
+|
+v
+ACME Server
+|
+v
+Certificate Revoked
+ 
+OR
+ 
+RP removed from Trust List
+|
+v
+ACME Server
+|
+v
+Certificate Revoked
+ 
+(Note: one instance revocation
+does not affect other instances)
 
 ## 6.2 Direct Issuance Process
 
@@ -300,6 +402,18 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 3.	The User registers himself as the Authorised Representative
 4.	The User uploads WRP evidences (proof of existence or registration, depending on the RP’s country regulation, and the POA)
 
+User
+|
+| Connect to RA Portal
+v
+RA Portal
+|
+| RP information
+| Representative registration
+| Evidence upload
+v
+Registration Submitted
+
 ### 6.2.2 Order Creation
 
 1.	The User describes the certificate receiver.
@@ -307,11 +421,32 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 3.	Optionally the User fills in a RPRC certificate application.
 4.	The user set a complex password for certificate retrieval.
 
+User
+|
+| Receiver details
+| RPAC application
+| Optional RPRC request
+| Retrieval password
+v
+Order Submitted
+
 ### 6.2.3 Order Validation
 
 1.	The RA validates the RP Identifier and verifies the organisation's identity.
 2.	The RA validates the presence of RP in Trust Lists (*Blueprint step 5: RP list check.*)
 3.	Optionally (Blueprint step 4): **[MVP+]** the RA collects  entitlements or types of entitlements in Trust Lists for WRPRC production. **[MVP]** RA MAY collects this information from RP out of band.
+
+RA
+|
+| Verify Organisation
+| Verify RP Identifier
+| Check Trust Lists
+v
+Validation OK
+|
+| Optional entitlement collection
+v
+Ready for Issuance
 
 ### 6.2.4 Certificate Issuance
 
@@ -322,6 +457,18 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 3.	The RA sends the RPAC together with the optional RPRC if produced by e-mail to the certificate receiver.
 4.	The RA send to the certificate receiver its revocation credentials and procedure.
 
+CA
+|
+| Issue RPAC
+| Optional RPRC
+v
+RA
+|
+| Email certificates
+| Send revocation credentials
+v
+Certificate Receiver
+
 ### 6.2.5 Certificate Revocation
 
 1.	Certificate receiver may use its revocation credentials to revoke RPAC according to RPC issuer procedure.
@@ -329,6 +476,15 @@ Per RFC 8555 §7.3.4 [1], the `externalAccountBinding` value is a flattened JWS 
 > [!NOTE]
 > CS-RPAC_08: RPRC can be seen as a structured export of registration data, for instance formatted as a signed JWT. It seems then opportune to issue these just at the end of registration steps that check the content of the Trust List.
 > CS-RPAC_09: Renewal is out of scope of this specification; implementations are only required to support initial issuance and revocation.
+
+Certificate Receiver
+|
+| Revocation credentials
+v
+RPAC Issuer
+|
+v
+Certificate Revoked
 
 # 7. Normative Requirements
 
