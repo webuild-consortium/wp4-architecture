@@ -51,6 +51,8 @@ def generate_qmd(md: str, numbered: bool) -> str:
         for line in lines:
             # Fix Mermaid syntax for Quarto
             line = line.replace('```mermaid', '```{mermaid}')
+            # Fix links to conformance specifications in the published page
+            line = line.replace('](../conformance-specs/', '](')
             qmd_file.write(line)
     return qmd
 
@@ -72,14 +74,15 @@ def get_indexed_mds(index_file: str) -> list[str]:
 
 def generate_adr_appendix():
     print("Generating ADR appendix...")
-    generate_qmd("appendix-adr.md", numbered=True)
     base_path = "../adr/"
-    adr_mds = get_indexed_mds(base_path + "README.md")
+    shutil.copy(base_path + "README.md", "appendix-adr.md")
+    generate_qmd("appendix-adr.md", numbered=True)
+    adr_mds = get_indexed_mds("appendix-adr.md")
     with open("appendix-adr.qmd", "a") as adr_appendix_qmd:
         for adr_md in adr_mds:
             print("Found ADR:", adr_md)
             shutil.copy(base_path + adr_md, adr_md)
-            include(adr_appendix_qmd, generate_qmd(adr_md, numbered=True), indent=1)
+            REFS.append(generate_qmd(adr_md, numbered=True))
     print()
 
 
@@ -110,6 +113,8 @@ def proc_file(filename: str, line_proc):
 def fix_qtsp_doc(line):
     # Fix links
     line = line.replace('.../README.md', 'https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/README.md')
+    line = line.replace('../README.md', 'https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/README.md')
+    line = line.replace('docs/qeaa/', 'https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qeaa/')
     for md in ["architecture.md", "issuance-to-eudiw.feature.md", "validation.feature.md", "verification.feature.md", "rb0xx_hello_world_attestation.md"]:
         line = line.replace(md, f"https://github.com/webuild-consortium/wp4-qtsp-group/blob/main/docs/qeaa/{md}")
     return line

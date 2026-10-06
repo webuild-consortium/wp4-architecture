@@ -3,7 +3,7 @@
 **Authors:**
 - Erwin Nieuwlaar, KVK, Netherlands
 
-## Context:
+## Context
 In webuild-consortium/eudi-wallet-rulebooks-and-schemas#24, the LPID (Legal Person Identification Data) rulebook was removed in favour of the EBWOID (European Business Wallet Owner Identification Data) rulebook. It was unclear whether this represented a consortium decision. Hence, an ADR to discuss support/objections and document this decision is clearly.
 The PID/EBWOID working group agreed to proceed with this change during a weekly discussion session.
 

@@ -6,20 +6,25 @@ Different wallet implementations exist in the ecosystem, reflecting different us
 
 ### Wallet Types Relevant for WE BUILD
 
-From a deployment perspective, wallet implementations in the WE BUILD ecosystem can broadly be grouped into four practical categories.
+From a deployment perspective, wallet implementations in the WE BUILD ecosystem can broadly be grouped into three practical categories, distinguished by where the wallet runs and where its keys are protected. The same three categories are used in the Wallet Types section of chapter 3.
 
 | Wallet Type | Typical Deployment | Primary Use Cases |
 |---|---|---|
-| Mobile (on-device) | Smartphone application using device hardware security | Natural person wallets and offline use cases |
-| Web / browser-based | Browser interface with backend cryptographic services | Desktop services and enterprise workflows |
-| Cloud / HSM-based | Server-hosted wallet infrastructure backed by HSMs | Legal person wallets and managed services |
-| Hybrid | Combination of local device security and remote HSM | Mixed use cases requiring both scalability and offline capability |
+| On-device | Wallet Instance on the user's device, keys protected by a WSCD on that device | Natural person wallets and offline use cases |
+| Remote / server-side | Wallet service in backend infrastructure, keys protected by a server-side WSCD, typically an HSM | Legal person wallets, managed services and large-scale deployments |
+| Hybrid | Combination of a device WSCD and a server-side WSCD | Mixed use cases requiring both scalability and offline capability |
+
+The conformance specifications draw the same line on the cryptographic side: CS-04 describes a device WSCD in which the Wallet Unit generates keys and from which the private key never leaves, while CS-05 describes a cloud- or organisation-controlled HSM acting as a server-side WSCD for business wallets. The security properties of a given deployment are established per wallet unit through the Key Attestation rather than inferred from the wallet type.
+
+The user interface is a separate question. The ARF notes that a Wallet Instance can also be a web application, so a browser-based interface can sit on top of any of the three approaches.
 
 These categories reflect common deployment patterns observed across wallet implementations. The concrete architecture used by a wallet provider depends on the supported use cases, operational requirements, and device capabilities.
 
 ### Deployment Patterns Observed Among WE BUILD Wallet Providers
 
 The WE BUILD Wallet Provider Group conducted a stocktaking questionnaire covering **31 wallet providers** participating in the project. Providers described the deployment models they currently support.
+
+The questionnaire was carried out in March 2026. The Wallet Providers Group has grown since then, so the figures below are a snapshot of that point in time rather than current coverage of the group.
 
 The results show a clear split between natural person and enterprise wallet deployments.
 
@@ -37,28 +42,8 @@ Many providers support multiple modes, typically combining a mobile wallet for n
 
 The stocktaking exercise highlights several trends relevant for the WE BUILD pilots.
 
-#### Mobile and cloud duality
+The most common architecture combines a mobile wallet for natural persons with a server-based wallet for enterprise or legal person scenarios. This reflects the broader EUDI ecosystem, where personal identity use cases are mobile-centric while organisational use cases often require backend infrastructure.
 
-The most common architecture combines:
+Several providers indicate the use of remote HSM infrastructure for enterprise wallet deployments. This approach supports large-scale operations and key recovery but requires continuous network connectivity. Beyond that, the questionnaire gives limited visibility of the cryptographic layer: responses mainly describe the application layer, and only a small number of providers state the type of secure cryptographic device used, whether secure hardware on the device or remote HSM infrastructure.
 
-- a **mobile wallet for natural persons**, and  
-- a **server-based wallet for enterprise or legal person scenarios**.
-
-This reflects the broader EUDI ecosystem, where personal identity use cases are mobile-centric while organisational use cases often require backend infrastructure.
-
-#### Increasing use of HSM-backed infrastructure
-
-Several providers indicate the use of remote HSM infrastructure for enterprise wallet deployments. This approach supports large-scale operations and key recovery but requires continuous network connectivity.
-
-#### Limited visibility of WSCD implementation choices
-
-The questionnaire responses mainly describe the application layer (mobile app, server, or web wallet), rather than the underlying cryptographic architecture.
-
-Only a small number of providers explicitly describe the type of secure cryptographic device used (for example secure hardware on the device or remote HSM infrastructure).
-
-#### Emerging architectures for legal person wallets
-
-Architectures supporting legal person wallets are still evolving.  
-Many providers indicate that their legal person wallet solutions will be further developed during the WE BUILD project in alignment with emerging European Business Wallet proposals.
-
-As a result, the architectures described in the stocktaking responses should be understood as initial implementation approaches rather than final designs.
+Architectures supporting legal person wallets are still evolving. Many providers indicate that their legal person wallet solutions will be further developed during the WE BUILD project in alignment with emerging European Business Wallet proposals. As a result, the architectures described in the stocktaking responses should be understood as initial implementation approaches rather than final designs.

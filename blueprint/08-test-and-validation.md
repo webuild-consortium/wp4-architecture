@@ -27,20 +27,42 @@ WBCS must stay within the scope defined by the published ADRs. If a WBCS needs f
 
 Implementing participants discuss WBCS together with the use cases that require the functionality.
 
-The ITB initially includes two credential-agnostic test suites:
-- [Issuing (based on OpenID4VCI v1.0)](../conformance-specs/cs-01-credential-issuance.md)
-- [Verifying (based on OpenID4VP v1.0)](../conformance-specs/cs-02-credential-presentation.md)
-
 If a use case requires different functionality, it can propose a new or adapted (draft) WBCS. Once the WBCS and required supporting artefacts are available, the Testing Group implements the corresponding test cases in the ITB.
 
 Some test cases require additional artefacts beyond the WBCS, such as rulebooks for attestation-specific requirements, and the corresponding data schemas, namespaces, and metadata.
 
 When the required artefacts are available, the Testing Group implements the test cases in the ITB and communicates their availability to the consortium.
 
+## Test Case Structuring 
+The ITB is set up with the following structure:
+
+* Base Protocols
+  * Conformance Test Suites supporting the generic, mandatory conformance specifications relevant to all use cases
+  * Covering basic issuing/presentation (OID4VC) and the trust validation mechanisms (such as TL verification and WUA)
+* Domain-Specific Functionalities and Generic Use Cases
+  * Supporting standards and functionalities that are covering specific domain-requirements that are not part of all use cases
+  * Examples are support for QES or DC APIs
+* Business Use Cases
+  * Test Suites that are composed of existing test cases covering the specific use case scenarios in the business use cases
+  * Each use case has their own test suite
+* Supply Chain Use Cases
+  * Test Suites that are composed of existing test cases covering the specific use case scenarios in the supply chain use cases
+  * Each use case has their own test suite
+* Payment Use Cases
+  * Test Suites that are composed of existing test cases covering the specific use case scenarios in the payment use cases
+  * Each use case has their own test suite
+* Reference Implementations
+  * Test Suites covering individual implementations for specific test purposes
+  * Examples are some individual Member State PID issuers and technology-providers that support relying parties
+
+All test suites are versioned in their name (as well as in the description). Major versions are new releases of ITB test suites and will be mapped to WBCS releases on GitHub. Minor versions are ITB bugfixes. Versions are dated in the description.
+
+## Showing Conformance
+
+Participants can acquire a conformance report after running the test cases in a test suite. The Testing Group collects these conformance reports and publishes [a conformance overview](https://webuild-consortium.github.io/wp4-interop-test-bed/docs/conformance-overview.html). This overview currently lists conformance against Conformance Test Suite 1.0 (base protocols) and will be elaborated to cover the other test suites in the next few months.
+
 ## Additional Documentation
 
-[The ITB on GitHub](https://github.com/webuild-consortium/wp4-interop-test-bed) 
+All information on testing is available with [the ITB on GitHub](https://github.com/webuild-consortium/wp4-interop-test-bed) 
+This includes a user guide and other [documentation on testing and the ITB](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/overview.md)
 
-A [user guide](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/user-guide-interoperability-test-bed.md) on how to onboard and execute tests. 
-
-[Documentation on the ITB and integrations](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md)

@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle
 
-Version 1.0
-Date: 15-June-2026
+Version 1.1
+Date: 07-September-2026
 
 **Authors / Contributors**: WP4 Architecture
 - Lal Chandran, iGrant.io, Sweden
@@ -265,7 +265,7 @@ These requirements are pre-seeded from TS-03 [3] and ARF Topic C [2], with refer
 Wallet Provider **MUST**:
 1. Sign every WIA and KA as a JWT using ES256, ES384 or ES512 (TS-03 [3], clause 2.6).
 2. Populate the WIA with at least `wallet_name`, `wallet_version`, `wallet_solution_certification_information`, a `client_status` object (containing `status` and `exp`) and a `cnf` key, as defined in TS-03 [3], clause 2.3.1.
-3. Populate the KA with at least the `attested_keys` array (one or more keys), `key_storage`, `certification`, `user_authentication` and a `key_storage_status` object (containing `status` and `exp`), as defined in TS-03 [3], clause 2.3.2.
+3. Populate the KA with at least the `attested_keys` array (one or more keys), `key_storage`, `certification`, `user_authentication` and a `key_storage_status` object (containing `status` and `exp`), as defined in TS-03 [3], clause 2.3.2. The `certification` value is a string containing a URL that links to the certification of the WSCD or keystore (OpenID4VCI [5], Appendix D.1, as referenced by TS-03 [3], clause 2.3.2), not a JSON object.
 4. Issue each WIA with a time-to-live of less than 24 hours (TS-03 [3], clause 2.2.1.1).
 5. (WE BUILD profile) Issue each KA with a short token-level time-to-live comparable to the WIA. TS-03 [3] permits the KA a longer validity period and leaves its technical validity period to the Wallet Provider (clause 2.4.2); WE BUILD does not use that allowance and issues **no long-lived KA**, to keep things simple within the scope of WE BUILD. This token-level `exp` is independent of the `key_storage_status.exp` revocation-maintenance commitment (section 7.2; TS-03 [3], clause 2.4.1).
 
@@ -415,7 +415,7 @@ Where each element comes from:
 JOSE header:
 
 ```json
-{ "alg": "ES256", "typ": "keyattestation+jwt", "x5c": ["<wallet provider signing certificate chain>"] }
+{ "alg": "ES256", "typ": "key-attestation+jwt", "x5c": ["<wallet provider signing certificate chain>"] }
 ```
 
 Payload:
@@ -427,7 +427,7 @@ Payload:
   "attested_keys": [ { "kty": "EC", "crv": "P-256", "x": "...", "y": "..." } ],
   "key_storage": ["iso_18045_high"],
   "user_authentication": ["iso_18045_high"],
-  "certification": { "...": "WSCD or keystore certification scheme, evaluated requirements and level" },
+  "certification": "https://wallet-provider.example/certification/wscd/GlobalPlatform/",
   "key_storage_status": {
     "status": { "status_list": { "idx": 8081, "uri": "https://wallet-provider.example/ka-statuslists/7" } },
     "exp": 1779678000
@@ -437,12 +437,14 @@ Payload:
 
 Where each element comes from:
 - `alg` (ES256, ES384 or ES512) - TS-03 [3], clause 2.6.
-- `attested_keys`, `key_storage`, `certification`, `key_storage_status` - TS-03 [3], clause 2.3.2.
+- `typ` (`key-attestation+jwt`) - OpenID4VCI [5], Appendix D.1
+- `attested_keys`, `key_storage`, `key_storage_status` - TS-03 [3], clause 2.3.2.
+- `certification` (string containing a URL that links to the certification of the WSCD or keystore) - OpenID4VCI [5], Appendix D.1, as referenced by TS-03 [3], clause 2.3.2.
 - `user_authentication` - OpenID4VCI [5], Appendix D, as referenced by TS-03 [3], clause 2.3.2.
 - Signing a `jwt` proof with the key at index 0 of `attested_keys` - TS-03 [3], clause 2.2.2.1.
 - `key_storage_status.status` (type-shared or per-KA index) - TS-03 [3], clause 2.5.2, using the IETF Token Status List [9].
 
-> Note: the header `typ` values and the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by TS-03 [3] and OpenID4VCI [5]; reproduce TS-03's own examples for the authoritative form. The `key_storage` and `user_authentication` values are ISO 18045 AVA_VAN levels; the mechanism by which an issuer requires minimum levels is profiled in CS-01 [10]. `iss` is intentionally omitted from both the WIA and the KA: the Wallet Provider identity is inferred from the signing certificate in the `x5c` JOSE header (TS-03 [3], clause 2.2.1).
+> Note: the header `typ` value of the KA and the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by OpenID4VCI [5], Appendix D.1, as referenced by TS-03 [3], clause 2.3.2; where a TS-03 [3] example differs from OpenID4VCI [5], the OpenID4VCI [5] form is authoritative. The `key_storage` and `user_authentication` values are ISO 18045 AVA_VAN levels; the mechanism by which an issuer requires minimum levels is profiled in CS-01 [10]. `iss` is intentionally omitted from both the WIA and the KA: the Wallet Provider identity is inferred from the signing certificate in the `x5c` JOSE header (TS-03 [3], clause 2.2.1).
 
 # Annex B (informative): Key binding and holder binding
 

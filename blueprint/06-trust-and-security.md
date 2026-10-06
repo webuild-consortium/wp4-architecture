@@ -27,13 +27,13 @@ These scenarios include:
 - a Relying Party evaluating presented credentials (PID, QEAA, PuB-EAA, non-qualified EAA)
 - discovery and consumption of the LoTL and TLs.
 
-For detailed information on authorities, registries and responsibilities, see [Appendix C - Trust Ecosystem](#appendix-c-trust-ecosystem).
+For detailed information on authorities, registries and responsibilities, see [Trust Ecosystem](appendix-trust-ecosystem.md).
 
 For reference on relying party access certificates and relying party registration certificates, see the [RPAC/RPRC documentation](#rpacrprc-documentation).
 
 ### Trust infrastructure architecture (overview)
 
-In the [Appendix - Trust Ecosystem](../appendix-trust-ecosystem.md) there is a diagram that summarises the roles of Member State and European Commission, the split between registration and notification, and how Trusted Lists and the LoTL are produced and consumed. A simplified version used in WE BUILD is shown below.
+In the [Trust Ecosystem Appendix](appendix-trust-ecosystem.md) there is a diagram that summarises the roles of Member State and European Commission, the split between registration and notification, and how Trusted Lists and the LoTL are produced and consumed. A simplified version used in WE BUILD is shown below.
 
 ````mermaid
 graph TB

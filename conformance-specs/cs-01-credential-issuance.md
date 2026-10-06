@@ -1,10 +1,11 @@
 # WE BUILD - Conformance Specification:  Credential Issuance
 
-Version 1.2
-Date: 03 August 2026
+Version 1.3
+Date: 28 August 2026
 
 **Revision history**
 
+* Version 1.3 (28 August 2026): Clarified that re-issuance and the Deferred Credential Endpoint are OPTIONAL for Issuers, resolving issue [#297](https://github.com/webuild-consortium/wp4-architecture/issues/297).
 * Version 1.2 (15 July 2026): Added the re-issuance chapter, resolving issue [#244](https://github.com/webuild-consortium/wp4-architecture/issues/244).
 * Version 1.1 (10 July 2026): Added the pre-authorised code-flow to support payments
 * Version 1.0 (28 November 2025): Initial version.
@@ -304,7 +305,7 @@ Credential validation and storage are identical to the Wallet-initiated flow, Se
 
 ## 6.3 Deferred Credential Request
 
-Deferred issuance applies to both wallet-initiated and issuer-initiated flows.
+Support for deferred issuance is OPTIONAL for Issuers (section 7.6). Where supported, deferred issuance applies to both wallet-initiated and issuer-initiated flows.
 
 When the Credential Issuer cannot immediately produce one or more credentials:
 
@@ -323,6 +324,8 @@ When the Credential Issuer cannot immediately produce one or more credentials:
 ## 6.4 Re-issuance Flow
 
 Re-issuance is the replacement of an attestation that already exists in a Wallet Unit by an attestation of the same attestation type, issued by the same Attestation Provider to the same Wallet Unit. Re-issuance keeps a valid technical attestation available throughout the administrative validity of the underlying attestation, is always initiated by the WU, and, to the maximum extent possible, requires no User authentication or interaction (ARF 2.9 [6], Annex 2, Topic 10, ISSU_42; Discussion Paper for Topic B [9]).
+
+Support for re-issuance is OPTIONAL for Issuers. The Issuer requirements in this section and in sections 7.8 and 8.4 apply where the Issuer supports re-issuance (section 9).
 
 **Actors**: Holder, WU, Issuer (AS and Credential Issuer).
 
@@ -491,14 +494,15 @@ Wallets **MUST**:
 
 ## 7.6 Deferred Credential Endpoint
 
-Issuers **MUST**:
+Issuers **MAY** support a `deferred_credential_endpoint`. Support for deferred issuance is OPTIONAL for Issuers, as in OpenID4VCI [1].
 
-* Support a `deferred_credential_endpoint`.
+Issuers that support deferred issuance **MUST**:
+
 * Return a `transaction_id` (as defined in OpenID4VCI v1.0 §8.3) when issuance is delayed.
 * Validate `transaction_id` and ensure proper lifetime and binding to the issuance session.
 * Publish endpoint in metadata.
 
-Issuers **SHOULD**:
+Issuers that support deferred issuance **SHOULD**:
 
 * Provide clear retry guidance via the `interval` parameter.
 * Return explicit errors when the `transaction_id` is expired or the credential cannot be issued.
@@ -536,9 +540,11 @@ Issuers **MAY**:
 
 ## 7.8 Re-issuance
 
-Issuers **MUST**:
+Support for re-issuance is OPTIONAL for Issuers (section 6.4). The Issuer requirements in this section apply where the Issuer supports re-issuance.
 
-1. Issue sender-constrained refresh tokens (DPoP-bound) where re-issuance is supported, and support the OpenID4VCI features that enable re-issuance of attestations (ARF 2.9 [6], ISSU_63; OpenID4VCI [1], section 14.5).
+Issuers that support re-issuance **MUST**:
+
+1. Issue sender-constrained refresh tokens (DPoP-bound), and support the OpenID4VCI features that enable re-issuance of attestations (ARF 2.9 [6], ISSU_63; OpenID4VCI [1], section 14.5).
 2. Verify that a re-issued device-bound attestation is bound to the same WSCA/WSCD as the attestation it replaces, using the DPoP-bound refresh token and, where required, a fresh Key Attestation, reusing the KA mechanism defined in section 7.5 and CS-04 [7] (ARF 2.9 [6], ISSU_65).
 3. Define the refresh token lifetime and rotation relative to the administrative validity of the credential, and return explicit errors when re-issuance is refused.
 
@@ -657,7 +663,7 @@ All PAR requests MUST be client-authenticated according to Section 7.4.
 
 **Refresh Token grant**
 
-For re-issuance (section 6.4), the Token Endpoint also supports the `refresh_token` grant.
+Where the Issuer supports re-issuance (section 6.4), the Token Endpoint also supports the `refresh_token` grant.
 
 **Request (logical fields)**
 
@@ -699,6 +705,8 @@ In line with the OpenID4VCI [1] Token Error Response, the AS returns:
 * SD-JWT-VC credential and any associated metadata defined by the OpenID4VCI SD-JWT-VC profile
 
 ## 8.6 Deferred Credential Endpoint
+
+This endpoint is OPTIONAL for Issuers (section 7.6). Issuers that support deferred issuance provide it as follows.
 
 **Direction:** WU → Issuer \
 **Method:** POST
@@ -760,7 +768,7 @@ An implementation **conforms to this specification as an Issuer** if it:
 1. Implements the Issuer requirements in Sections 6 and 7.
 2. Publishes server metadata, including type to `scope` mappings.
 3. Provides the PAR, Token, Credential and WU invocation interfaces described in Section 8.
-4. Implements the Issuer re-issuance requirements in sections 6.4 and 7.8, including the Refresh Token grant at the Token Endpoint (section 8.4).
+4. Where it supports re-issuance, implements the Issuer re-issuance requirements in sections 6.4 and 7.8, including the Refresh Token grant at the Token Endpoint (section 8.4). Support for re-issuance is OPTIONAL for Issuers (section 6.4).
 
 Profiles may define additional constraints for specific WE BUILD credential types, such as PID, QEAA, or business credentials. Such profiles MUST NOT relax the mandatory requirements in this document. The specific issuance will be taken into a separate CS.
 

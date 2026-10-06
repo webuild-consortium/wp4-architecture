@@ -34,6 +34,17 @@ The amended eIDAS Regulation is supported by several implementing acts defining 
   - [2025/1570 – Notification of certified or cancelled QSCDs](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202501570)
   - [2025/1572 – QTSP initiation, notification and verification](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202501572)
 
+#### Dynamic Regulatory Alignment and Pilot Baseline
+The implementing acts supporting the EUDI Wallet ecosystem are subject to continuous amendment by the European Commission to align with evolving standards. The consortium actively monitors these updates and manages technical impacts through strict change control. 
+
+Where newly introduced requirements or production-grade qualification schemes cannot be fully realized within the project’s timeframe, the pilots utilize documented workarounds (such as simulated registries or synthetic data) to maintain a stable technical foundation. Full alignment with these emerging baselines is treated as a post-pilot transition target.
+
+| Amending Regulation (July 2026) | Target / Scope | Amends Original Regulation(s) |
+| :--- | :--- | :--- |
+| [Regulation (EU) 2026/1730](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32026R1730) | Standards and specifications for relying party registers | 2025/848 |
+| [Regulation (EU) 2026/1731](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32026R1731) | Cryptographic mechanisms, secure storage, and interfaces | 2024/2977, 2024/2979, 2024/2980, 2024/2982|
+| [Regulation (EU) 2026/1735](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32026R1735) | Standards and catalog of schemes for attribute attestations | 2025/1569 |
+
 ### Standardisation and Technical Specifications
 The European Commission, together with the European Digital Identity Cooperation Group, has published:
 
@@ -56,6 +67,13 @@ In addition to the aforementioned standardisation organisations, the [European C
 
 The EBW framework is introduced through the European Commission’s [Digital Package proposal](https://digital-strategy.ec.europa.eu/en/news/simpler-eu-digital-rules-and-new-digital-wallets-save-billions-businesses-and-boost-innovation) as part of its 2025 Work Programme. The proposal aims to establish the EBW as a harmonised digital solution that reduces administrative burden and allows companies and public authorities to identify, authenticate and exchange data with legal effect across the European Union.
 
+While the proposal is still in negotiation, every statement in this document may still change in the future. Below is the current history of the proposal we are building on:
+
+- The Commission adopted the proposal, COM(2025) 838, on 19 November 2025.
+- The Council adopted its negotiating position (general approach) at the TTE (Telecommunications) Council on 9 June 2026.
+- The European Parliament has not yet adopted its position. The ITRE rapporteur's draft report PE785.244 was published on 20 March 2026, followed by further committee amendments and opinions from IMCO and JURI.
+- Negotiations between the institutions (trilogues) are expected next. The Council Presidency has stated a target of political agreement by the end of 2026.
+
 The EBW framework complements the EUDI framework by addressing the needs of economic operators and public authorities. It supports the digital management of representation rights and mandates, provides a secure channel for exchanging official documents and attestations, and includes support for a common directory. Interoperability with the EUDI Wallet is a core requirement.
 
 The proposal supports the management and use of EAA, including owner identification data with selective disclosure. It defines requirements for authenticating owners and authorised users through (Q)EAAs and enables links between EAAs and other attestations. Access to EAAs by relying parties requires proper authorisation.
@@ -69,4 +87,24 @@ The regulation supports role-based access so that multiple authorised users can 
 From a technical perspective, the framework promotes the use of common protocols for sharing attestations. It requires secure onboarding using eID with a LoA of at least Substantial and mandates interoperability, secure communication interfaces, and mechanisms for validation and revocation. Further requirements will be defined in implementing acts.
 
 Within WE BUILD, the proposed EBW framework is treated as a primary regulatory and architectural reference for business-focused identity and data exchange scenarios. Use case design and pilot activities align with the EBW model’s legal structure, interoperability requirements and trust-service framework, while taking forthcoming implementing acts into account.
+
+### The principle of equivalence
+
+The Regulation establishes a **principle of equivalence**:
+
+> Where a wallet owner or authorised wallet user makes use of any of the qualified trust services forming part of core functionalities of a European Business Wallet referred to in Article 5(1), the resulting action has the same legal effect as if the action had been lawfully carried out in person, in paper form, or via any other means or processes compliant with applicable legal, administrative or procedural requirements.
+
+The same applies where a self-employed person or sole trader uses the QERDS secure communication channel as a standalone service.
+
+The principle has clear limits:
+
+- It applies only to actions resulting from the use of core functionalities that are **functionally equivalent** to their traditional counterparts and serve the same purpose — for example qualified electronic signatures, seals and attestations of attributes. Council general approach specifies that the principle related only to **qualified trust services forming part of core functionalities** of the wallet.
+- **National procedural requirements still apply.** Additional safeguards or verifications that are part of an administrative procedure and are not supported by the wallet's core functionalities must still be fulfilled.
+- **Requirements on electronic formats remain applicable.** Where EU or national law requires an administrative step or a document in a particular electronic form, that requirement is observed.
+- At the same time, such requirements may not be applied in a way that excludes the use of the wallet's core functionalities **solely because of their digital nature**.
+
+Related principles: information validly transmitted via an EBW should not have to be submitted again through physical or alternative digital means, and vice versa; the Regulation is without prejudice to the once-only right of legal persons and to existing systems for exchanges between competent authorities; and Member States should not add national requirements on matters within the Regulation's scope.
+
+### European Business Wallet Owner Identification Data (EBWOID) 
+To uniquely bootstrap and identify an economic operator, the WE BUILD architecture formally replaces the concept of Legal Person Identification Data (LPID) with **European Business Wallet Owner Identification Data (EBWOID)**. The EBWOID consists of a stable, minimal set of identity attributes (primarily the official company name and its European Unique Identifier, EUID). For economic operators not covered by EUID/BRIS, such as sole traders and self-employed persons, national registration codes are used as the identifier baseline to ensure inclusive representation across use cases.
 

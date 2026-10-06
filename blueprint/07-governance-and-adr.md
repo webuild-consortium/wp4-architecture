@@ -11,19 +11,21 @@ To maintain alignment, the project uses a technical governance model based on co
 
 ```mermaid
 stateDiagram-v2
-    state "New ADR candidate" as pr
-    state "PR ready to merge" as ready
-    state "Consortium decision" as merged
-    state "Proposal rejected" as rejected
+    [*] --> Intake: PR opened by any consortium member
+    Intake --> Review: Ready for review
+    Intake --> Rejected: Not ready / out of scope
 
-    [*] --> pr: Any consortium participant proposes
-    pr --> ready: Review
+    Review --> Decision: Max. 12 days
 
-    ready --> merged: Merge the PR
-    merged --> [*]
+    Decision --> Approved: No blocking issues
+    Decision --> Iteration: Blocking issues
+    Decision --> Rejected: Insufficient support
 
-    ready --> rejected: Closes the PR
-    rejected --> [*]
+    Iteration --> Approved: Issues resolved
+    Iteration --> Rejected: Issues remain
+
+    Approved --> [*]
+    Rejected --> [*]
 ```
 
 ## WE BUILD Conformance Specifications (WBCS)
@@ -68,6 +70,10 @@ graph TB
     SpecEfforts["Specification efforts"] -- "New wallet interface definitions" --> CS
     TestDev["Test development"] -- "New version test cases" --> ITB
 ```
+### Pre-flight WBCS
+The consortium sometimes requires fast and lightweight conformance specifications in order to start testing. For some areas the standardization situation enables testing to proceed with a minimal "pre-flight" WBCS that references existing standards.
+
+The expectation is that the result if testing is fed back into the CS process in WP4 so that a better and more informed CS can be produced as the result of the first round of testing.
 
 ## Document Lifecycle
 WE BUILD moves fast, and our documentation needs to keep up. We don't wait for "perfect" documents; we iterate as the use cases mature.

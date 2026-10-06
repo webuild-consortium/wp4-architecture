@@ -24,6 +24,7 @@ export CHROME_DEVEL_SANDBOX=$(realpath -m chrome/linux-145.0.7632.46/chrome-linu
 
 if [ "$1" == "--github-action" ]; then
     setup
+    shift
 fi
 
 . .venv/bin/activate
@@ -34,7 +35,7 @@ fi
 mkdir -p ../build_outputs_folder/blueprint/
 cp -R _site/* ../build_outputs_folder/blueprint/
 # Copy images
-for IMAGE in $(find . -maxdepth 1 -name "*.png") $(find . -maxdepth 1 -name "*.svg") $(find . -maxdepth 1 -name "*.jpg"); do
+for IMAGE in $(find . -maxdepth 1 -name "*.png") $(find . -maxdepth 1 -name "*.svg") $(find . -maxdepth 1 -name "*.jpg") wp4-qtsp-group-main/docs/qerds/qerds-value-chain.svg wp4-qtsp-group-main/docs/qeaa/qeaa-value-chain.svg; do
     echo "Copying image: ${IMAGE}"
     cp ${IMAGE} ../build_outputs_folder/blueprint/
 done

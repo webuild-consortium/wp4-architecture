@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification CS-05: Business Wallet Unit Attestation (BWUA) Lifecycle
 
-Version 1.0
-Date: 05-August-2026
+Version 1.1
+Date: 07-September-2026
 
 **Authors / Contributors**: WP4 Architecture
 
@@ -328,7 +328,7 @@ Business Wallet Provider **MUST**:
 
 1. Sign every BWIA and SKA as a JWT using ES256, ES384, or ES512 (TS3 [3], clause 2.6).
 2. Populate the BWIA, by analogy to TS3 [3], clause 2.3.1, with at least the wallet service identification (name, version, and certification information), a `client_status` object (containing `status` and `exp`), and a `cnf` key.
-3. Populate the SKA, by analogy to TS3 [3] clause 2.3.2, with at least the `attested_keys` array (one or more keys), the key storage and certification information for the HSM, and a `key_storage_status` object (containing `status` and `exp`).
+3. Populate the SKA, by analogy to TS3 [3] clause 2.3.2, with at least the `attested_keys` array (one or more keys), the key storage information (`key_storage`) and certification information (`certification`) for the HSM, and a `key_storage_status` object (containing `status` and `exp`). The `certification` value is a string containing a URL that links to the certification of the HSM (OpenID4VCI [5], Appendix D.1, as referenced by TS3 [3], clause 2.3.2), not a JSON object.
 4. Issue each BWIA with a time-to-live of less than 24 hours; the provisioning cadence for high-volume services is profiled under section 7.5.
 5. Issue each SKA with a short token-level time-to-live comparable to the BWIA, so that no SKA is long-lived. The token-level `exp` is independent of the `key_storage_status.exp` revocation-maintenance commitment (section 7.2).
 
@@ -626,7 +626,7 @@ JOSE header:
 ```json
 {
   "alg": "ES256",
-  "typ": "keyattestation+jwt",
+  "typ": "key-attestation+jwt",
   "x5c": ["<Business Wallet Provider signing certificate chain>"]
 }
 ```
@@ -640,7 +640,7 @@ Payload:
   "attested_keys": [ { "kty": "EC", "crv": "P-256", "x": "...", "y": "..." } ],
   "key_storage": ["iso_18045_high"],
   "user_authentication": ["iso_18045_high"],
-  "certification": { "...": "HSM certification scheme, evaluated requirements and level" },
+  "certification": "https://wallet-provider.example/certification/hsm/common-criteria/",
   "key_storage_status": {
     "status": { "status_list": { "idx": 9107, "uri": "https://wallet-provider.example/ska-statuslists/4" } },
     "exp": 1788278400
@@ -651,11 +651,13 @@ Payload:
 Where each element comes from:
 
 - `alg` (ES256, ES384 or ES512) - TS3 [3], clause 2.6, as required by section 7.1.
-- `attested_keys`, `key_storage`, `certification` and `key_storage_status` - TS3 [3], clause 2.3.2, applied to a cloud- or organisation-controlled HSM rather than a device WSCD.
+- `typ` (`key-attestation+jwt`) - OpenID4VCI [5], Appendix D.1
+- `attested_keys`, `key_storage` and `key_storage_status` - TS3 [3], clause 2.3.2, applied to a cloud- or organisation-controlled HSM rather than a device WSCD.
+- `certification` (string containing a URL that links to the certification of the HSM) - OpenID4VCI [5], Appendix D.1, as referenced by TS3 [3], clause 2.3.2.
 - `user_authentication` - OpenID4VCI [5], Appendix D, as referenced by TS3 [3], clause 2.3.2. For a business wallet it expresses the authentication level applied to the administrator or user operating the BWU (section 4), not that of a single device holder.
 - `key_storage_status.status` (type-shared or per-SKA index) - TS3 [3], clause 2.5.2, using the Token Status List [9], as required by section 7.2.
 
-> Note: the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by TS3 [3] and OpenID4VCI [5]; the values shown are ISO 18045 AVA_VAN levels. As in the BWIA, `iss` is omitted and the Business Wallet Provider identity is inferred from the `x5c` JOSE header.
+> Note: the header `typ` value of the SKA and the exact shapes of `key_storage`, `user_authentication` and `certification` are defined by OpenID4VCI [5], Appendix D.1, as referenced by TS3 [3], clause 2.3.2; where a TS3 [3] example differs from OpenID4VCI [5], the OpenID4VCI [5] form is authoritative. The `key_storage` and `user_authentication` values shown are ISO 18045 AVA_VAN levels. As in the BWIA, `iss` is omitted and the Business Wallet Provider identity is inferred from the `x5c` JOSE header.
 
 # Annex B (informative): Key binding and holder binding
 

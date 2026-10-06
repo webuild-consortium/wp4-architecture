@@ -16,7 +16,7 @@ website:
     type: overlay
   page-footer:
     left: |
-      ![EU](eu.png){width=200px} ![WE BUILD](/we_build.png){width=200px}
+      ![EU](eu.png){width=200px} ![WE BUILD](/we_build.png){width=200px} <br>[WE BUILD](https://www.webuildconsortium.eu/) is co-funded by the European Union. However, the views and opinions expressed are those of the author(s) only and do not necessarily reflect those of the European Union or the granting authority. Neither the European Union nor the granting authority can be held responsible.
   navbar:
     background: light
     collapse-below: lg
