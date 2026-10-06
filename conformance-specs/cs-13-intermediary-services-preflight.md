@@ -86,7 +86,7 @@ sequenceDiagram
 
     User->>RA: 1. Connect & authenticate using EBW
     RA->>User: 2. Request credentials
-    User-->>RA: 3. Present EAA granting Power of Attorney (PoA)
+    User-->>RA: 3. Present EAA 
     RA->>User: 4. Request additional attributes for RPRC
     User-->>RA: Provide additional attributes
     RA->>List: 5. Check authorization
