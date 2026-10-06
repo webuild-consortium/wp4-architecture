@@ -138,7 +138,7 @@ sequenceDiagram
 5. **WU-RPI-05**: The WU **SHALL NOT** display the trade name or branding of the RPI or RPI-Service during consent rendering (`RPI_07`, `ARF RPA_06 note b`). The WU **MUST** display exclusively the intermediated RP's name and Service name.
 
 ### 7.3 Intermediated Relying Party (RP) Requirements
-1. **RP-INT-01**: The intermediated RP **MUST** indicate to the RPI which single WRPRC to include in presentation requests (`RPI_05`).
+1. **RP-INT-01**: The intermediated RP **SHOULD** indicate to the RPI which single WRPRC to include in presentation requests (`RPI_05`).
 2. **RP-INT-02**: Intermediated RPs **SHALL NOT** be required to present or hold a WRPAC for intermediated flows (`ARF §6.6.5`).
 
 ### 7.4 Registrar and Trust Infrastructure Requirements
