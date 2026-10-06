@@ -59,7 +59,7 @@ graph TB
 | CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle - v1.1](cs-04-wua-lifecycle.md) |
 | CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.1](cs-05-bwua-lifecycle.md) |
 | CS-007   | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) |
-| CS-010   | [Revocation Mechanism - v1.0](cs-10-revocation-mechanism.md) |
+| CS-010   | [Revocation Mechanism - v1.1](cs-10-revocation-mechanism.md) |
 | CS-012   | [SCA Attestations for Payment Transactions (TS12 Profile) - v1.0](cs-12-sca-payments.md) |
 | CS-015   | [QERDS - EBW Interface - v1.0](cs-15-ebw-qtsp-wmp.md) |
 <!--END INDEX-->
