@@ -60,7 +60,7 @@ graph TB
 | CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.1](cs-05-bwua-lifecycle.md) |
 | CS-007   | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) |
 | CS-012   | [SCA Attestations for Payment Transactions (TS12 Profile) - v1.0](cs-12-sca-payments.md) |
-| CS-013   | [Intermediary services pre-flight] - v1.0(cs-13-intermediary-services-preflight.md |
+| CS-013   | [Intermediary services pre-flight - v1.0](cs-13-intermediary-services-preflight.md) |
 <!--END INDEX-->
 
 ### WBCS Under Development
