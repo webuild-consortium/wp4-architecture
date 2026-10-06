@@ -102,7 +102,7 @@ The following terminology applies throughout this specification:
 * **EBWOID** — European Business Wallet Organisational Identification Data, as defined in the WE BUILD EBWOID Attestation Rulebook [20]. Carries the organisation's unique identifier (`id`) and official name (`name`).
 * **Authorised representative** or **RP representative**: Individual acting on behalf of the RP
 * **Legal Representative** or **LR**: a natural person authorized by law or record registration to act on behalf of a legal person.
-* **Power of Attorney** or **POA**: written document digitally signed by the RL with an advanced or qualified signature to establish that RP representative is appointed to act on behalf of the RP.
+* **Power of Attorney** or **POA**: written document digitally signed by the RL with an advanced or qualified signature to establish that RP representative is appointed to act on behalf of the RP. It can be stylised following https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-poa-pox  
 * **RP’s BACKEND**: IS of RP
 * **RP’s FRONTEND**: ACME client of RP
 * **TRUST LIST**: Trusted registry of accredited Relying Parties
