@@ -32,6 +32,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 23. [Architectural Scoping of the EBW](ebw-scope.md)
 24. [Mutual identification for EBW presentation requests](mutual_identification.md)
 25. [Verify QERDS Provider trust via Trusted Lists before and after delivery](qerds-delivery-trust-evaluation.md)
+26. [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md)
 <!--END INDEX-->
 
 ## Supporting analysis
