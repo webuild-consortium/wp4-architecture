@@ -6,7 +6,7 @@
 **Context**: This work sits within the WE BUILD consortium's QERDS-for-European-Business-Wallets architecture ([WEBUILD-ARCH]) — see §2 and §4 for how this document's C1–C4 scope maps onto that model
 **Citation scheme**: See `AS4CONF-<AREA>-<seq>` IDs throughout — see §3 and this feature's Clause Citation Scheme contract for the stability contract
 **Author**: Alejandro Nieto Gallego — DigitelTS
-**Contributors**: 
+**Contributors**: David Sánchez  - DigitelTS 
 
 ---
 
