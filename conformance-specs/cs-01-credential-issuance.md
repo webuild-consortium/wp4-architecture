@@ -1,10 +1,11 @@
 # WE BUILD - Conformance Specification:  Credential Issuance
 
-Version 1.3
-Date: 28 August 2026
+Version 1.4
+Date: 12 October 2026
 
 **Revision history**
 
+* Version 1.4 (12 October 2026): Aligned with TS-03 v1.5.2, resolving issue [#330](https://github.com/webuild-consortium/wp4-architecture/issues/330).
 * Version 1.3 (28 August 2026): Clarified that re-issuance and the Deferred Credential Endpoint are OPTIONAL for Issuers, resolving issue [#297](https://github.com/webuild-consortium/wp4-architecture/issues/297).
 * Version 1.2 (15 July 2026): Added the re-issuance chapter, resolving issue [#244](https://github.com/webuild-consortium/wp4-architecture/issues/244).
 * Version 1.1 (10 July 2026): Added the pre-authorised code-flow to support payments
@@ -126,7 +127,7 @@ The WE BUILD issuance profile is based on the OAuth 2.0 Authorisation Code Flow 
 * Sender-constrained tokens, for example, using Demonstration of Proof of Possession (DPoP) or mutual TLS
 * PKCE with `S256` code challenge method for all authorisation requests (Authorisation Code Flow)
 * Pushed Authorisation Requests (PAR) for all authorisation requests (Authorisation Code Flow; the Pre-Authorised Code Flow does not use the Authorisation Endpoint and therefore involves no authorisation request)
-* Wallet Unit Attestation (WUA = WIA + KA), per ARF 2.9 [6] and TS-03 [5] and profiled in CS-04 [7]: the WIA is used for client authentication and session binding at the PAR and Token endpoints (Authorisation Code Flow) or at the Token endpoint (Pre-Authorised Code Flow), and the KA for key binding at the Credential Endpoint
+* Wallet Unit Attestation (WUA = WIA + KA), per ARF 2.9 [6] and TS-03 [5] and profiled in CS-04 [7]: the WIA is used for client authentication at the PAR and Token endpoints (Authorisation Code Flow) or at the Token endpoint (Pre-Authorised Code Flow), and the KA for key binding at the Credential Endpoint
 
 Issuance can be:
 
@@ -424,41 +425,41 @@ Issuers **MUST**:
 
 1. Require Pushed Authorisation Requests (PAR) for all authorisation requests. Direct front-channel authorisation requests without PAR MUST NOT be used.
 2. Ensure that the Wallet authenticates at the PAR endpoint using the same method as used for client authentication at the Token Endpoint.
-3. Verify the WIA presented at the PAR endpoint as at the Token Endpoint, including that its `x5c` signing certificate chains to a trust anchor on the Trusted List for Wallet Providers (see section 7.4; TS-03 [5], clause 2.2.1.1; CS-04 [7]).
+3. Verify the WIA presented at the PAR endpoint as at the Token Endpoint, including that its `x5c` signing certificate chains to a trust anchor on the Trusted List for Wallet Providers (see section 7.4; TS-03 [5], clause 2.2.1.2; CS-04 [7]).
 
 WUs **MUST**:
 
 1. Use PAR for all authorisation requests.
 2. Use the `scope` parameter to indicate the credential type to be issued. Each `scope` value MUST map to a specific credential type that is known from Issuer metadata or from the Credential Offer.
 3. Ensure that the `client_id` in the PAR request matches the `sub` claim in the WIA (Wallet Instance Attestation) JWT used for client authentication.
-4. Include `dpop_jkt` (the JWK Thumbprint of the WIA `cnf` key) in the PAR request to bind the issued authorisation code to the DPoP key (RFC 9449 [8], Section 10), so that the sender-constraint holds from PAR through to the Access Token. TS-03 [5] mandates the `cnf.jkt` check at the Token Request (section 7.4); binding the code at PAR is the OpenID4VCI / RFC 9449 mechanism and is to be confirmed for this profile.
+4. Include `dpop_jkt` (the JWK Thumbprint of the DPoP key that the WU uses at the Token Request) in the PAR request to bind the issued authorisation code to the DPoP key (RFC 9449 [8], Section 10), so that the sender-constraint holds from PAR through to the Access Token. Binding the code at PAR is the OpenID4VCI / RFC 9449 mechanism and is to be confirmed for this profile.
 
 ## 7.4 Token Endpoint and Wallet Attestation
 
 WUs **MUST**:
 
-1. Authenticate at the Token Endpoint using the WIA, a Wallet Attestation per OpenID4VCI [1] v1.0 Appendix E (`typ: oauth-client-attestation+jwt`), sent with its Proof-of-Possession (`oauth-client-attestation-pop+jwt`) in the PAR and Token Request. The WIA is profiled in CS-04 [7] (TS-03 [5], clause 2.2.1.1).
+1. Authenticate at the Token Endpoint using the WIA, a Wallet Attestation per OpenID4VCI [1] v1.0 Appendix E (`typ: oauth-client-attestation+jwt`), sent with its Proof-of-Possession (`oauth-client-attestation-pop+jwt`) in the PAR and Token Request. The WIA is profiled in CS-04 [7] (TS-03 [5], clause 2.2.1).
 2. Convey the Wallet Provider signing certificate in the `x5c` JOSE header of the WIA, with intermediate certificates as needed. The Wallet Provider identity is inferred from this certificate; `iss` is not used (TS-03 [5], clause 2.2.1).
-3. Use the WIA `cnf` key as the DPoP key when requesting the Access Token, and on receipt verify that the Access Token's `cnf.jkt` matches the JWK Thumbprint of that `cnf` key, aborting the issuance session on mismatch. This session binding is the obligation profiled in CS-04 [7], section 7.3 (TS-03 [5], clause 2.2.1.1).
-4. Ensure the `sub` claim in the WIA equals the `client_id` used in PAR and Token Requests.
+3. Ensure the `sub` claim in the WIA equals the `client_id` used in PAR and Token Requests.
 
 Issuers **MUST**:
 
-1. Verify the WIA signature under the signing certificate in the `x5c` JOSE header, and verify that this certificate chains to a trust anchor on the Trusted List for Wallet Providers, using `x5c` intermediate certificates as needed (TS-03 [5], clause 2.2.1.1).
-2. Verify the WIA Proof-of-Possession under the `cnf` key (TS-03 [5], clause 2.2.1.1).
+1. Verify the WIA signature under the signing certificate in the `x5c` JOSE header, and verify that this certificate chains to a trust anchor on the Trusted List for Wallet Providers, using `x5c` intermediate certificates as needed (TS-03 [5], clause 2.2.1.2).
+2. Verify that the WIA has not expired (TS-03 [5], clause 2.2.1.2).
+3. Verify the WIA Proof-of-Possession under the `cnf` key (TS-03 [5], clause 2.2.1.2).
 
 Issuers **SHOULD**:
 
 1. Support refresh tokens for credential refresh, following OpenID4VCI guidance on refresh usage and lifetime. Where re-issuance is supported, sender-constrained refresh tokens are REQUIRED and are specified normatively in section 7.8.
 
 > [!NOTE]
-> Because the WIA `cnf` key is used as the DPoP key (WUs item 3 above), for WUA-based issuance the Access Token is DPoP-bound (section 7.1).
+> TS-03 [5] v1.5.2 removed the v1.5.1 requirements that the WU uses the WIA `cnf` key as the DPoP key and checks the Access Token `cnf.jkt` against that key. This profile does not require them (CS-04 [7], section 7.3). The Access Token is sender-constrained as in section 7.1, item 3.
 
 In the Pre-Authorised Code Flow, WUs **MUST** additionally:
 
 1. Authenticate at the Token Endpoint using the WIA and its Proof-of-Possession as specified in items 1 and 2 above; since this flow has no PAR step, both are sent with the Token Request only. OpenID4VCI [1] makes client authentication OPTIONAL for the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type; this profile REQUIRES it.
 2. Include the `pre-authorized_code` from the Credential Offer in the Token Request, together with the Transaction Code entered by the Holder in the `tx_code` parameter (section 7.2).
-3. Use the WIA `cnf` key as the DPoP key when requesting the Access Token, as in item 3 above. Because this flow has no PAR step (and hence no `dpop_jkt` code binding, section 7.3), the DPoP binding is established at the Token Request.
+3. Where DPoP is used, send the DPoP proof with the Token Request. Because this flow has no PAR step (and hence no `dpop_jkt` code binding, section 7.3), the DPoP binding is established at the Token Request.
 
 In the Pre-Authorised Code Flow, Issuers **MUST** additionally:
 
@@ -782,7 +783,7 @@ Profiles may define additional constraints for specific WE BUILD credential type
 
 [4]	WE BUILD (2025) Interoperability Test Bed - Reference Specification, 12 November, Available at: [https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md) (Accessed: 24 November 2025).
 
-[5] European Commission (2026) Wallet Unit Attestation (TS3). eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications. Available at: [https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md) (Accessed: 5 June 2026).
+[5] European Commission (2026) Wallet Unit Attestation (TS3). eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications. Available at: [https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md](https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md), version 1.5.2 (Accessed: 12 October 2026).
 
 [6] European Commission (2026) The European Digital Identity Wallet Architecture and Reference Framework, version 2.9.0. Available at: [https://eudi.dev/2.9.0/architecture-and-reference-framework-main/](https://eudi.dev/2.9.0/architecture-and-reference-framework-main/) (Accessed: 5 June 2026).
 

@@ -53,10 +53,10 @@ graph TB
 <!--BEGIN INDEX-->
 | **WBCS #** | **WBCS Title**                                                                         |
 | -------- | ------------------------------------------------------------------------------------ |
-| CS-001   | [Credential Issuance - v1.1](cs-01-credential-issuance.md)         |
+| CS-001   | [Credential Issuance - v1.4](cs-01-credential-issuance.md)         |
 | CS-002   | [Credential Presentation - v1.0](cs-02-credential-presentation.md) |
 | CS-003   | [Remote Qualified Signing with Wallet Units - v1.0](cs-03-remote-signing-with-wallet-units.md) |
-| CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle - v1.1](cs-04-wua-lifecycle.md) |
+| CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle - v1.2](cs-04-wua-lifecycle.md) |
 | CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.1](cs-05-bwua-lifecycle.md) |
 | CS-007   | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) |
 | CS-010   | [Revocation Mechanism - v1.1](cs-10-revocation-mechanism.md) |
