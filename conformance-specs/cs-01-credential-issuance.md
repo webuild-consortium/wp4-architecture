@@ -695,14 +695,15 @@ In line with the OpenID4VCI [1] Token Error Response, the AS returns:
 
 * HTTP header: `Authorization: Bearer {access_token}`
 * Body:
-    * `format` (for example, `vc+sd-jwt` or the identifier used in the chosen SD-JWT-VC profile)
-    * identification of the requested credential configuration
-    * `proof` object with:
-        * `proof_type="jwt"`
-        * `jwt` containing proof claims
+    * `credential_configuration_id` or `credential_identifier`, identifying the requested credential configuration.
+    * `proofs` object containing a single `jwt` parameter, whose value is a non-empty array of JWT key proofs
+
+The Credential Format (`dc+sd-jwt`) is determined by the corresponding entry in `credential_configurations_supported` in the Credential Issuer metadata
 
 **Response**
-* SD-JWT-VC credential and any associated metadata defined by the OpenID4VCI SD-JWT-VC profile
+
+* `credentials`: array of objects, each containing an SD-JWT-VC credential (Credential Format `dc+sd-jwt`, OpenID4VCI [1], Appendix A.3), or
+* `transaction_id`, where issuance is deferred (section 8.6)
 
 ## 8.6 Deferred Credential Endpoint
 
