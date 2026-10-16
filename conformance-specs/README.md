@@ -62,7 +62,7 @@ graph TB
 | CS-010   | [Revocation Mechanism - v1.1](cs-10-revocation-mechanism.md) |
 | CS-012   | [SCA Attestations for Payment Transactions (TS12 Profile) - v1.0](cs-12-sca-payments.md) |
 | CS-015   | [QERDS - EBW Interface - v1.0](cs-15-ebw-qtsp-wmp.md) |
-| CS-016   | [Inter-QTSP Message Relay (QERDS AS4) - v1.0](cs) |
+| CS-016   | [Inter-QTSP Message Relay (QERDS AS4) - v1.0](cs-16-qerds-as4.md) |
 <!--END INDEX-->
 
 ### WBCS Under Development
