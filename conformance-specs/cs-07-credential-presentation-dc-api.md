@@ -1,7 +1,12 @@
 # WE BUILD - Pre-flight Conformance Specification: Credential Presentation and Issuance via the Digital Credentials API
 
-Version 0.1 / Pre-flight Draft
-Date: 4 July 2026
+Version 0.2 / Pre-flight Draft
+Date: TBD
+
+**Revision history**
+
+* Version 0.2 (unreleased): Added section 6.4 and the Interactive Authorization requirements, following the pre-flight adoption of OpenID4VCI 1.1 recorded in the [ADR](../adr/openid4vci-1-1.md).
+* Version 0.1 (4 July 2026): Initial pre-flight draft.
 
 **Authors**: WP4 Architecture
 
@@ -18,6 +23,7 @@ Date: 4 July 2026
   - [6.1 Same-device Presentation via DC API](#61-same-device-presentation-via-dc-api)
   - [6.2 Cross-device Presentation via DC API Hybrid Transport](#62-cross-device-presentation-via-dc-api-hybrid-transport)
   - [6.3 Credential Issuance via DC API](#63-credential-issuance-via-dc-api)
+  - [6.4 Interactive Authorization during Issuance](#64-interactive-authorization-during-issuance)
 - [7. Normative Requirements](#7-normative-requirements)
   - [7.1 Wallet Unit Requirements](#71-wallet-unit-requirements)
   - [7.2 Verifier Requirements](#72-verifier-requirements)
@@ -46,6 +52,7 @@ This specification defines the conformance expectations for credential presentat
   * Cross-device presentation flows using DC API hybrid transport (CTAP2 / BLE + tunnel)
   * Integration of OpenID4VP request/response with the DC API transport
   * Integration of OID4VCI credential offers with the DC API transport
+  * Interactive Authorization requests carried in DC API request shape (OpenID4VCI 1.1 [8], CS-001 §7.9)
   * Verifier-side and issuer-side JavaScript API usage
   * Wallet unit registration and response handling via the DC API
   * Limitations of web-based wallet units and known mitigations
@@ -221,6 +228,27 @@ The wallet unit returns a response via the DC API. The browser delivers it to th
 
 > **Note:** The `"openid4vci-v1"` protocol identifier is defined in the W3C DC API spec (§5, §7.8.3) but is at an earlier stage of adoption than the presentation protocols. Implementers SHOULD track [6] for current browser support.
 
+## 6.4 Interactive Authorization during Issuance
+
+OpenID4VCI 1.1 [8] lets a Credential Issuer's Authorisation Server require the Holder to present a Credential before it issues. The request it sends is an OpenID4VP Authorization Request in **DC API request shape** (OpenID4VP [4] Appendix A.2 and A.3), which is why it is specified here and not only in CS-001.
+
+It is not, however, carried over `navigator.credentials.get()`. The exchange runs between the WU and the Authorization Challenge Endpoint, and the DC API contributes the request shape only. Two things differ from section 6.1:
+
+* The `response_mode` is `ia_post` for an unencrypted response or `ia_post.jwt` for an encrypted one, not `dc_api.jwt`. The response is sent back to the same Authorization Challenge Endpoint.
+* `expected_origins`, where present, contains only the derived Origin of that endpoint.
+
+### 6.4.1 Authorisation Server requests a presentation
+
+The WU posts to the Authorization Challenge Endpoint declaring the interaction types it supports. The Authorisation Server answers 403 with `interaction_type_required` set to `urn:openid:dcp:ia:openid4vp_presentation` and an `openid4vp_request` parameter carrying the request.
+
+### 6.4.2 Wallet processing and Holder consent
+
+The WU validates the request, checks `expected_origins` against the endpoint the request arrived from, and obtains Holder consent as for any other presentation (CS-002 [2] §7.3).
+
+### 6.4.3 Response delivery
+
+The WU posts the response back to the Authorization Challenge Endpoint as the `openid4vp_response` parameter, together with the `auth_session` it was given. On success the Authorisation Server returns an authorisation code and the WU continues the issuance flow as in CS-001.
+
 # 7. Normative Requirements
 
 ## 7.1 Wallet Unit Requirements
@@ -236,6 +264,9 @@ The wallet unit returns a response via the DC API. The browser delivers it to th
 | WU-DC-07 | The WU SHOULD register as a credential provider for the `"openid4vci-v1"` protocol to support issuance via the DC API. | [1] §7.8.3 |
 | WU-DC-08 | The WU MUST, upon receiving a credential offer via the DC API, initiate the standard OID4VCI flow with the issuer's endpoints as specified in CS-001. | [7] |
 | WU-DC-09 | The WU MUST validate that the requesting origin matches one of the values in `expected_origins` from the signed authorization request before processing the request. | [4] §A.2 |
+| WU-DC-10 | A WU that supports Interactive Authorization MUST accept an OpenID4VP authorization request in DC API request shape delivered in the `openid4vp_request` parameter of an Authorization Challenge Endpoint response, and MUST support the `ia_post` and `ia_post.jwt` response modes. | [8], CS-001 §7.9 |
+| WU-DC-11 | For such a request, the WU MUST verify that `expected_origins`, where present, contains only the derived Origin of the Authorization Challenge Endpoint the request arrived from, and MUST refuse the request otherwise. Unlike WU-DC-09, the origin is not supplied by the browser and must be derived from the endpoint the WU itself addressed. | [8], CS-001 §7.9 |
+| WU-DC-12 | For such a request, the WU MUST bind the presentation to that Authorization Challenge Endpoint using the Credential Format-specific binding, and MUST return the response to the same endpoint in the `openid4vp_response` parameter together with the most recent `auth_session`. | [8], CS-001 §7.9, NOTE CS01_08 |
 
 ## 7.2 Verifier Requirements
 
@@ -259,6 +290,9 @@ The wallet unit returns a response via the DC API. The browser delivers it to th
 | IS-DC-03 | The Issuer MUST construct a valid OID4VCI credential offer as specified in CS-001. | [7] |
 | IS-DC-04 | The Issuer MUST call the DC API from a [secure context](https://w3c.github.io/webappsec-secure-contexts/) and in response to a user activation event. | [1] §8.3 |
 | IS-DC-05 | The Issuer SHOULD implement fallback to direct OID4VCI credential offer delivery (e.g. via QR code or deep link) when the DC API is not available. | [7] |
+| IS-DC-06 | An Issuer that supports Interactive Authorization MUST construct the `openid4vp_request` as an OpenID4VP authorization request in DC API request shape, with `response_mode` set to `ia_post` or `ia_post.jwt`. It MUST NOT use `dc_api` or `dc_api.jwt` for this request: those response modes direct the response to the browser, and this exchange has no browser in it. | [8], [4] §A.2 |
+| IS-DC-07 | Where the Issuer includes `expected_origins`, it MUST contain only the derived Origin of its own Authorization Challenge Endpoint. | [8], CS-001 §7.9 |
+| IS-DC-08 | The Issuer MUST bind the `nonce` of that request to the `auth_session`, and MUST verify that the presentation it receives used that nonce. | [8], CS-001 §7.9 |
 
 # 8. Platform and Browser Support Considerations (Informative)
 
@@ -322,3 +356,4 @@ Conformance testing for this pre-flight specification will be defined as part of
 | [5] | W3C Web Identity & Credentials Adoption CG, "Digital Credentials API Ecosystem Support", https://digitalcredentials.dev/ecosystem-support |
 | [6] | FIDO Alliance, "Client to Authenticator Protocol (CTAP) 2.2 — Hybrid Transport", https://fidoalliance.org/specs/fido-v2.2-rd-20230321/fido-client-to-authenticator-protocol-v2.2-rd-20230321.html#hybrid-transport |
 | [7] | OpenID Foundation, "OpenID for Verifiable Credential Issuance (OID4VCI) 1.0", https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html |
+| [8] | OpenID Foundation, "OpenID for Verifiable Credential Issuance 1.1", editor's draft -01, https://github.com/openid/OpenID4VCI/blob/main/1.1/openid-4-verifiable-credential-issuance-1_1.md. NOT a published specification; adopted pre-flight, see the [ADR](../adr/openid4vci-1-1.md). |
