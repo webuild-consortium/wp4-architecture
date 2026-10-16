@@ -295,7 +295,6 @@ Verifier obligations are listed below in two groups: per-transaction protocol be
 5. All Presentation Responses are validated, including:
     * Signature of Presentation Proof
     * Credential authenticity
-    * Wallet Unit Attestation validity (per HAIP)
     * SD‑JWT‑VC disclosure integrity
     * Holder binding
     * Nonce and audience binding
