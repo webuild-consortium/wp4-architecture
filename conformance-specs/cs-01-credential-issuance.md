@@ -1,10 +1,11 @@
 # WE BUILD - Conformance Specification:  Credential Issuance
 
-Version 1.3
-Date: 28 August 2026
+Version 1.4
+Date: 12 October 2026
 
 **Revision history**
 
+* Version 1.4 (12 October 2026): Allowed the Pre-Authorised Code grant without a Transaction Code under defined conditions, resolving issue [#361](https://github.com/webuild-consortium/wp4-architecture/issues/361).
 * Version 1.3 (28 August 2026): Clarified that re-issuance and the Deferred Credential Endpoint are OPTIONAL for Issuers, resolving issue [#297](https://github.com/webuild-consortium/wp4-architecture/issues/297).
 * Version 1.2 (15 July 2026): Added the re-issuance chapter, resolving issue [#244](https://github.com/webuild-consortium/wp4-architecture/issues/244).
 * Version 1.1 (10 July 2026): Added the pre-authorised code-flow to support payments
@@ -142,13 +143,13 @@ Both modes are required in this profile.
 > **CS01_02**: HAIP [2] mandates only the Authorisation Code Flow. Support for the Pre-Authorised Code Flow is a WE BUILD extension profiled directly on OpenID4VCI [1], for Issuer-initiated use cases where the Issuer has authenticated the Holder and prepared the issuance before the Wallet interaction starts; it is therefore used for Issuer-initiated issuance only (section 7.1).
 
 > [!NOTE]
-> **CS01_03**: OpenID4VCI [1] makes the Transaction Code (`tx_code`) OPTIONAL at the protocol level, but section 13.6.1 states that Pre-Authorised Code replay "must be prevented using other means" and names the Transaction Code as the single mitigation the design facilitates for that purpose. The other controls available in this profile, namely short-lived single-use codes and WIA client authentication, restrict redemption to attested Wallet Units but do not bind the code to the intended Holder (NOTE **CS01_04**). This profile therefore REQUIRES a Transaction Code for every Credential Offer that uses the Pre-Authorised Code grant, delivered via a channel separate from the Credential Offer (sections 7.2 and 7.4).
+> **CS01_03**: OpenID4VCI [1] makes the Transaction Code (`tx_code`) OPTIONAL at the protocol level, but section 13.6.1 states that Pre-Authorised Code replay "must be prevented using other means" and names the Transaction Code as the single mitigation the design facilitates for that purpose. The other controls available in this profile, namely short-lived single-use codes and WIA client authentication, restrict redemption to attested Wallet Units but do not bind the code to the intended Holder (NOTE **CS01_04**). This profile therefore REQUIRES a Transaction Code by default for Credential Offers that use the Pre-Authorised Code grant, delivered via a channel separate from the Credential Offer (sections 7.2 and 7.4). The Transaction Code MAY be omitted only for Credential Offers delivered same-device within a session in which the Issuer has authenticated the Holder, using a short-lived Pre-Authorised Code, since the code then cannot be observed by a third party (section 7.2).
 
 > [!NOTE]
-> **CS01_04**: The Pre-Authorised Code Flow provides no PKCE-like mechanism to protect the Pre-Authorised Code. Unlike the authorisation code, which is bound to the WU session via PKCE and to the DPoP key via `dpop_jkt` at PAR (section 7.3), the Pre-Authorised Code is not bound to a session or key, so anyone who obtains a valid code can attempt to redeem it (OpenID4VCI [1], section 13.6.1). The WIA client authentication required at the Token Endpoint (section 7.4) restricts redemption to attested Wallet Units but does not bind the code to the intended Holder: an attacker who obtains the code, for example by scanning a QR code over the Holder's shoulder, can redeem it in their own attested Wallet Unit. Pre-Authorised Codes are therefore short-lived and single-use (section 7.2), and a Transaction Code is REQUIRED to bind the code to the Holder (NOTE **CS01_03**).
+> **CS01_04**: The Pre-Authorised Code Flow provides no PKCE-like mechanism to protect the Pre-Authorised Code. Unlike the authorisation code, which is bound to the WU session via PKCE and to the DPoP key via `dpop_jkt` at PAR (section 7.3), the Pre-Authorised Code is not bound to a session or key, so anyone who obtains a valid code can attempt to redeem it (OpenID4VCI [1], section 13.6.1). The WIA client authentication required at the Token Endpoint (section 7.4) restricts redemption to attested Wallet Units but does not bind the code to the intended Holder: an attacker who obtains the code, for example by scanning a QR code over the Holder's shoulder, can redeem it in their own attested Wallet Unit. Pre-Authorised Codes are therefore short-lived and single-use (section 7.2), and a Transaction Code is REQUIRED to bind the code to the Holder unless the conditions in section 7.2 apply (NOTE **CS01_03**).
 
 > [!NOTE]
-> **CS01_05**: OpenID4VCI [1] section 13.6.2 describes a Transaction Code phishing attack, in which an attacker operating a Credential Issuer site induces the Holder to enter into the Wallet a Transaction Code issued by an unrelated service, such as a payment service, and thereby obtains access to that service. OpenID4VCI RECOMMENDS that Wallets interact with trusted Credential Issuers only, and states that the Wallet MAY show the End-User the Credential Issuer endpoint before the Transaction Code is sent. Because this profile requires a Transaction Code for the Pre-Authorised Code grant (NOTE **CS01_03**), both mitigations are profiled as normative requirements in section 7.2.
+> **CS01_05**: OpenID4VCI [1] section 13.6.2 describes a Transaction Code phishing attack, in which an attacker operating a Credential Issuer site induces the Holder to enter into the Wallet a Transaction Code issued by an unrelated service, such as a payment service, and thereby obtains access to that service. OpenID4VCI RECOMMENDS that Wallets interact with trusted Credential Issuers only, and states that the Wallet MAY show the End-User the Credential Issuer endpoint before the Transaction Code is sent. Where a Transaction Code is used for the Pre-Authorised Code grant (NOTE **CS01_03**), both mitigations are profiled as normative requirements in section 7.2.
 
 # 6. High-level Flows
 
@@ -245,9 +246,9 @@ Where the Pre-Authorised Code grant is used, the Issuer authenticates the Holder
    * `credential_configuration_ids`: one or more identifiers, each matching a key in `credential_configurations_supported` in the Credential Issuer metadata (section 7.7)
    * a `grants` object carrying one or both of:
      * `authorization_code`, optionally with `issuer_state`
-     * `urn:ietf:params:oauth:grant-type:pre-authorized_code`, containing a short-lived, single-use `pre-authorized_code` and a `tx_code` object (section 7.2)
+     * `urn:ietf:params:oauth:grant-type:pre-authorized_code`, containing a short-lived, single-use `pre-authorized_code` and, unless the conditions in section 7.2 apply, a `tx_code` object
 
-2. Where the offer uses the Pre-Authorised Code grant, the Issuer generates the Transaction Code and delivers it to the Holder via a channel **separate** from the Credential Offer, for example, by text message or email (section 7.2, NOTE **CS01_03**).
+2. Where the offer uses the Pre-Authorised Code grant with a `tx_code` object, the Issuer generates the Transaction Code and delivers it to the Holder via a channel **separate** from the Credential Offer, for example, by text message or email (section 7.2, NOTE **CS01_03**).
 
 ### 6.2.3 Credential Offer delivery and Wallet invocation
 
@@ -257,6 +258,8 @@ Where the Pre-Authorised Code grant is used, the Issuer authenticates the Holder
    * sending a link that uses the `openid-credential-offer://` scheme to a device with a registered WU
 
 2.	Both same-device and cross-device delivery methods MUST be supported.
+
+3.	Credential Offers without a `tx_code` object MUST NOT be delivered as a QR code (section 7.2).
 
 ### 6.2.4 WU processes the offer
 
@@ -281,15 +284,15 @@ Where the Pre-Authorised Code grant is used, the Issuer authenticates the Holder
 
 ### 6.2.6 Token request (Pre-Authorised Code grant)
 
-1. The WU prompts the Holder to enter the Transaction Code received from the Issuer, rendering the input screen according to the `tx_code` object and displaying its `description` where present. Before submitting, the WU displays the Credential Issuer endpoint to which the Transaction Code will be sent (section 7.2, NOTE **CS01_05**).
+1. Where the offer contains a `tx_code` object, the WU prompts the Holder to enter the Transaction Code received from the Issuer, rendering the input screen according to the `tx_code` object and displaying its `description` where present. Before submitting, the WU displays the Credential Issuer endpoint to which the Transaction Code will be sent (section 7.2, NOTE **CS01_05**).
 
 2. The WU sends a token request directly to the Token Endpoint, without any prior Authorisation Endpoint or PAR interaction, including:
    * `grant_type=urn:ietf:params:oauth:grant-type:pre-authorized_code`
    * `pre-authorized_code` from the Credential Offer
-   * `tx_code` entered by the Holder
+   * `tx_code` entered by the Holder, where the offer contains a `tx_code` object
    * client authentication using WUA
 
-3. The Token Endpoint validates the Pre-Authorised Code and the Transaction Code, and returns:
+3. The Token Endpoint validates the Pre-Authorised Code and, where one was required, the Transaction Code, and returns:
    * sender-constrained `access_token`
    * optional `refresh_token` for credential refresh
 
@@ -399,8 +402,11 @@ Issuers that support the Pre-Authorised Code Flow (section 7.1) **MUST** additio
 
 1. Support the grant type `urn:ietf:params:oauth:grant-type:pre-authorized_code` in Credential Offers, aligned with OpenID4VCI.
 2. Ensure that each `pre-authorized_code` is short-lived and single-use.
-3. Include a `tx_code` object in every Credential Offer that uses the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type, as the replay mitigation required by OpenID4VCI [1] section 13.6.1 (NOTES **CS01_03** and **CS01_04**).
-4. Deliver the Transaction Code to the Holder via a channel separate from the Credential Offer, for example, by text message or email (OpenID4VCI [1], section 4.1.1).
+3. Include a `tx_code` object in every Credential Offer that uses the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type, as the replay mitigation required by OpenID4VCI [1] section 13.6.1, except where all of the conditions in item 5 are met (NOTES **CS01_03** and **CS01_04**).
+4. Where a `tx_code` object is included, deliver the Transaction Code to the Holder via a channel separate from the Credential Offer, for example, by text message or email (OpenID4VCI [1], section 4.1.1).
+5. Omit the `tx_code` object only where:
+    * the Credential Offer is delivered same-device, within a session in which the Issuer has authenticated the Holder (for example, an `openid-credential-offer://` link opened from the Issuer's authenticated app or web session), and is never delivered as a QR code; and
+    * the `pre-authorized_code` has a lifetime of no more than 5 minutes.
 
 WUs **MUST**:
 
@@ -457,7 +463,7 @@ Issuers **SHOULD**:
 In the Pre-Authorised Code Flow, WUs **MUST** additionally:
 
 1. Authenticate at the Token Endpoint using the WIA and its Proof-of-Possession as specified in items 1 and 2 above; since this flow has no PAR step, both are sent with the Token Request only. OpenID4VCI [1] makes client authentication OPTIONAL for the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type; this profile REQUIRES it.
-2. Include the `pre-authorized_code` from the Credential Offer in the Token Request, together with the Transaction Code entered by the Holder in the `tx_code` parameter (section 7.2).
+2. Include the `pre-authorized_code` from the Credential Offer in the Token Request, together with, where the Credential Offer contained a `tx_code` object, the Transaction Code entered by the Holder in the `tx_code` parameter (section 7.2).
 3. Use the WIA `cnf` key as the DPoP key when requesting the Access Token, as in item 3 above. Because this flow has no PAR step (and hence no `dpop_jkt` code binding, section 7.3), the DPoP binding is established at the Token Request.
 
 In the Pre-Authorised Code Flow, Issuers **MUST** additionally:
@@ -465,7 +471,7 @@ In the Pre-Authorised Code Flow, Issuers **MUST** additionally:
 1. Reject Token Requests that use the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type without client authentication with a valid WIA. Anonymous access (`pre-authorized_grant_anonymous_access_supported`) MUST NOT be offered.
 2. Verify that the `pre-authorized_code` was issued by their AS, has not expired and has not been used before, returning the `invalid_grant` error otherwise (OpenID4VCI [1], Token Error Response).
 3. Verify the Transaction Code value presented in the `tx_code` parameter, returning `invalid_grant` if the value is wrong, and `invalid_request` if a Transaction Code is provided but not expected, or expected but not provided.
-4. Limit the number of failed Transaction Code attempts for a given `pre-authorized_code` and invalidate that code once the limit is exceeded (OpenID4VCI [1], section 13.6.1).
+4. Where a Transaction Code is required, limit the number of failed Transaction Code attempts for a given `pre-authorized_code` and invalidate that code once the limit is exceeded (OpenID4VCI [1], section 13.6.1).
 
 In the Pre-Authorised Code Flow, Issuers **SHOULD**:
 
@@ -596,7 +602,10 @@ When the `grants` object contains the `authorization_code` grant type, that gran
 When the `grants` object contains the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type, that grant object MUST contain:
 
 * `pre-authorized_code`: short-lived, single-use code to be sent in the subsequent Token Request
-* `tx_code`: object indicating that a Transaction Code is required, REQUIRED by this profile as replay mitigation (sections 7.2 and 7.4, NOTES **CS01_03** and **CS01_04**), with the OPTIONAL parameters:
+
+and MUST also contain, unless the conditions in section 7.2 (Issuer MUST item 5) are met:
+
+* `tx_code`: object indicating that a Transaction Code is required, as replay mitigation (sections 7.2 and 7.4, NOTES **CS01_03** and **CS01_04**), with the OPTIONAL parameters:
     * `input_mode`: `numeric` (default) or `text`
     * `length`: length of the Transaction Code
     * `description`: guidance for the Holder on how to obtain the Transaction Code (maximum 300 characters)
