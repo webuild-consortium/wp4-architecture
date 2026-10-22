@@ -1,10 +1,11 @@
 # WE BUILD - Conformance Specification:  Credential Presentation
 
-Version 1.2
-Date: 23 September 2026
+Version 1.3
+Date: TBD
 
 **Revision history**
 
+* Version 1.3 (unreleased): Scoped the requirements in section 7 to presentations made to a Verifier, and added section 7.3 for presentations made to a Credential Issuer's Authorization Challenge Endpoint during Interactive Authorization (CS-01 [6] section 7.9), following the pre-flight adoption of OpenID4VCI 1.1 recorded in the [ADR](../adr/openid4vci-1-1.md).
 * Version 1.2 (23 September 2026): Restricted the Verifier's `client_id` to the `x509_hash` Client Identifier Scheme, added `haip-vp://` and `eu-eaap://` as additional Wallet invocation schemes, and added the mandatory `verifier_info` parameter (RP Registrar-provided data and, where available, the WRPRC) to the Presentation Request Object, aligning with the finalised OpenID4VC HAIP 1.0 and ETSI TS 119 472-2, resolving issue [#341](https://github.com/webuild-consortium/wp4-architecture/issues/341). Also corrected and restructured Section 8.3 (Presentation Response Endpoint) to match OpenID4VP 1.0's actual `direct_post.jwt` semantics (encrypted `response` parameter, form-urlencoded transport, defined error codes, and the `redirect_uri` acknowledgement), and aligned Sections 6.1.6/6.1.7/6.2.6/6.2.7 accordingly.
 * Version 1.1 (30 April 2026): Approved.
 
@@ -45,6 +46,7 @@ Date: 23 September 2026
 - [7. Normative Requirements](#7-normative-requirements)
   - [7.1 Wallet Unit Requirements](#71-wallet-unit-requirements)
   - [7.2 Verifier Requirements](#72-verifier-requirements)
+  - [7.3 Presentations during Interactive Authorization](#73-presentations-during-interactive-authorization)
 - [8. Interface Definitions](#8-interface-definitions)
   - [8.1 Wallet Invocation Interface](#81-wallet-invocation-interface)
   - [8.2 Presentation Request Object Interface](#82-presentation-request-object-interface)
@@ -258,6 +260,8 @@ Verifier's Response Endpoint acknowledges the submission and the outcome is comm
 
 The requirements in 7.1 and 7.2 attach to the OpenID4VP **roles** of Wallet Unit and Verifier respectively, as defined in chapter 4, not to the products or organisations implementing them. A relying party deploying a multi-role software product (for example a Business Wallet) to implement the Verifier role is a normal and supported pattern; the obligations in 7.2 apply to the Verifier role inside that product.
 
+Sections 7.1 and 7.2 govern presentations made **to a Verifier**. OpenID4VCI 1.1 [7] defines a second context in which a WU presents a Credential: Interactive Authorization, where a Credential Issuer's Authorisation Server requests a presentation in order to decide whether to issue. That exchange is not a presentation to a Verifier, does not use a Presentation Response Endpoint, and is governed by CS-01 [6] section 7.9. Section 7.3 states which of the obligations in this specification carry over to it.
+
 ## 7.1 Wallet Unit Requirements
 
 Wallets MUST:
@@ -315,6 +319,26 @@ Verifiers MUST NOT:
 * Disable nonce or audience validation
 * Use a `client_id` scheme other than `x509_hash`
 * Omit `verifier_info` from the Presentation Request Object
+
+## 7.3 Presentations during Interactive Authorization
+
+This section applies where a WU presents a Credential to a Credential Issuer's Authorization Challenge Endpoint as part of Interactive Authorization (CS-01 [6] section 7.9). Support for Interactive Authorization is OPTIONAL; a WU that does not implement it is unaffected by this section.
+
+The exchange differs from a presentation to a Verifier in three ways that matter to this specification. The request arrives in Digital Credentials API shape rather than as a request object fetched over a custom URL scheme (CS-07 [8]). The response goes back to the same Authorization Challenge Endpoint using the `ia_post` or `ia_post.jwt` response mode, not to a `response_uri` using `direct_post.jwt`, so section 8.3 does not apply. And the party requesting the presentation is an Issuer deciding whether to issue, not a Relying Party consuming attributes for its own purpose.
+
+WUs **MUST**, in this exchange:
+
+1. Apply the Holder consent, selective disclosure and proof-generation obligations of section 7.1 items 7 to 10 unchanged. A presentation made to obtain a Credential is still a presentation, and the Holder decides what is disclosed.
+2. Verify that `expected_origins`, where present in the request, contains only the derived Origin of the Authorization Challenge Endpoint the request arrived from, and refuse the request otherwise (CS-01 [6] section 7.9).
+3. Bind the presentation to that Authorization Challenge Endpoint, as specified per Credential Format by OpenID4VCI 1.1 [7] and pinned for testing by CS-01 [6] NOTE **CS01_08**. This takes the place of the `aud` binding in section 7.1 item 10, and it is what prevents one Authorisation Server relaying another's challenge.
+
+The following obligations of section 7.1 do **not** apply to this exchange, because the mechanism they attach to is absent:
+
+* Item 3, invocation via `openid4vp://` and `eu-eaap://`. The request arrives through the Authorization Challenge Endpoint exchange.
+* Item 5, the `x509_hash` Client Identifier Scheme. A request in DC API shape identifies the requester by origin.
+* Item 11, submission to a Presentation Response Endpoint.
+
+> **NOTE CS02_IA_01**: Whether item 6, the `verifier_info` obligation carrying RP Registrar-provided data and the WRPRC, should apply to a Credential Issuer requesting a presentation under Interactive Authorization is an **open question for the consortium**, and is deliberately left unresolved by this version. The Issuer is requesting personal data from the Holder, which is the circumstance the registrar obligations exist for; but it is acting as an Issuer under a different registration, and OpenID4VCI 1.1 [7] does not require `verifier_info` in the Interactive Authorization request. Resolving this in favour of requiring it would mean an Issuer cannot use Interactive Authorization without also being registered as a Relying Party. ITB+ testing proceeds without the obligation, and the question is to be answered before this section is made normative outside the pre-flight scope.
 
 # 8. Interface Definitions
 
@@ -463,3 +487,9 @@ An implementation **conforms to this specification as an Issuer** if it:
 [4]	IETF (2025) SD‑JWT‑based Verifiable Credentials. IETF. Available at: https://www.ietf.org/archive/id/draft-ietf-oauth-sd-jwt-vc-09.html (Accessed: 24 November 2025).
 
 [5]	WE BUILD (2025) Interoperability Test Bed - Reference Specification, 12 November, Available at: [https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/reference-implementation-interoperability-test-bed.md) (Accessed: 24 November 2025).
+
+[6] WE BUILD (2026) Conformance Specification CS-01: Credential Issuance. webuild-consortium/wp4-architecture.
+
+[7] OpenID Foundation (2026) OpenID for Verifiable Credential Issuance 1.1, editor's draft -01. Available at: [https://github.com/openid/OpenID4VCI/blob/main/1.1/openid-4-verifiable-credential-issuance-1_1.md](https://github.com/openid/OpenID4VCI/blob/main/1.1/openid-4-verifiable-credential-issuance-1_1.md). NOT a published specification; adopted pre-flight, see the [ADR](../adr/openid4vci-1-1.md).
+
+[8] WE BUILD (2026) Pre-flight Conformance Specification CS-07: Credential Presentation and Issuance via the Digital Credentials API. webuild-consortium/wp4-architecture.
