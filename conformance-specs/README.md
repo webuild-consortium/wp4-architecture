@@ -64,6 +64,7 @@ graph TB
 | CS-013   | [Relying Party Intermediaries v1.0](cs-13-intermediary-services-preflight.md) |
 | CS-015   | [QERDS - EBW Interface - v1.0](cs-15-ebw-qtsp-wmp.md) |
 | CS-016   | [Inter-QTSP Message Relay (QERDS AS4) - v1.0](cs-16-qerds-as4.md) |
+| CS-017   | [Directory & Discovery (EDD) - v1.0](cs-17-directory.md) |
 <!--END INDEX-->
 
 ### WBCS Under Development
@@ -74,7 +75,6 @@ graph TB
 | CS-006     | [Issuance of WRPAC/WRPRC](https://github.com/webuild-consortium/wp4-architecture/pull/287)                                          | 🟢 *In review*     | Must-have    | Oct 2026        |
 | CS-011     | [Remote QESeal creation](https://github.com/webuild-consortium/wp4-architecture/pull/198)                                           | 🟢 *In review*     | Must-have    | Oct 2026        |
 | CS-014     | [Proximity / Offline profile](https://github.com/webuild-consortium/wp4-architecture/issues/251)                                    | 🔵 *Investigating* | Should-have  | Nov 2026        |
-| CS-017     | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/issues/253)                                    | 🔵 *Investigating* | Must-have    | Oct 2026        |
 |            | [RP-QERDS interface](https://github.com/webuild-consortium/wp4-architecture/issues/254)                                             | 🟣 *Candidate*     | Low          | Jan 2027        |
 |            | [Support for Data spaces](https://github.com/webuild-consortium/wp4-architecture/issues/335)                                        | 🟣 *Candidate*     | SC2 specific | Jan 2027        |
 <!--END INDEX-->
