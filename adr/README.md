@@ -33,6 +33,10 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 24. [Mutual identification for EBW presentation requests](mutual_identification.md)
 25. [Verify QERDS Provider trust via Trusted Lists before and after delivery](qerds-delivery-trust-evaluation.md)
 26. [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md)
+27. [Exclusion of Portrait from the WE BUILD PID Profile](exlusion-of-portrait-from-pid-profile.md)
+28. [PID Attributes for Cross-Border Identity Matching](002-identity-matching-and-subject-linking.md)
+29. [Extend TS11 credential metadata with OpenID Federation Trust Marks](openid-federation-trust-marks.md)
+30. [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md)
 <!--END INDEX-->
 
 ## Supporting analysis
