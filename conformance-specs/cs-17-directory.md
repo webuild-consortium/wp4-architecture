@@ -12,7 +12,7 @@ This specification defines how WE BUILD participants publish and look up deliver
 - Read-only SMP 2.0 interface: ServiceGroup and ServiceMetadata
 - Identifier schemes, normalisation and URL encoding
 - Metadata signing and trust anchors
-- Transport profiles, for AS4 and wallet endpoints
+- Transport profiles, for AS4, wallet messaging and OID4VC endpoints
 - ERDS capability metadata for (Q)ERDS endpoints, as ETSI EN 319 522 defines it
 - The registration procedure for adding or changing entries
 
@@ -74,6 +74,7 @@ Participants are identified with ebCore party ID schemes. Services (document typ
 | --- | --- | --- |
 | Participant | `urn:oasis:names:tc:ebcore:partyid-type:iso6523:{ICD}` | `991825827` (ICD 0192) |
 | Service | `bdx-docid-qns` | `urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017::2.1` |
+| Service (WE BUILD capability) | `webuild-svcid` (placeholder) | `urn:webuild:svc:oid4vci:credential-offer` (placeholder, section 8.2) |
 | Process | none, or a WE BUILD scheme | `urn:webuild:sc5:einvoicing:1.0` (placeholder) |
 
 **Requirements:**
@@ -130,7 +131,7 @@ The SMP implements the [SMP2] REST binding (`oasis-bdxr-smp-2`), read-only, unde
 - **SMP-05** Responses MUST carry `Content-Type: application/xml`, as [SMP2] requires.
 - **SMP-06** Senders MUST request ServiceMetadata directly. They MUST NOT depend on fetching the ServiceGroup first.
 - **SMP-07** Every `ProcessMetadata` MUST contain `Endpoint` elements and MUST NOT contain `Redirect`.
-- **SMP-08** Every `Endpoint` MUST contain `AddressURI`, `ExpirationDate` and at least one `Certificate`.
+- **SMP-08** Every `Endpoint` MUST contain `AddressURI` and `ExpirationDate`. It MUST contain at least one `Certificate`, unless its transport profile is marked "none" in the certificate anchor column of section 8.
 
 **Static hosting.** `/bdxr-smp-2/{participant}` is both a resource and the parent of `services/`. A static host that serves `{name}.html` at `/{name}`, as Cloudflare Pages does, can store the ServiceGroup as `{participant}.html` beside the `{participant}/` folder and answer without a redirect (SMP-04). Storing it only as `{participant}/index.html` produces a 308, which phoss rejects. SMP-05 rules out hosts that cannot set response headers, such as GitHub Pages. Hosts that can, such as Cloudflare Pages or Netlify, conform.
 
@@ -158,6 +159,8 @@ An endpoint's `TransportProfileID` says how to reach it. AS4 and wallet endpoint
 | --- | --- | --- | --- |
 | `bdxr-transport-ebms3-as4-v1p0` | OASIS AS4 profile of ebMS 3.0 | AS4 MSH URL | WE BUILD AS4 test CA (to be defined) |
 | `webuild-transport-wmp-v1` (proposed) | Wallet Messaging Protocol inbox | WMP endpoint URL | WE BUILD wallet anchor (to be defined) |
+| `webuild-transport-oid4vci-1.0` (placeholder) | EBW credential offer endpoint, OpenID for Verifiable Credential Issuance 1.0 | https URL that accepts a credential offer | none for now (OID-04) |
+| `webuild-transport-oid4vp-1.0` (placeholder) | EBW presentation request endpoint, OpenID for Verifiable Presentations 1.0 | https URL that accepts an authorization request | none for now (OID-04) |
 
 - **TP-01** Registrants MUST use only profile IDs listed in this table. New profiles are added by changing this spec.
 - **TP-02** One `ProcessMetadata` MAY list several endpoints with different profiles. The sender picks one it supports.
@@ -171,6 +174,21 @@ An endpoint's `TransportProfileID` says how to reach it. AS4 and wallet endpoint
 - **ERDS-02** For an endpoint that names an ERDS, the SMP MUST publish `Endpoint/ext:SMPExtensions/ext:SMPExtension` with `smb:ID` `ERDSMetadata`, `ext:Name` `ERDSMetadata`, `ext:ExtensionAgencyID` `ETSI`, `ext:ExtensionAgencyName` `European Telecommunications Standards Institute`, `ext:ExtensionVersionID` `EN319522v1.1.1`, `ext:ExtensionAgencyURI` `http://www.etsi.org`, `ext:ExtensionURI` `http://uri.etsi.org/19522/v1#ERDSMetadata`, `ext:ExtensionReasonCode` `ERDSMetadata` and `ext:ExtensionReason` `Publish capability metadata for an Electronic Registered Delivery Service`. These are the [ERDS3] clause 6.3.2 values under their [SMP2] element names. `ext:ExtensionContent` holds one `erds:ERDSMetadata` (namespace `http://uri.etsi.org/19522/v1#`, `version="EN319522v1.1.1"`) that MUST validate against the [ERDS3] schema. In that schema only the root element is namespace-qualified.
 - **ERDS-03** `ERDSProfileSupported` MUST be one of the WE BUILD ERDS profile URIs. [ERDS3] defines no profile identifiers, so WE BUILD keeps the list (`erds_profiles` in the reference implementation). The pilot value `urn:webuild:erds:profile:etsi-en-319-522-4-1-as4` (ETSI AS4 binding) is a placeholder; see section 12.
 - **ERDS-04** The extension is on the `Endpoint`, not on `ProcessMetadata`, because one ServiceMetadata can mix ERDS and non-ERDS endpoints (TP-02). [ERDS43] allows either level. Senders that do not use ERDS metadata MUST ignore the extension, as [SMP2] allows.
+
+### 8.2 EBW OID4VC endpoints
+
+The WP4 ADR "EBW's EAA extension for the EDD" requires every business wallet to publish a credential offer endpoint and an endpoint for credential requests in the EDD, so that issuers and relying parties can reach a wallet machine-to-machine, without the business owner in the loop. This section publishes them through the SMP. All identifiers here are placeholders until WE BUILD agrees on them (section 12).
+
+| Capability | Service ID | Transport profile |
+| --- | --- | --- |
+| Receive a credential offer | `webuild-svcid::urn:webuild:svc:oid4vci:credential-offer` | `webuild-transport-oid4vci-1.0` |
+| Receive a presentation (authorization) request | `webuild-svcid::urn:webuild:svc:oid4vp:authorization-request` | `webuild-transport-oid4vp-1.0` |
+
+- **OID-01** A business wallet's OID4VC endpoints are published as services of the business's participant identifier, the same identifier used for messaging. One lookup can then find AS4, wallet messaging and OID4VC endpoints for a business.
+- **OID-02** The service IDs above are fixed and well known, so a sender can request the ServiceMetadata directly (SMP-06). The process ID is `urn:webuild:proc:oid4vc:1.0` (placeholder).
+- **OID-03** `AddressURI` is an https URL that works without a browser session, as the ADR requires. The SMP publishes only this entry point. Senders MUST take capabilities, such as supported formats and credential types, from OpenID4VC metadata at the endpoint, not from the SMP.
+- **OID-04** For the pilot these profiles carry no `Certificate` (SMP-08 exception), because OID4VC authenticates through its own mechanisms (for example access certificates). Whether the SMP should carry a certificate, and which anchor it chains to, is open (section 12).
+- **OID-05** If an endpoint is protected by a secret, as the ADR allows, the secret MUST NOT be published in the SMP. The business owner shares it out of band.
 
 ## 9. Registration and change procedure
 
@@ -216,7 +234,7 @@ A sender or operator conforms if it meets every MUST in its column.
 | SMP-05 | `Content-Type: application/xml` | MUST | | |
 | SMP-06 | Direct ServiceMetadata lookup | | | MUST |
 | SMP-07 | Endpoints only, no `Redirect` | MUST | | |
-| SMP-08 | AddressURI, ExpirationDate, Certificate per endpoint | check | MUST | |
+| SMP-08 | AddressURI, ExpirationDate, Certificate per endpoint (unless profile says none) | check | MUST | |
 | SIG-01–03 | Enveloped RSA-SHA256, C14N 1.1, cert in X509Data | MUST | | |
 | SIG-04–05 | Configurable trust anchor, verify before use | MUST | | MUST |
 | SIG-06 | Key outside repo, rotation on admin change | MUST | | |
@@ -226,6 +244,8 @@ A sender or operator conforms if it meets every MUST in its column.
 | TP-01–03 | Listed profiles only, ignore unsupported | check | MUST | MUST |
 | ERDS-01–03 | ERDS metadata as ETSI SMP extension, XSD-valid, listed profile | MUST | MUST (ERDS endpoints) | |
 | ERDS-04 | Extension on Endpoint; ignore if unused | MUST | | MUST |
+| OID-01–03 | OID4VC endpoints as services of the business, fixed service IDs, https entry point only | MUST | MUST (EBW) | MUST use OID4VC metadata |
+| OID-05 | Never publish endpoint secrets | MUST | MUST | |
 | REG-01–06 | PR-based registration, review, expiry | MUST | MUST | |
 
 "check" means the operator's CI enforces the requirement on the registrant's behalf.
@@ -271,6 +291,7 @@ The operator publishes the test participant and the expected results.
 - [ ] **BDXL hash rule.** Confirm the WE BUILD rule of one label over the full identifier (BDXL-02) against what partner clients can configure. Some BDXL clients only offer the Peppol/eDelivery rule with a scheme label. *phoss: supported with `BDXLURLProvider.setAddIdentifierSchemeToZone(false)`. Other partner clients still to check.*
 - [x] **Zone and host names.** Fix `bdxl_zone` and `smp_base_url`, and the Cloudflare account that runs Pages and DNS. *Pilot: `smp.webuild.kjorlaug.no` (Cloudflare Pages) and `bdxl.webuild.kjorlaug.no` (deSEC, because the parent's DNS host, Domeneshop, has no NAPTR).*
 - [ ] **ERDS profile identifiers.** Agree the `ERDSProfileSupported` URIs (ERDS-03) with the WP4-QTSP group, for example one each for the ETSI AS4 binding (EN 319 522-4-1), REM (EN 319 532) and the EUBW secure channel. Also confirm that per-endpoint ERDS metadata (ERDS-04) meets what QERDS providers need for relaying decisions.
+- [ ] **EBW OID4VC endpoints.** Agree the service IDs, process ID and transport profile IDs in section 8.2 (all placeholders), and clarify the ADR's second endpoint (read here as the OID4VP request endpoint). Decide whether these endpoints carry a certificate in the SMP and which anchor it chains to, for example the access-certificate providers in the WE BUILD LoTL (OID-04, SIG-07). Settle together with the EUID participant scheme, since businesses are the participants.
 - [ ] **Participant schemes.** Confirm the ICD list for ID-03 against the pilot's participants.
 - [ ] **WE BUILD process and service identifiers.** Agree a URN namespace for SC5 processes and for WE BUILD-specific services, such as attestations.
 - [ ] **Transport profiles and anchors.** Define the AS4 test CA, the wallet anchor, and the WMP profile ID with the WMP authors.
