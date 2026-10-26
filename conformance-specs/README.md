@@ -75,6 +75,7 @@ graph TB
 | CS-011     | [Remote QESeal creation](https://github.com/webuild-consortium/wp4-architecture/pull/198)                                           | 🟢 *In review*     | Must-have    | Oct 2026        |
 | CS-014     | [Proximity / Offline profile](https://github.com/webuild-consortium/wp4-architecture/issues/251)                                    | 🔵 *Investigating* | Should-have  | Nov 2026        |
 | CS-017     | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/issues/253)                                    | 🔵 *Investigating* | Must-have    | Oct 2026        |
+| CS-020     | [Document References, Linked Attestations and Evidence in (Q)EAAs (pre-flight)](cs-20-attestation-references-and-evidence-preflight.md) | 🟡 *Drafting*      | Must-have    | TBD             |
 |            | [RP-QERDS interface](https://github.com/webuild-consortium/wp4-architecture/issues/254)                                             | 🟣 *Candidate*     | Low          | Jan 2027        |
 |            | [Support for Data spaces](https://github.com/webuild-consortium/wp4-architecture/issues/335)                                        | 🟣 *Candidate*     | SC2 specific | Jan 2027        |
 <!--END INDEX-->
