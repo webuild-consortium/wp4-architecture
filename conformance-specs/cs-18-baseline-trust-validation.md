@@ -1,7 +1,7 @@
 # WE BUILD - Pre-flight Conformance Specification CS-018: Baseline Trust Validation
 
 Version 0.1 / Pre-flight Draft
-Date: 23 October 2026
+Date: 26 October 2026
 
 **Authors / Contributors**: WP4 Architecture / Trust Infrastructure Group
 
@@ -12,6 +12,8 @@ Date: 23 October 2026
 * Leif Johansson, SIROS
 * Giuseppe De Marco, Dipartimento per la trasformazione digitale
 * Martin Micuch, IDUnion
+* Stefan Kauhaus, Visa
+* Thodoris Papadopoulos, GRNET
 
 Table Of Contents
 
@@ -207,7 +209,7 @@ sequenceDiagram
         WU->>SP: Get the WRPRC Status List Token (cached)
         WU->>WU: Check the WRPRC to WRPAC binding and the requested claims
     end
-    WU->>WU: Show the RP and Service trade names, warnings if any
+    WU->>WU: Show the RP trade name from the WRPAC, warnings if any
 ```
 
 1. The Relying Party sends a signed Request Object as defined in CS-002 [2] or CS-007 [5]. The `x5c` header carries the WRPAC and the intermediate certificates, but not the trust anchor.
@@ -215,7 +217,7 @@ sequenceDiagram
 3. The Wallet Unit validates the WRPAC path to a trust anchor of the WRPAC Provider LoTE, checks its revocation status and, where Certificate Transparency logs are available, its Signed Certificate Timestamp.
 4. Where `verifier_info` contains a WRPRC (optional\*), the Wallet Unit validates it: its signature and path to a trust anchor of the WRPRC Provider LoTE, its validity period, its revocation status and its binding to the WRPAC.
 5. Where a WRPRC is present, the Wallet Unit compares the requested credentials and claims with it.
-6. The Wallet Unit shows the trade names of the Relying Party and its Service, and any warning, before it asks the User to approve.
+6. The Wallet Unit shows the trade name from the WRPAC, and any warning, before it asks the User to approve.
 
 **Outcome**: the User sees an authenticated Relying Party and, where a WRPRC is present, is warned before sharing more than the Relying Party is registered to request.
 
@@ -303,7 +305,7 @@ These requirements apply to every Validator, for every certificate path in this 
 | WU-TV-04 | The Wallet Unit MUST validate the WRPAC path as defined in §7.2 to a trust anchor of the WRPAC Provider LoTE, service type `WRPAC/Issuance`. | [14] RPA_04, [26] |
 | WU-TV-05 | The Wallet Unit SHOULD check that the WRPAC contains at least one valid Signed Certificate Timestamp (SCT). Until the Certificate Transparency logs for WE BUILD WRPACs and their public keys are published, a missing or unverifiable SCT MUST NOT by itself cause a failure of Relying Party authentication. | [14] CT_05, CT_06, [35] |
 | WU-TV-06 | The Wallet Unit SHOULD check that the `certificatePolicies` extension of the WRPAC contains one of the policy identifiers of ETSI TS 119 411-8 (§8.4). | [26] clause 5.3, GEN-6.6.1-03 |
-| WU-TV-07 | Where Relying Party authentication succeeds, the Wallet Unit MUST show the User the trade name of the Relying Party and of its Service from the WRPAC. | [14] RPA_06, [33] Article 3(5) |
+| WU-TV-07 | Where Relying Party authentication succeeds, the Wallet Unit MUST show the User the `commonName` of the WRPAC subject, which is the trade name of the Relying Party or the name of its Service. Where the WRPAC also carries a Service trade name (§8.4), the Wallet Unit MUST show it too. | [14] RPA_06, Reg_34, [26] GEN-6.1.1-04, [33] Article 3(5) |
 
 **Registration certificate at presentation (optional\*)**
 
@@ -313,7 +315,7 @@ These requirements apply to every Validator, for every certificate path in this 
 | WU-TV-09 | The Wallet Unit MUST check that the WRPRC `typ` is `rc-wrp+jwt` or `rc-wrp+cwt`, and MUST validate the path of the WRPRC signing certificate as defined in §7.2 to a trust anchor of the WRPRC Provider LoTE, service type `WRPRC/Issuance`. | [14] RPRC_02, RPRC_02a, [28] GEN-5.2.1-03, -04 |
 | WU-TV-10 | The Wallet Unit MUST check that the WRPRC `policy_id` contains `0.4.0.19475.3.1`, that `iat` is not in the future and, where present, that `exp` is not in the past. | [28] OVR-6.1.3-01, GEN-5.2.4-08 |
 | WU-TV-11 | The Wallet Unit MUST check the revocation status of the WRPRC from its `status` claim as defined in CS-010 [6], and MUST validate the signer of the Status List Token as defined in §7.6. | [14] RPRC_17, [28] REV-6.2.6.2-05 |
-| WU-TV-12 | Where a WRPRC is present, the Wallet Unit MUST check that its `sub` is equal to the `organizationIdentifier` (legal person) or the `serialNumber` (natural person) of the WRPAC subject, and that the Service identifier of the WRPRC is equal to that of the WRPAC. | [14] RPRC_07, RPRC_17a, [28] GEN-5.1.1-02, GEN-5.1.1-03 |
+| WU-TV-12 | Where a WRPRC is present, the Wallet Unit MUST check that its `sub` is equal to the `organizationIdentifier` (legal person) or the `serialNumber` (natural person) of the WRPAC subject. Where both the WRPRC and the WRPAC carry a Service identifier (§8.4), the Wallet Unit MUST also check that the two values are equal. Where one or both do not carry it, this is not a failure (§9). | [14] RPRC_07, RPRC_07a, RPRC_17a, Reg_33, [28] GEN-5.1.1-02, GEN-5.1.1-03 |
 | WU-TV-13 | Where a WRPRC is present, the Wallet Unit MUST check that each credential and each claim requested in the `dcql_query` (OpenID4VP) or in the `docRequests` (mdoc) is listed in the `credentials` of the WRPRC, with the same format, credential type and claim path. | [14] RPRC_21, [32] Article 8(2)(d), [33] Annex II WRP-OVERASKING-01 to -03 |
 | WU-TV-14 | Where a WRPRC is present, the Wallet Unit MUST complete WU-TV-08 to WU-TV-13 before it asks the User to approve the presentation. | [33] Annex II WRP-VALIDATION-01 |
 
@@ -390,7 +392,7 @@ The table defines the result of each failed or incomplete check. **Reject** mean
 | UP-TV-06 | `client_id` does not match the WRPAC, Request Object or `readerAuth` signature does not validate | Reject | not applicable | not applicable | WU-TV-02, WU-TV-03 |
 | UP-TV-07 | WRPAC fails WU-TV-04 | Warn ("the identity of the Relying Party could not be verified") | not applicable | not applicable | [14] RPA_05, RPA_06a, CT_06 |
 | UP-TV-08 | WRPRC malformed, signature or path invalid, expired, or revoked | Warn | not applicable | not applicable | [14] RPRC_17, [33] Annex II WRP-VALIDATION-02, -03 |
-| UP-TV-09 | WRPRC does not match the WRPAC (WU-TV-12) | Warn, and treat the WRPRC as absent | not applicable | not applicable | [14] RPRC_17a |
+| UP-TV-09 | WRPRC `sub` does not match the WRPAC subject, or both carry a Service identifier and the values are different (WU-TV-12) | Warn, and treat the WRPRC as absent | not applicable | not applicable | [14] RPRC_17a |
 | UP-TV-10 | Request asks for credentials or claims that the WRPRC does not list | Warn, and identify the claims that are not registered | not applicable | not applicable | [14] RPRC_21, [33] Annex II WRP-OVERASKING-01 to -03 |
 | UP-TV-11 | Credential Issuer metadata is not signed, or fails WU-TV-15 | Inform the User, and do not request issuance | not applicable | not applicable | [14] ISSU_24, ISSU_34 |
 | UP-TV-12 | Credential signing certificate does not chain to a trust anchor for the expected category, or fails §8.4 (for a non-qualified EAA without trust anchors, see UP-TV-16) | Reject (do not store) | Reject | not applicable | RP-TV-01 to -04 |
@@ -447,6 +449,8 @@ In each case the header carries the end-entity certificate first, then the inter
 |-------------|-------|--------|-----------|
 | WRPAC | `certificatePolicies` (SHOULD, WU-TV-06) | `0.4.0.194118.1.1` (NCP-n-eudiwrp), `.2` (NCP-l-eudiwrp), `.3` (QCP-n-eudiwrp), `.4` (QCP-l-eudiwrp) | [26] clause 5.3 |
 | WRPAC | Subject identifier for WU-TV-12 | `organizationIdentifier` (legal person) or `serialNumber` (natural person) | [26] GEN-6.6.1-05, [28] clause 5.1 |
+| WRPAC | Name shown to the User (WU-TV-07) | `commonName` of the subject: a trade name or a service name | [26] GEN-6.1.1-04 |
+| WRPAC and WRPRC | Service identifier (WU-TV-12) and Service trade name (WU-TV-07) | No encoding is defined yet in [26] or [28], see §9 | [14] Reg_33, Reg_34, RPRC_07a |
 | WRPAC | Signed Certificate Timestamp (SHOULD, WU-TV-05) | at least one valid SCT | [14] CT_04, CT_05, [35] |
 | PID signing certificate | QcType | `id-etsi-qct-pid` (`0.4.0.194126.1.1`) | [27] PID-4.5-01 |
 | Wallet Provider signing certificate | QcType | `id-etsi-qct-wal` (`0.4.0.194126.1.2`) | [27] WAL-5.2-01 |
@@ -512,7 +516,7 @@ Example of a WRPRC JWT header and of the payload members of a Relying Party WRPR
 }
 ```
 
-In the example of a Relying Party WRPRC above, WU-TV-12 compares `sub` with the `organizationIdentifier` of the WRPAC subject, and WU-TV-13 compares the `dcql_query` of the request with `credentials`.
+In the example of a Relying Party WRPRC above, WU-TV-12 compares `sub` with the `organizationIdentifier` of the WRPAC subject, and WU-TV-13 compares the `dcql_query` of the request with `credentials`. The example has no Service identifier, because its encoding is not yet defined (§9).
 
 A WRPRC issued to a Credential Issuer has the same header and common members. Instead of `credentials` and `purpose`, it carries an Attestation Provider entitlement and `provides_attestations` ([28] Table 8, ISS-TV-08). Example payload (illustrative only):
 
@@ -581,6 +585,7 @@ In line with the pre-flight process [7], the following topics are deliberately l
 9. **`x5u` and `x5t#S256`.** ETSI TS 119 472-1 [29] makes `x5u` and `x5t#S256` mandatory and `x5c` a "should" for QEAA and PuB-EAA in SD-JWT VC; HAIP [17] makes `x5c` mandatory. This specification follows HAIP (ISS-TV-04).
 10. **Revocation check privacy.** OCSP requests show the Access Certificate Authority and the Credential Issuer which certificate a Validator checks. CRT-TV-05 prefers cached CRLs. Report on CRL sizes and on the use of OCSP stapling where a transport allows it.
 11. **Historical validation.** LST-TV-09 evaluates trust at the current time. Validation at a past point in time (for example for archived evidence) needs time-stamping and historical list data, and is under discussion in the EAA Provider support group.
+12. **Service identifier encoding.** The ARF requires the same Service identifier in the WRPAC and in the WRPRC, and a Service trade name in the WRPAC ([14] Reg_33, Reg_34, RPRC_07a, RPRC_17a). ETSI TS 119 411-8 [26] and ETSI TS 119 475 [28] do not define a field for them. The WRPAC `commonName` is a trade name or a service name ([26] GEN-6.1.1-04), and the Organizational Unit separates instances of the same organisation ([26] GEN-6.6.1-08). CS-006 [36] puts the `instanceId` in the Organizational Unit, which identifies a Relying Party Instance and not a Service. Until CS-006 defines the encoding, WU-TV-12 compares the Service identifier only where both certificates carry it, and WU-TV-07 shows the `commonName`. The same gap applies to the intermediary association in CS-013 [37] §8.3. The encoding is open since WP4 Trust Group pull request #135, and is one of the ARF 3.0 points in issue #292. Report which encoding implementers propose, for example a URI in the Subject Alternative Name.
 
 # 10. Conformance
 
