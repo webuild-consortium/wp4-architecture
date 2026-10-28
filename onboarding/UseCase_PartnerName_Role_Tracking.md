@@ -4,13 +4,13 @@ Copy this template to create your partner-specific tracking file (e.g., `PA3_Sce
 
 ## 📋 Profile Metadata
 
-| Parameter | Value |
-|:---|:---|
-| **Use Case ID** | |
-| **Partner Name** | |
-| **Business Role** | *(e.g., Supplier, Buyer, Bank)* |
-| **Technical Role** | *(e.g., Holder, Relying Party / Verifier, Issuer)* |
-| **Onboarding Contact** | *(Email / Slack handle)* |
+| Parameter              | Value                                              |
+|:-----------------------|:---------------------------------------------------|
+| **Use Case ID**        |                                                    |
+| **Partner Name**       |                                                    |
+| **Business Role**      | *(e.g., Supplier, Buyer, Bank)*                    |
+| **Technical Role**     | *(e.g., Holder, Relying Party / Verifier, Issuer)* |
+| **Onboarding Contact** | *(Email / Slack handle)*                           |
 
 ---
 
@@ -28,18 +28,18 @@ Copy this template to create your partner-specific tracking file (e.g., `PA3_Sce
 
 ## 🏁 Phase 2: Interoperability Test Bed (ITB) & CTS Testing
 
-| Check | Wallet | Requirement            | Test Case       | Status                               | Evidence / Notes   |
-|:------|:-------|:-----------------------|:----------------|:-------------------------------------|:-------------------|
-| 2.1   |        | **ITB Portal Account** |                 | ⚪ Not Started / 🟢 Complete          | Username:          |
-| 2.2   | EBW    | **CS-Basic**           | ex  VCI-006     | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.3   | EBW    | **CS-Basic**           | ex. VP-001      | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.4*  | EUDI   | **CS-Basic**           | ex  VCI-006     | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.5*  | EUDI   | **CS-Basic**           | ex. VP-001      | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.6   | EBW    | **CS-Trust**           | ex              | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.7   | EUDI   | **CS-Trust**           | ex.             | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.8   | EUDI   | **CS-Signature**       | ex              | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.9   | EUBW   | **CS-Issuer**          | ex.             | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
-| 2.10  | EUDI   | **CS-Issuer**          | ex.             | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| Check | Wallet | Requirement            | Test Case          | Status                               | Evidence / Notes   |
+|:------|:-------|:-----------------------|:-------------------|:-------------------------------------|:-------------------|
+| 2.1   |        | **ITB Portal Account** |                    | ⚪ Not Started / 🟢 Complete          | Username:          |
+| 2.2   | EBW    | **CS-Basic**           | ex  VCI-006        | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.3   | EBW    | **CS-Basic**           | ex. VP-011, VP-013 | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.4*  | EUDI   | **CS-Basic**           | ex  VCI-006        | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.5*  | EUDI   | **CS-Basic**           | ex. VP-011, VP-013 | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.6   | EBW    | **CS-Trust**           | ex  VCI-006        | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.7   | EUDI   | **CS-Trust**           | ex. VP-011, VP-013 | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.8   | EUDI   | **CS-Signature**       | ex                 | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.9   | EUBW   | **CS-Issuer**          | ex. Test Case 001  | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
+| 2.10  | EUDI   | **CS-Issuer**          | ex. Test Case 002  | ⚪ Not Started / 🟢 Complete          | Execution Date:    |
 
 *Adapt this checklist to your use case:*
 - Remove any wallet type that is not required.

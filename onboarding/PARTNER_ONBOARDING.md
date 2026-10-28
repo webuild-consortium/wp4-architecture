@@ -155,47 +155,97 @@ TODO FC multiply with the attestations that you want to issued
 3. Select **"Base Protocols"**.
 4. Execute the tests specified in each block one-by-one according to your use case definition (if required).
 
-#### A. CS-Basic (Mandatory to run the MVP)
-##### 1. WE BUILD CTS - CS-01 Issuance
-Verify if the wallet can successfully receive credentials/attestations (without any trust check)
-* *Test Case:* 
-  * minimum one TestCase need to be specified   
-    * ex in `PA3.Scenario1` the `VCI-006` (Pre-authorized code flow - SD-JWT - X509 without BWUA).
-  * Note: Key Attestation (KA) is required.*
 
-##### 2. WE BUILD CTS - CS-02 Presentation
-Verify if the wallet can successfully present requested claims to a Verifier(without any trust check)
-* *Test Case:*
-    * minimum one TestCase need to be specified
-      * ex, in `PA3.Scenario1` run `VP-001` (DCQL-based Verifiable Presentation request for `urn:eu.europa.ec.eudi:pid:1` with `family_name` claim).
-* *Execution Flow:*
-    1. Retrieve the `openid4vp` request.
+#### 4.1. CS-Basic (Mandatory to run the MVP)
+
+##### 4.1.1. WE BUILD CTS - CS-01 Issuance
+Verify if the wallet can successfully receive credentials/attestations (without any trust check).
+* **Test Case:** *At least one test case must be specified.*
+    * *Example:* `Test Case VCI-006 [Wallet SUT]: WE BUILD - Pre-authorized code flow - SD-JWT - X509`
+    * *Note: Key Attestation (KA) is required.*
+* **Execution Flow:**
+    1. Retrieve the `openid4vci` request (via QR Code or Link).
+    2. Review the offer and accept it.
+    3. Check and log the transaction status.
+
+##### 4.1.2. WE BUILD CTS - CS-02 Presentation
+Verify if the wallet can successfully present requested claims to a Verifier (without any trust check).
+* **Test Case:** *At least one test case must be specified.*
+    * *Examples:*
+        * `Test Case VP-011: CS-02 hash presentation invoked with OpenID4VP [Wallet SUT]`
+        * `Test Case VP-013: CS-02 hash presentation invoked with haip-vp [Wallet SUT]`
+* **Execution Flow:**
+    1. Retrieve the `openid4vp` request (via QR Code or Link).
     2. Present the requested credential.
     3. Check and log the transaction status.
-* > documented in the usecase_tracklist
-
-#### B. CS-Trust (Use-Case Dependent)
-* **Mobile Wallet Validation:** Coverage WBCS 001/002/004 (includes optional WUA). Runs `VCI-006` (with Wallet Instance Attestation headers) and `VP-001`.
-* **Business Wallet Validation:** ⌛ todopoooooo
-
-#### C. CS-Signature (Use-Case Dependent)
-* **QES via QTSP:** Validate whether the wallet can present PID, download QES, and sign the document hash.
-
-#### D. CS-Issuer (Use-Case Dependent)
-* **Issuance Triggering:** Validate whether the entity can successfully trigger EAA issuance.
-
-| Wallet Type | Test Baseline | Status | Evidence / Notes |
-|:------------|:---|:---|:---|
-| **EBW**     | CS-Basic | ⚪ Not Started | |
-| **EUDI**    | CS-Basic | ⚪ Not Started | |
-| **EBW**     | CS-Trust (Optional) | ⚪ Not Started | |
-| **EUDI**    | CS-Trust (Optional) | ⚪ Not Started | |
-| **EUDI**    | CS-Signature (Optional) | ⚪ Not Started | |
-| **EBW**     | CS-Issuer (Optional) | ⚪ Not Started | |
-| **EUDI**    | CS-Issuer (Optional) | ⚪ Not Started | |
+* *Note: Document this in the usecase_tracklist.*
 
 ---
 
+#### 4.2. WE BUILD CTS - Trust Framework Integration (Use-Case Dependent)
+
+##### 4.2.1. TrustFramework - Issuance
+Verify if the wallet can successfully receive credentials/attestations with WEBUILD trust.
+* **Test Case:** *At least one test case must be specified.*
+    * *Example:* `Test Case VCI-006 [Wallet SUT]: WE BUILD - Pre-authorized code flow - SD-JWT - X509`
+* **Execution Flow:**
+    1. Retrieve the `openid4vci` request (via QR Code or Link).
+    2. Review the offer and accept it.
+    3. Check and log the transaction status.
+
+##### 4.2.2. TrustFramework - Presentation
+Verify if the wallet can successfully present requested claims to a Verifier with WEBUILD Trust Registry.
+* **Test Case:** *At least one test case must be specified.*
+    * *Examples:*
+        * `Test Case VP-011: CS-02 hash presentation invoked with OpenID4VP [Wallet SUT]`
+        * `Test Case VP-013: CS-02 hash presentation invoked with haip-vp [Wallet SUT]`
+* **Execution Flow:**
+    1. Retrieve the `openid4vp` request (via QR Code or Link).
+    2. Present the requested credential.
+    3. Check and log the transaction status.
+
+---
+
+#### 4.3. CS-Signature (If required by Use Case)
+* **QES via QTSP:** Validate whether the wallet can present PID, download QES, and sign the document hash.
+
+---
+
+#### 4.4. CS-Issuer: WE BUILD Relying Parties Conformance Test Suite (If required by Use Case)
+
+##### 4.4.1. CS-Issuer - Issuance
+Verify if your component can successfully issue:
+* **Test Case:** `Test Case 001 [Issuer SUT]:: WE BUILD Issuer VCI 1.0`
+* **Execution Flow:**
+    1. Retrieve the `openid4vci` from your wallet instance.
+    2. Paste it in the next step.
+    3. Check and log the transaction status.
+
+##### 4.4.2. CS-Issuer - Verification
+Verify if your component can successfully verify:
+* **Test Case:** `Test Case 002 [Verifier SUT]:: WE BUILD Issuer VP 1.0`
+* **Execution Flow:**
+    * *Prerequisite:* Step **4.4.1 (CS-Issuer - Issuance)** must be executed successfully before running verification.
+    1. Retrieve the `openid4vp` from your wallet instance.
+    2. Paste it in the next step.
+    3. Check and log the transaction status.
+
+---
+
+### Conformance Baseline Summary Checklist
+
+| Wallet Type | Test Baseline | Status | Evidence / Notes |
+|:---|:---|:---|:---|
+| **EBW** | CS-Basic | ⚪ Not Started | |
+| **EUDI** | CS-Basic | ⚪ Not Started | |
+| **EBW** | CS-Trust (Optional) | ⚪ Not Started | |
+| **EUDI** | CS-Trust (Optional) | ⚪ Not Started | |
+| **EUDI** | CS-Signature (Optional) | ⚪ Not Started | |
+| **EBW** | CS-Issuer (Optional) | ⚪ Not Started | |
+| **EUDI** | CS-Issuer (Optional) | ⚪ Not Started | |
+
+*Note: In order to start the MVP, CS-Basic is mandatory. Depending on the use case, additional CS types may be required (please check your specific use case).*
+----
 
 ### Step 5: Environment Setup & Credential Provisioning
 
@@ -272,30 +322,51 @@ Verify if the wallet can successfully present requested claims to a Verifier(wit
 3. **Trigger Issuance:** Start the issuer process, input the prepared metadata, and copy the generated Credential Offer.
 4. **Accept in Wallet:** Paste the offer into your company wallet, review, and confirm acceptance.
 
+#### 5.4. Company Self-Attested Attestation (Self-EAA)
+
+##### 5.4.1 How to Create It
+
+| Name | Rulebooks |
+|:---|:---|
+| **CompanyInfo** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) |
+| **ContactPerson** | [rb-contact-person](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-contact-person) |
+| **VAT** | [rb-vat](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-vat) |
+| **Owner** | [rb-owner](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-owner) |
+| **Control** | [rb-control](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-control) |
+| **UBO** | [rb-ubo](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-ubo) |
+| **AuthorisedSignatories** | [rb-authorised-signatories](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-authorised-signatories) |
+
+##### 5.4.2 How to Obtain It for the Legal Entity (Company)
+1. **Open Wallet & Load Schemas:** Open your company wallet and ensure the rulebook schemas are imported.
+2. **Prepare Data:** Gather the mandatory data fields for each attestation (template/demo data can be extracted from the rulebook definitions).
+3. **Trigger Issuance:** Start the issuer process, input the prepared metadata, and copy the generated Credential Offer.
+4. **Accept in Wallet:** Paste the offer into your company wallet, review, and confirm acceptance.
+
 ##### 5.4.3 🛠️ Prepare Proof Request (RP)
 
 1. **Import Schemas:** Import the schemas into your EBW Company Wallet.
 
-   | Name                      | Schema File                         |
-   |:--------------------------|:------------------------------------|
-   | **CompanyInfo**           | `CompanyInfo.schema.json`           |
-   | **ContactPerson**         | `ContactPerson.schema.json`         |
-   | **VAT**                   | `VAT.schema.json`                   |
-   | **Owner**                 | `Owner.schema.json`                 |
-   | **Control**               | `Control.schema.json`               |
-   | **UBO**                   | `UBO.schema.json`                   |
-   | **AuthorisedSignatories** | `AuthorisedSignatories.schema.json` |
+| Name                      | Schema File                         |
+|:--------------------------|:------------------------------------|
+| **CompanyInfo**           | `CompanyInfo.schema.json`           |
+| **ContactPerson**         | `ContactPerson.schema.json`         |
+| **VAT**                   | `VAT.schema.json`                   |
+| **Owner**                 | `Owner.schema.json`                 |
+| **Control**               | `Control.schema.json`               |
+| **UBO**                   | `UBO.schema.json`                   |
+| **AuthorisedSignatories** | `AuthorisedSignatories.schema.json` |
 
 2. **Build Request:** Construct the proof request by combining the required attributes, or use the provided DCQL queries:
 
-   | Name                      | DCQL Query File                            |
-   |:--------------------------|:-------------------------------------------|
-   | **CompanyInfo**           | `CompanyInfo.dcql.standard.json`           |
-   | **ContactPerson**         | `ContactPerson.dcql.standard.json`         |
-   | **VAT**                   | `VAT.dcql.standard.json`                   |
-   | **Owner**                 | `Owner.dcql.standard.json`                 |
-   | **Control**               | `Control.dcql.standard.json`               |
-   | **UBO**                   | `UBO.dcql.standard.json`                   |
-   | **AuthorisedSignatories** | `AuthorisedSignatories.dcql.standard.json` |
+| Name                      | DCQL Query File                            |
+|:--------------------------|:-------------------------------------------|
+| **CompanyInfo**           | `CompanyInfo.dcql.standard.json`           |
+| **ContactPerson**         | `ContactPerson.dcql.standard.json`         |
+| **VAT**                   | `VAT.dcql.standard.json`                   |
+| **Owner**                 | `Owner.dcql.standard.json`                 |
+| **Control**               | `Control.dcql.standard.json`               |
+| **UBO**                   | `UBO.dcql.standard.json`                   |
+| **AuthorisedSignatories** | `AuthorisedSignatories.dcql.standard.json` |
 
+*Note: Check your use case (predefined combined DCQL queries are already available - use case specific).*
 ......
