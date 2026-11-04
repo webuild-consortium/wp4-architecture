@@ -1,7 +1,7 @@
 # WE BUILD - Pre-flight Conformance Specification CS-018: Baseline Trust Validation
 
 Version 0.1 / Pre-flight Draft
-Date: 26 October 2026
+Date: 4 November 2026
 
 **Authors / Contributors**: WP4 Architecture / Trust Infrastructure Group
 
@@ -14,6 +14,7 @@ Date: 26 October 2026
 * Martin Micuch, IDUnion
 * Stefan Kauhaus, Visa
 * Thodoris Papadopoulos, GRNET
+* Michal Stava, Aricoma
 
 Table Of Contents
 
@@ -149,13 +150,17 @@ flowchart TB
     RC --> RCC["WRPRCs<br/>WRPRC Status List Tokens"]
     PUB --> PUBC["PuB-EAA signing certificates"]
     QTL --> QC["QEAA signing certificates"]
-    RB["Rulebook of the credential type<br/>(outside the LoTL)"]
-    RB -.-> NEC["Non-qualified EAA signing certificates"]
+    RB["Rulebook of the credential type<br/>(defines the mechanism)"]
+    EAL["Non-qualified EAA Trusted Lists (TS 119 612)"]
+    RB -.-> EAL
+    LOTL -.-> EAL
+    EAL -.-> NEC["Non-qualified EAA signing certificates"]
+    RB -.-> NEC
 ```
 
-In the European Union deployment, Member States notify the trusted entities to the Commission [34], and the Commission publishes the LoTE locations and their signing certificates in the Official Journal [14] TLPub_01, TLPub_07. In WE BUILD, the WP4 Trust Group publishes the LoTL in the trust group repository and onboards each Trusted List Provider [11], [13]. A Validator that is configured with the WE BUILD LoTL MUST NOT be configured to accept trust anchors from other sources for the checks in this specification, except the trust anchors of non-qualified EAA Providers (see LST-TV-01).
+In the European Union deployment, Member States notify the trusted entities to the Commission [34], and the Commission publishes the LoTE locations and their signing certificates in the Official Journal [14] TLPub_01, TLPub_07. In WE BUILD, the WP4 Trust Group publishes the LoTL in the trust group repository and onboards each Trusted List Provider [11], [13]. A Validator that is configured with the WE BUILD LoTL MUST NOT be configured to accept trust anchors from other sources for the checks in this specification, except the trust anchors of a non-qualified EAA whose Rulebook defines a mechanism outside the LoTL (see LST-TV-01).
 
-WE BUILD has no trusted list for non-qualified EAA Providers. This follows the ARF, which uses Trusted Lists for QEAA Providers, and LoTEs for PID Providers, PuB-EAA Providers, Access Certificate Authorities and Providers of registration certificates ([14] OIA_15b, ISSU_10b). The trust anchors of a non-qualified EAA come from the mechanism in the Rulebook of its credential type ([14] OIA_15). A Wallet Unit validates a non-qualified EAA only where it has those trust anchors ([14] ISSU_10).
+The ARF uses Trusted Lists for QEAA Providers, and LoTEs for PID Providers, PuB-EAA Providers, Access Certificate Authorities and Providers of registration certificates ([14] OIA_15b, ISSU_10b). For a non-qualified EAA, the Rulebook of its credential type defines the mechanism for the trust anchors ([14] OIA_15, ARB_26). One mechanism is a TS 119 612 Trusted List with service type `Svctype/EAA` that the LoTL points to ([11] §7.3.1). The WP4 Trust Group adds such a list on request [38]. A Wallet Unit validates a non-qualified EAA only where it has those trust anchors ([14] ISSU_10).
 
 ## 5.2 What Is Validated Against Which List
 
@@ -167,7 +172,7 @@ WE BUILD has no trusted list for non-qualified EAA Providers. This follows the A
 | PID and EBWOID issued as PID | RP, WU | PID Provider LoTE | `PID/Issuance` | Token Status List |
 | QEAA | RP, WU | QEAA Trusted List | `Svctype/EAA/Q` | Token Status List |
 | PuB-EAA | RP, WU | PuB-EAA Provider LoTE | `PubEAA/Issuance` | Token Status List |
-| Non-qualified EAA | RP; WU where it has the trust anchors | The mechanism in the Rulebook of the credential type ([14] OIA_15) | as defined by the Rulebook | Token Status List, where the Rulebook requires it (CS-010 [6]) |
+| Non-qualified EAA | RP; WU where it has the trust anchors | The mechanism in the Rulebook of the credential type, for example a non-qualified EAA Trusted List ([14] OIA_15, ARB_26) | `Svctype/EAA` for a Trusted List; otherwise as defined by the Rulebook | Token Status List, where the Rulebook requires it (CS-010 [6]) |
 | WIA, KA | Credential Issuer | Wallet Provider LoTE | `WalletSolution/Issuance` | Token Status List (CS-004 [3]) |
 | Status List Token | RP, WU, Credential Issuer | As for the Referenced Token signer (§7.6) | as for the Referenced Token, or the matching `.../Revocation` service | not applicable |
 
@@ -215,7 +220,7 @@ sequenceDiagram
 1. The Relying Party sends a signed Request Object as defined in CS-002 [2] or CS-007 [5]. The `x5c` header carries the WRPAC and the intermediate certificates, but not the trust anchor.
 2. The Wallet Unit checks that the `client_id` is the `x509_hash` of the WRPAC and validates the Request Object signature with the WRPAC public key.
 3. The Wallet Unit validates the WRPAC path to a trust anchor of the WRPAC Provider LoTE, checks its revocation status and, where Certificate Transparency logs are available, its Signed Certificate Timestamp.
-4. Where `verifier_info` contains a WRPRC (optional\*), the Wallet Unit validates it: its signature and path to a trust anchor of the WRPRC Provider LoTE, its validity period, its revocation status and its binding to the WRPAC.
+4. Where `verifier_info` contains a WRPRC (optional\*), the Wallet Unit validates it: its signature and path to a trust anchor of the WRPRC Provider LoTE, its validity period, its revocation status and its binding to the WRPAC. A request without a WRPRC does not fail this step, and the Wallet Unit continues at step 6 (§7.3).
 5. Where a WRPRC is present, the Wallet Unit compares the requested credentials and claims with it.
 6. The Wallet Unit shows the trade name from the WRPAC, and any warning, before it asks the User to approve.
 
@@ -238,12 +243,12 @@ Participating actors: Credential Issuer, Wallet Unit.
 Participating actors: Wallet Unit, Relying Party, Status Provider.
 
 1. The Relying Party receives the presentation as defined in CS-002 [2] or CS-007 [5].
-2. The Relying Party determines the expected Provider category (PID, QEAA, PuB-EAA or non-qualified EAA) from the credential type and its Rulebook.
+2. The Relying Party determines the expected Provider category (PID, QEAA, PuB-EAA or non-qualified EAA) from the credential type and its Rulebook. This specification requires no check against a catalogue of attestations during a transaction.
 3. The Relying Party takes the signing certificate from the `x5c` header (SD-JWT VC) or the `x5chain` header of `issuerAuth` (mdoc), validates the credential signature, and validates the path to a trust anchor for that category (§5.2). For a non-qualified EAA, the trust anchors come from the Rulebook of the credential type.
 4. The Relying Party checks the certificate content that identifies the category (§8.4).
 5. Where the credential has a `status` claim, the Relying Party obtains the Status List Token (CS-010 [6]) and validates its signer as defined in §7.6 before it reads the status.
 
-**Outcome**: a credential is accepted only when it is signed by a Provider that is listed for that category and its status is valid or has been assessed under the Relying Party's risk policy.
+**Outcome**: a credential is accepted only when its signing certificate chains to a trust anchor for that category (§5.2) and its status is valid or has been assessed under the Relying Party's risk policy.
 
 ## 6.5 Credential Issuer Validates the Wallet Unit
 
@@ -263,14 +268,14 @@ These requirements apply to every Validator.
 
 | ID | Requirement | Reference |
 |----|-------------|-----------|
-| LST-TV-01 | The Validator MUST be configured with the location of the WE BUILD LoTL and with the LoTL signer certificate (§8.1), and MUST take every trust anchor for the checks in this specification from the lists that the LoTL points to, and only from those, except the trust anchors of non-qualified EAA Providers (§5.2). | [14] RPA_04, RPRC_02a, ISSU_10b, OIA_15, OIA_15b; [25] GPR-4.0-02 |
+| LST-TV-01 | The Validator MUST be configured with the location of the WE BUILD LoTL and with the LoTL signer certificate (§8.1), and MUST take every trust anchor for the checks in this specification from the lists that the LoTL points to, and only from those, except the trust anchors of a non-qualified EAA whose Rulebook defines a mechanism outside the LoTL (§5.2). | [14] RPA_04, RPRC_02a, ISSU_10b, OIA_15, OIA_15b, ARB_26; [25] GPR-4.0-02 |
 | LST-TV-02 | The Validator MUST validate the signature of the LoTL with the configured LoTL signer certificate: compact JAdES Baseline B for the JSON LoTL, enveloped XAdES Baseline B for the XML LoTL. The Validator MUST NOT use a LoTL whose signature does not validate. | [23] clause 6.8, [24] clause 5.7.1, [25] PRO-4.1.4-07 |
 | LST-TV-03 | The Validator MUST validate the signature of each trusted list with a certificate taken from the `ServiceDigitalIdentities` of the LoTL pointer to that list, and MUST NOT use a list whose signature does not validate. | [23] clause 6.3.13, [24] clause 5.3.13 |
 | LST-TV-04 | The Validator MUST check that the list type of each trusted list (`LoTEType` or `TSLType`) is the type given for that list in §8.2, and MUST use the service entries of a list only for the checks that §5.2 assigns to that list type. | [23] Annexes D to H, [24] clause 5.3.3 |
 | LST-TV-05 | The Validator MUST NOT use a LoTL or a trusted list whose `NextUpdate` is in the past. | [23] clause 6.3.15, [24] clause 5.3.15 |
 | LST-TV-06 | The Validator MUST NOT use a trusted list that contains a critical extension that the Validator does not process. | [23] clause 6.3.17 |
 | LST-TV-07 | The Validator SHOULD cache the LoTL and the trusted lists and MUST refresh them before `NextUpdate`. The Validator SHOULD refresh them at least once every 24 hours, and MUST NOT download a list for each transaction. | [14] ISSU_10a, OIA_15a |
-| LST-TV-08 | The Validator MUST derive trust anchors only from service entries that are current: for LoTE types without service status (PID, Wallet Provider, WRPAC Provider, WRPRC Provider), an entry that is present in the current list; for the PuB-EAA Provider LoTE, an entry with status `.../PubEAAProvidersList/SvcStatus/notified`; for a TL, an entry with status `http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/granted`. | [14] GenNot_05, [23] Annexes D to H, [24] clause 5.5.4 |
+| LST-TV-08 | The Validator MUST derive trust anchors only from service entries that are current: for LoTE types without service status (PID, Wallet Provider, WRPAC Provider, WRPRC Provider), an entry that is present in the current list; for the PuB-EAA Provider LoTE, an entry with status `.../PubEAAProvidersList/SvcStatus/notified`; for a QEAA Trusted List, an entry with status `http://uri.etsi.org/TrstSvc/TrustedList/Svcstatus/granted`; for a non-qualified EAA Trusted List, an entry with status `.../Svcstatus/recognisedatnationallevel` or `.../Svcstatus/granted` (§9). | [14] GenNot_05, [23] Annexes D to H, [24] clause 5.5.4 |
 | LST-TV-09 | The Validator MUST evaluate trust at the current time. The Validator MUST NOT use historical service information to accept a certificate whose service entry is no longer current. | [23] Annexes D to G, [24] clause 5.5.5 |
 
 ## 7.2 Certificate Path Validation
@@ -290,7 +295,7 @@ These requirements apply to every Validator, for every certificate path in this 
 ## 7.3 Wallet Unit Requirements
 
 > **\* Note on the optional WRPRC:** The Wallet Unit duty to authenticate and validate the WRPRC applies only from 11 August 2028 ([33] Article 3(4) and Article 8). The ARF defers RPRC_17 at presentation, and ISSU_24a, ISSU_34a, RPRC_22a and RPRC_23 at issuance, in the same way [14]. Until that date, where the WRPRC is marked optional\*:
-> * Where no WRPRC is present, the absence is not a failure.
+> * Where no WRPRC is present, the absence is not a failure. From 11 August 2028, [14] RPRC_17 requires a warning to the User where the WRPRC is absent at presentation.
 > * Where a WRPRC is present, the Wallet Unit MUST validate it as defined in WU-TV-08 to WU-TV-14 at presentation, or in WU-TV-16 at issuance, and MUST apply the results in §7.7.
 >
 > The WRPAC requirements (WU-TV-01 to WU-TV-07 and WU-TV-15) have no such delay and apply now.
@@ -355,7 +360,7 @@ These requirements also apply to the Wallet Unit for WU-TV-17.
 | ID | Requirement | Reference |
 |----|-------------|-----------|
 | ISS-TV-04 | The Credential Issuer MUST include its signing certificate and the intermediate certificates, but not the trust anchor, in the `x5c` header of each SD-JWT VC and in the `x5chain` header of each mdoc `issuerAuth`. The signing certificate MUST NOT be self-signed. | [17] clause 6.1.1, [27] |
-| ISS-TV-05 | The Credential Issuer MUST use a signing certificate that chains to a trust anchor of its own entry in the list for its category (§5.2), and whose content matches §8.4. | [14] PPNot_03, [12], [27] |
+| ISS-TV-05 | The Credential Issuer MUST use a signing certificate that chains to a trust anchor of its own entry in the list for its category (§5.2) or, for a non-qualified EAA, of the mechanism in the Rulebook of the credential type, and whose content matches §8.4. | [14] PPNot_03, [12], [27] |
 | ISS-TV-06 | The Credential Issuer MUST ensure that each Status List Token for its credentials includes an `x5c` header whose first certificate satisfies SL-TV-02. | [14] PPNot_03a, [17] clause 6.1 |
 | ISS-TV-07 | The Credential Issuer MUST sign its metadata with the key of its WRPAC, and MUST include the WRPAC chain, without the trust anchor, in the `x5c` header. | [14] ISSU_22, ISSU_32, [17] clause 4.1, [31] ISS-MDATA-ACC_CERT-4.2.2-01 to -03 |
 | ISS-TV-08 | Where the Credential Issuer includes a WRPRC in `issuer_info` in its metadata, the WRPRC MUST contain `provides_attestations`, with one entry (`format`, `meta`) for each credential type that the Credential Issuer issues. This makes the RECOMMENDED fields of [28] GEN-5.2.4-05 mandatory in WE BUILD. | [14] RPRC_23, ISSU_24a, ISSU_34a, [28] GEN-5.2.4-05 Table 8, [31] clause 4.2.3 |
@@ -371,7 +376,7 @@ The Token Status List [18] does not require the Status List Token to be signed b
 | SL-TV-03 | The Validator MUST validate the Status List Token signing certificate path as defined in §7.2. | [21] |
 | SL-TV-04 | Where SL-TV-01 to SL-TV-03 fail, the Validator MUST treat the status of the Referenced Token as unknown, and MUST NOT treat it as valid. | [6] RP-RV-05, [14] VCR_14 |
 | SL-TV-05 | An Issuer that delegates the Status Issuer role (CS-010 [6] §4) MUST ensure that the Status Issuer signs with a certificate that satisfies SL-TV-02 for the Issuer's Referenced Tokens. | [6], [18] clause 13.5 |
-| SL-TV-06 | A QEAA Provider or a non-qualified EAA Provider MUST sign its Status List Tokens with the key of the signing certificate of the attestations they reference (condition (a) of SL-TV-02), because the TS 119 612 Trusted List has no revocation service entry for QEAA Providers, and WE BUILD has no trusted list for non-qualified EAA Providers (§5.1). | [12], [27] EAA-6.2-01 |
+| SL-TV-06 | A QEAA Provider or a non-qualified EAA Provider MUST sign its Status List Tokens with the key of the signing certificate of the attestations they reference (condition (a) of SL-TV-02), because a TS 119 612 Trusted List has no revocation service entry for these Providers, and another mechanism in a Rulebook may have none either (§5.1). | [12], [27] EAA-6.2-01 |
 
 > **Note on SL-TV-02:** No single source defines this rule. It combines the following:
 > * Condition (a) follows the recommendation of the Token Status List for an Issuer that is also the Status Issuer ([18] clause 11.3: "the same key that is embedded into the Referenced Token may be used"), and the WP4 Trust Group rule for EAA and QEAA Providers [12], which SL-TV-06 makes mandatory for them.
@@ -425,8 +430,9 @@ The LoTL signer certificate is published by the WP4 Trust Group with the LoTL [1
 | WRPRC Provider LoTE | `http://uri.etsi.org/19602/LoTEType/EUWRPRCProvidersList` | [23] Annex G | `http://uri.etsi.org/19602/SvcType/WRPRC/Issuance`, `.../WRPRC/Revocation` | none |
 | PuB-EAA Provider LoTE | `http://uri.etsi.org/19602/LoTEType/EUPubEAAProvidersList` | [23] Annex H | `http://uri.etsi.org/19602/SvcType/PubEAA/Issuance`, `.../PubEAA/Revocation` | `notified`, `withdrawn` |
 | QEAA Trusted List | `http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric` | [24] | `http://uri.etsi.org/TrstSvc/Svctype/EAA/Q` | `granted`, `withdrawn` |
+| Non-qualified EAA Trusted List (where a Rulebook uses it) | `http://uri.etsi.org/TrstSvc/TrustedList/TSLType/EUgeneric` | [24], [11] §7.3.1 | `http://uri.etsi.org/TrstSvc/Svctype/EAA` | `recognisedatnationallevel`, `deprecatedatnationallevel`; `granted` also occurs (§9) |
 
-The QEAA Trusted List has the generic list type. The Validator takes QEAA trust anchors only from entries with service type `Svctype/EAA/Q` (CRT-TV-01). WE BUILD has no trusted list for non-qualified EAA Providers (§5.1).
+The QEAA Trusted List and the non-qualified EAA Trusted Lists have the generic list type. The Validator takes QEAA trust anchors only from entries with service type `Svctype/EAA/Q`, and non-qualified EAA trust anchors only from entries with service type `Svctype/EAA` (CRT-TV-01). The LoTL points to more than one non-qualified EAA Trusted List. The Rulebook of the credential type defines which list applies (§5.1).
 
 ## 8.3 Where Certificates Are Carried
 
@@ -576,7 +582,7 @@ In line with the pre-flight process [7], the following topics are deliberately l
 
 1. **Relation to the Trust Group documents.** Issue #189 proposed a CS for trust evaluation and was closed with the decision that the Trust Group documents would cover it. This specification profiles those documents [9], [10], [11], [12] for testing and does not replace them. Feedback is sought from the Trust Group on the split between its documents and this CS.
 2. **LoTE consumption procedure.** ETSI TS 119 605 (procedures for LoTEs) is not published. LST-TV-01 to LST-TV-09 are a minimum WE BUILD profile until it is.
-3. **Non-qualified EAA trust anchors.** WE BUILD has no trusted list for non-qualified EAA Providers. The ARF leaves their trust anchors to the Rulebook of the credential type ([14] OIA_15, ISSU_10), so this specification does not define one anchor source for them. Report which mechanism each Rulebook uses, and whether Wallet Units and Relying Parties can obtain the trust anchors.
+3. **Non-qualified EAA trust anchors.** The ARF leaves their trust anchors to the Rulebook of the credential type ([14] OIA_15, ISSU_10, ARB_26), so this specification does not define one anchor source for them. The LoTL points to non-qualified EAA Trusted Lists [38], but not all Rulebooks define a mechanism yet, and some use an EAA Provider chaining model, which is out of scope (§2). ETSI TS 119 612 [24] clause 5.5.4 requires `recognisedatnationallevel` for `Svctype/EAA`, but most entries in these lists use `granted`, so LST-TV-08 accepts both for now. Report which mechanism each Rulebook uses, and whether Wallet Units and Relying Parties can obtain the trust anchors.
 4. **EBWOID Provider list.** The trust group maps the `ebwoid-provider` category to the `EURegistrarsAndRegistersList` type and the `SvcType/Register` service type. This specification treats an EBWOID as a PID, QEAA or PuB-EAA according to its Provider's category. Report which list an EBWOID signing certificate chains to in practice.
 5. **Status List Token signer.** SL-TV-02 is a WE BUILD rule. The Token Status List defines an extended key usage for delegated status signing ([18] clause 10), but its object identifier is not yet assigned. Report whether delegated Status Issuers can meet SL-TV-02, and whether the `.../Revocation` service entries are populated.
 6. **Token Status List revision.** CS-010 [6] pins draft-20. Draft-21 (August 2026) is in the RFC Editor queue. HAIP 1.0 [17] references draft-14. Alignment of the pinned revision is left to CS-010.
@@ -614,7 +620,7 @@ Conformance testing for this pre-flight specification will be defined as part of
 | [11] | WE BUILD WP4 Trust Group (2026) ETSI Trusted Lists Implementation Profile. Available at: https://github.com/webuild-consortium/wp4-trust-group/blob/040e97f363db1645e1379444b08d440bc2cf5db1/task3-x509-pki-etsi/etsi_trusted_lists_implementation_profile.md (Accessed: 16 October 2026). |
 | [12] | WE BUILD WP4 Trust Group (2026) Certificate Profiles for PID, Wallet, EAA, QEAA and PuB-EAA Providers (ETSI TS 119 412-6). Available at: https://github.com/webuild-consortium/wp4-trust-group/blob/040e97f363db1645e1379444b08d440bc2cf5db1/task3-x509-pki-etsi/certificate-profiles-pid-wallet-eaa-qeaa-psbeaa-providers-etsi-ts-119-412-6.md (Accessed: 16 October 2026). |
 | [13] | WE BUILD WP4 Trust Group (2026) LoTL Automation and TL Integration, and the published WE BUILD List of Trusted Lists. Available at: https://github.com/webuild-consortium/wp4-trust-group/blob/040e97f363db1645e1379444b08d440bc2cf5db1/task4-trust-infrastructure-api/lotl-automation-and-tl-integration.md (Accessed: 16 October 2026). |
-| [14] | European Commission (2026) EUDI Wallet Architecture and Reference Framework v3.0.0, Annex 2: High-Level Requirements (Topics 1, 6, 7, 10, 27, 31, 44, 55). Available at: https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/3.0.0/annexes/annex-2/annex-2.02-high-level-requirements-by-topic/ (Accessed: 16 October 2026). Requirements are cited by their legacy identifiers. |
+| [14] | European Commission (2026) EUDI Wallet Architecture and Reference Framework v3.0.0, Annex 2: High-Level Requirements (Topics 1, 6, 7, 10, 12, 27, 31, 44, 55). Available at: https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/3.0.0/annexes/annex-2/annex-2.02-high-level-requirements-by-topic/ (Accessed: 16 October 2026). Requirements are cited by their legacy identifiers. |
 | [15] | European Commission (2026) EUDI Wallet Architecture and Reference Framework v3.0.0, Chapter 6: Trust Model, sections 6.6.2 and 6.6.3. Available at: https://eu-digital-identity-wallet.github.io/eudi-doc-architecture-and-reference-framework/3.0.0/main/06-trust-model/ (Accessed: 16 October 2026). |
 | [16] | OpenID Foundation (2025) OpenID for Verifiable Presentations 1.0, 9 July. Available at: https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html (Accessed: 16 October 2026). |
 | [17] | OpenID Foundation (2025) OpenID4VC High Assurance Interoperability Profile (HAIP) 1.0. Available at: https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-final.html (Accessed: 16 October 2026). |
@@ -638,3 +644,4 @@ Conformance testing for this pre-flight specification will be defined as part of
 | [35] | IETF (2021) RFC 9162: Certificate Transparency Version 2.0. Available at: https://www.rfc-editor.org/rfc/rfc9162 (Accessed: 16 October 2026). |
 | [36] | WE BUILD (2026) Conformance Specification CS-006: Issuance of Relying Party Access and Registration Certificates (draft, pull request #287). Available at: https://github.com/webuild-consortium/wp4-architecture/blob/182842d04584cf7523c126fa7bd16dae0931a169/conformance-specs/cs-06-issuance-of-relying-party-access-and-registration-certificates.md (Accessed: 16 October 2026). Pull request #287 at commit 182842d. |
 | [37] | WE BUILD (2026) Pre-flight Conformance Specification CS-013: Relying Party Intermediaries. Available at: [cs-13-intermediary-services-preflight.md](cs-13-intermediary-services-preflight.md) |
+| [38] | WE BUILD WP4 Trust Group (2026) Onboarding to the Trusted Lists. Available at: https://github.com/webuild-consortium/wp4-trust-group/blob/040e97f363db1645e1379444b08d440bc2cf5db1/task1-use-cases/subtask1-1-onboarding/trusted-lists-onboarding.md (Accessed: 4 November 2026). |
