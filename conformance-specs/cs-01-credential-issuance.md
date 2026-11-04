@@ -404,7 +404,7 @@ Issuers that support the Pre-Authorised Code Flow (section 7.1) **MUST** additio
 2. Ensure that each `pre-authorized_code` is short-lived and single-use.
 3. Include a `tx_code` object in every Credential Offer that uses the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type, as the replay mitigation required by OpenID4VCI [1] section 13.6.1, except where all of the conditions in item 5 are met (NOTES **CS01_03** and **CS01_04**).
 4. Where a `tx_code` object is included, deliver the Transaction Code to the Holder via a channel separate from the Credential Offer, for example, by text message or email (OpenID4VCI [1], section 4.1.1).
-5. Omit the `tx_code` object only where:
+5. Where a Credential Offer that uses the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type does not include a `tx_code` object, ensure that all of the following apply:
     * the Credential Offer is delivered same-device, within a session in which the Issuer has authenticated the Holder (for example, an `openid-credential-offer://` link opened from the Issuer's authenticated app or web session), and is never delivered as a QR code; and
     * the `pre-authorized_code` has a lifetime of no more than 5 minutes.
 
