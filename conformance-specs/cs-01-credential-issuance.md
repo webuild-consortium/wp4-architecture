@@ -470,7 +470,7 @@ In the Pre-Authorised Code Flow, Issuers **MUST** additionally:
 
 1. Reject Token Requests that use the `urn:ietf:params:oauth:grant-type:pre-authorized_code` grant type without client authentication with a valid WIA. Anonymous access (`pre-authorized_grant_anonymous_access_supported`) MUST NOT be offered.
 2. Verify that the `pre-authorized_code` was issued by their AS, has not expired and has not been used before, returning the `invalid_grant` error otherwise (OpenID4VCI [1], Token Error Response).
-3. Verify the Transaction Code value presented in the `tx_code` parameter, returning `invalid_grant` if the value is wrong, and `invalid_request` if a Transaction Code is provided but not expected, or expected but not provided.
+3. Verify the `tx_code` parameter against the Credential Offer, returning `invalid_grant` if the Transaction Code value is wrong, and `invalid_request` if a Transaction Code is provided but not expected, or expected but not provided.
 4. Where a Transaction Code is required, limit the number of failed Transaction Code attempts for a given `pre-authorized_code` and invalidate that code once the limit is exceeded (OpenID4VCI [1], section 13.6.1).
 
 In the Pre-Authorised Code Flow, Issuers **SHOULD**:
