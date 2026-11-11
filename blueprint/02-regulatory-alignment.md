@@ -78,6 +78,8 @@ The EBW framework complements the EUDI framework by addressing the needs of econ
 
 The proposal supports the management and use of EAA, including owner identification data with selective disclosure. It defines requirements for authenticating owners and authorised users through (Q)EAAs and enables links between EAAs and other attestations. Access to EAAs by relying parties requires proper authorisation.
 
+Within WeBuild Economic operators are allowed to make EAA's (POA) sealed with their own EBW to declare attributes within their own scope. Economic operators can for instance issue authorisation EAA's (PoA) to natural persons (for instance employees) and other economic operators. An other example is where an EO declares, in an EAA, that someone is an employee. Relying parties can accept these POA's as valid proof. Self issued EAA's are limited to those cases where (local) law doesn't prescribe a specific registration like a business register, requires the involvement of a notary or a service where an relying party requires a QEAA. 
+
 The framework relies on existing eIDAS trust services such as qualified electronic signatures, seals, timestamps and registered delivery services.
 
 The proposal also introduces a European Digital Directory maintained by the Commission. The directory functions as a trusted internal system where EBW providers notify relevant service information and where digital addressing can be supported. Detailed requirements will be defined in future implementing acts.
