@@ -1,10 +1,11 @@
 # WE BUILD - Conformance Specification:  Credential Issuance
 
-Version 1.4
-Date: 12 October 2026
+Version 1.5
+Date: 4 November 2026
 
 **Revision history**
 
+* Version 1.5 (4 November 2026): Made signed Credential Issuer metadata mandatory, to align with CS-018.
 * Version 1.4 (12 October 2026): Aligned with TS-03 v1.5.2, resolving issue [#330](https://github.com/webuild-consortium/wp4-architecture/issues/330).
 * Version 1.3 (28 August 2026): Clarified that re-issuance and the Deferred Credential Endpoint are OPTIONAL for Issuers, resolving issue [#297](https://github.com/webuild-consortium/wp4-architecture/issues/297).
 * Version 1.2 (15 July 2026): Added the re-issuance chapter, resolving issue [#244](https://github.com/webuild-consortium/wp4-architecture/issues/244).
@@ -529,11 +530,13 @@ Issuers **MUST** publish metadata that includes:
     * all supported credential types, as entries in `credential_configurations_supported`
     * for each entry, the `scope` value that the Wallet uses in authorisation requests
 3. `grant_types_supported` in the Authorisation Server metadata, listing `authorization_code` and, where the Issuer supports the Pre-Authorised Code Flow (section 7.1), `urn:ietf:params:oauth:grant-type:pre-authorized_code`; when this parameter is published it replaces the default values defined for OAuth Authorisation Server Metadata, so every supported grant type MUST be listed. The `pre-authorized_grant_anonymous_access_supported` parameter MUST NOT be set to `true`, since client authentication with the WIA is required (section 7.4).
+4. Signed Credential Issuer metadata, in addition to the unsigned form that OpenID4VCI [1] section 12.2.2 requires. The Issuer returns it with the media type `application/jwt`, as defined in OpenID4VCI [1] section 12.2.3. The signing certificate is the access certificate (WRPAC) of the Issuer. The `x5c` JOSE header contains that certificate and the intermediate certificates, but not the trust anchor (ETSI TS 119 472-3 [10] clauses 4.2.1 and 4.2.2).
 
 Wallets **MUST**:
 
 1. Retrieve and process Issuer metadata, including `credential_configurations_supported` and the `scope` value of each entry.
 2. Resolve the `credential_configuration_ids` values of a Credential Offer against that metadata, and use the resolved `scope` values when constructing authorisation requests.
+3. Request the signed Credential Issuer metadata with the `Accept: application/jwt` header, validate its signature and the access certificate, and not request issuance where this validation fails. CS-018 [11] defines the checks (WU-TV-15, UP-TV-11).
 
 Issuers **MAY**:
 
@@ -754,6 +757,8 @@ The latter MUST include:
 * supported credential types
 * for each type, the associated `scope` value
 
+The Credential Issuer metadata document MUST also be available in signed form (section 7.7).
+
 WU uses these documents for dynamic configuration.
 
 # 9. Conformance
@@ -768,7 +773,7 @@ An implementation **conforms to this specification as a Wallet Provider** if it:
 An implementation **conforms to this specification as an Issuer** if it:
 
 1. Implements the Issuer requirements in Sections 6 and 7.
-2. Publishes server metadata, including type to `scope` mappings.
+2. Publishes server metadata, including type to `scope` mappings and signed Credential Issuer metadata.
 3. Provides the PAR, Token, Credential and WU invocation interfaces described in Section 8.
 4. Where it supports re-issuance, implements the Issuer re-issuance requirements in sections 6.4 and 7.8, including the Refresh Token grant at the Token Endpoint (section 8.4). Support for re-issuance is OPTIONAL for Issuers (section 6.4).
 
@@ -793,3 +798,7 @@ Profiles may define additional constraints for specific WE BUILD credential type
 [8] IETF (2023) RFC 9449: OAuth 2.0 Demonstrating Proof of Possession (DPoP). Available at: [https://www.rfc-editor.org/rfc/rfc9449](https://www.rfc-editor.org/rfc/rfc9449) (Accessed: 5 June 2026).
 
 [9] European Digital Identity Cooperation Group (2025) The European Digital Identity Wallet Architecture and Reference Framework, Discussion Paper for Topic B: Re-issuance and batch issuance of PIDs and Attestations, version 0.9, 17 February. Available at: [https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework/blob/v2.9.0/docs/discussion-topics/b-re-issuance-and-batch-issuance-of-pids-and-attestations.md](https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework/blob/v2.9.0/docs/discussion-topics/b-re-issuance-and-batch-issuance-of-pids-and-attestations.md) (Accessed: 10 July 2026).
+
+[10] ETSI (2026) ETSI TS 119 472-3 V1.1.1: Electronic Signatures and Trust Infrastructures (ESI); Profiles for Electronic Attestation of Attributes; Part 3: Profiles for issuance of EAA or PID. Available at: [https://www.etsi.org/deliver/etsi_ts/119400_119499/11947203/01.01.01_60/ts_11947203v010101p.pdf](https://www.etsi.org/deliver/etsi_ts/119400_119499/11947203/01.01.01_60/ts_11947203v010101p.pdf) (Accessed: 4 November 2026).
+
+[11] WE BUILD (2026) Pre-flight Conformance Specification CS-018: Baseline Trust Validation. Available at: [cs-18-baseline-trust-validation.md](cs-18-baseline-trust-validation.md)
