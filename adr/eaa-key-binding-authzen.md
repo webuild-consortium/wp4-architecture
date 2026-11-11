@@ -37,13 +37,13 @@ An EAA issuer's key binding to its EBWOID MAY be verified by the validator calli
 
 ```mermaid
 sequenceDiagram
-    participant Issuer as EAA Issuer (EBW)
+    participant Holder as EAA Holder (EBW)
     participant Validator as Validator (EBW)
     participant Directory as EU Directory<br/>(BRIS register routing, straw-man)
     participant LoTE as MS Trust Register LoTE<br/>(ETSI TS 119 612/602/615)
     participant PDP as MS Trust Register<br/>PDP (draft-johansson-authzen-trust)
 
-    Issuer->>Validator: 1. Present EAA<br/>(signed by key K, issuer EBWOID/EUID in header)
+    Holder->>Validator: 1. Present EAA<br/>(signed by key K, issuer EBWOID/EUID in header)
     Note over Validator: 2. Extract EUID and<br/>K as JWK or x5c
     Validator->>Directory: 3. Resolve register for EUID prefix
     Directory-->>Validator: 4. authzen_endpoint base URL
