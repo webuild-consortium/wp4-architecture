@@ -54,7 +54,7 @@ graph TB
 | **WBCS #** | **WBCS Title**                                                                         |
 | -------- | ------------------------------------------------------------------------------------ |
 | CS-001   | [Credential Issuance - v1.4](cs-01-credential-issuance.md)         |
-| CS-002   | [Credential Presentation - v1.0](cs-02-credential-presentation.md) |
+| CS-002   | [Credential Presentation - v1.3](cs-02-credential-presentation.md) |
 | CS-003   | [Remote Qualified Signing with Wallet Units - v1.0](cs-03-remote-signing-with-wallet-units.md) |
 | CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle - v1.2](cs-04-wua-lifecycle.md) |
 | CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.1](cs-05-bwua-lifecycle.md) |
@@ -76,6 +76,7 @@ graph TB
 | CS-011     | [Remote QESeal creation](https://github.com/webuild-consortium/wp4-architecture/pull/198)                                           | 🟢 *In review*     | Must-have    | Oct 2026        |
 | CS-014     | [Proximity / Offline profile](https://github.com/webuild-consortium/wp4-architecture/issues/251)                                    | 🔵 *Investigating* | Should-have  | Nov 2026        |
 | CS-017     | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/issues/253)                                    | 🔵 *Investigating* | Must-have    | Oct 2026        |
+| CS-018     | [Baseline Trust Validation](https://github.com/webuild-consortium/wp4-architecture/pull/363)                                        | 🟢 *In review*     | Must-have    | Nov 2026        |
 |            | [RP-QERDS interface](https://github.com/webuild-consortium/wp4-architecture/issues/254)                                             | 🟣 *Candidate*     | Low          | Jan 2027        |
 |            | [Support for Data spaces](https://github.com/webuild-consortium/wp4-architecture/issues/335)                                        | 🟣 *Candidate*     | SC2 specific | Jan 2027        |
 <!--END INDEX-->

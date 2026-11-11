@@ -1,10 +1,11 @@
 # WE BUILD - Conformance Specification:  Credential Presentation
 
-Version 1.2
-Date: 23 September 2026
+Version 1.3
+Date: 5 November 2026
 
 **Revision history**
 
+* Version 1.3 (5 November 2026): Aligned `verifier_info` with Annex XII of Regulation (EU) 2026/1731. `verifier_info` now carries `registration_cert`, and `registrar_dataset` is removed.
 * Version 1.2 (23 September 2026): Restricted the Verifier's `client_id` to the `x509_hash` Client Identifier Scheme, added `haip-vp://` and `eu-eaap://` as additional Wallet invocation schemes, and added the mandatory `verifier_info` parameter (RP Registrar-provided data and, where available, the WRPRC) to the Presentation Request Object, aligning with the finalised OpenID4VC HAIP 1.0 and ETSI TS 119 472-2, resolving issue [#341](https://github.com/webuild-consortium/wp4-architecture/issues/341). Also corrected and restructured Section 8.3 (Presentation Response Endpoint) to match OpenID4VP 1.0's actual `direct_post.jwt` semantics (encrypted `response` parameter, form-urlencoded transport, defined error codes, and the `redirect_uri` acknowledgement), and aligned Sections 6.1.6/6.1.7/6.2.6/6.2.7 accordingly.
 * Version 1.1 (30 April 2026): Approved.
 
@@ -83,7 +84,7 @@ This specification defines the conformance profile for high‑assurance credenti
     * Same‑device and cross‑device invocation
     * `openid4vp://` and `eu-eaap://` Wallet invocation (`haip-vp://` OPTIONAL)
     * `x509_hash` Client Identifier Scheme for the Verifier's `client_id`
-    * `verifier_info` parameter carrying RP Registrar-provided data and, where available, the WRPRC
+    * `verifier_info` parameter carrying the WRPRC
 
 # 3. Normative Language
 
@@ -110,7 +111,7 @@ The WE BUILD presentation profile is based on OpenID4VP with the following manda
 * Digital Credentials Query Language (DCQL): MUST be used for querying credentials.
 * Client Identifier Scheme: The Verifier's `client_id` MUST use the `x509_hash` Client Identifier Prefix. Other prefixes (`x509_san_dns`, `verifier_attestation`, `did:web`, `did:jwk`) MUST NOT be used. (See **NOTE_CS02_02**)
 * Wallet Invocation Schemes: `openid4vp://` and `eu-eaap://` MUST be supported for non-API mediated invocation; `haip-vp://` MAY additionally be supported. (See **NOTE_CS02_03**)
-* Verifier Info: The Request Object MUST contain the `verifier_info` parameter, carrying RP Registrar-provided data and, where the Verifier holds one, its WRPRC (Wallet-Relying Party Registration Certificate). (See **NOTE_CS02_04**)
+* Verifier Info: The Request Object MUST contain the `verifier_info` parameter, carrying the Verifier's WRPRC (Wallet-Relying Party Registration Certificate). (See **NOTE_CS02_04**)
 * Crypto Suites: Strict adherence to P-256 (secp256r1) with ES256 for signing.
 * Holder Binding: Mandatory Key Binding JWT (KB-JWT) for SD-JWT VCs. (See **NOTE_CS02_01**)
 
@@ -130,7 +131,7 @@ High‑level steps:
 
 ***NOTE_CS02_03: `eu-eaap://` is the custom URL scheme mandated for non-API mediated Wallet invocation by ETSI TS 119 472-2 [3], clause 6.4.1 (requirement OIDFVP-HAIP-REDIRECTS-03). `haip-vp://` is the OPTIONAL scheme defined by HAIP 1.0 [2] Section 5.1. WUs and Verifiers MUST support `openid4vp://` and `eu-eaap://`; `haip-vp://` support is OPTIONAL.***
 
-***NOTE_CS02_04: `verifier_info` is a JSON array in the Request Object; one element (`format`: `registrar_dataset`) carries the RP Registrar-provided data, and, where the Verifier holds a WRPRC, a further element (`format`: `registration_cert`) carries the base64url-encoded WRPRC, per ETSI TS 119 472-2 [3] clause 6.3.2.2 (requirements OIDFVP-HAIP-COMMON-REQ-RO-01 to -16). See Section 8.2 for the structure.***
+***NOTE_CS02_04: `verifier_info` is a JSON array in the Request Object. One element (`format`: `registration_cert`) carries the base64url-encoded WRPRC, per ETSI TS 119 472-2 [3] clause 6.3.2.2 (requirements OIDFVP-HAIP-COMMON-REQ-RO-01 and RO-13 to RO-16), as amended by Annex XII of Commission Implementing Regulation (EU) 2026/1731, which voids RO-02 to RO-12. This specification therefore does not define a `registrar_dataset` element. A Verifier that still sends one does not fail conformance, and a Wallet Unit is not required to process it. See Section 8.2 for the structure.***
 
 
 # 6. High-level Flows
@@ -148,7 +149,7 @@ The Verifier prepares a signed Presentation Request Object containing:
 * Proof requirements (nonce, audience)
 * Expiry (exp)
 * Verifier identifier (client_id), using the `x509_hash` Client Identifier Scheme (**NOTE_CS02_02**)
-* `verifier_info`, containing RP Registrar-provided data and, where available, the WRPRC (**NOTE_CS02_04**)
+* `verifier_info`, containing the WRPRC (**NOTE_CS02_04**)
 
 The request MUST be integrity‑protected (JAR‑style or equivalent).
 
@@ -175,7 +176,7 @@ The WU MUST validate:
 * Credential types and disclosure constraints
 * Request integrity
 * `client_id` uses the `x509_hash` Client Identifier Scheme (**NOTE_CS02_02**)
-* `verifier_info` is present and contains RP Registrar-provided data; where a WRPRC is included, its validity
+* `verifier_info` is present; where a WRPRC is included, its validity
 
 Unsigned or invalid requests, requests using a `client_id` scheme other than `x509_hash`, or requests missing `verifier_info` MUST be rejected.
 
@@ -267,7 +268,7 @@ Wallets MUST:
 3. Support invocation via the `openid4vp://` and `eu-eaap://` custom URL schemes; `haip-vp://` support is OPTIONAL.
 4. Validate signed Presentation Requests.
 5. Validate that the Verifier's `client_id` uses the `x509_hash` Client Identifier Scheme.
-6. Validate the `verifier_info` parameter, including the RP Registrar-provided data and, where present, the WRPRC.
+6. Validate the `verifier_info` parameter, including the WRPRC where present.
 7. Implement SD‑JWT‑VC selective disclosure.
 8. Provide transparent Holder consent.
 9. Generate JWT‑based Presentation Proof.
@@ -291,11 +292,10 @@ Verifier obligations are listed below in two groups: per-transaction protocol be
 1. The Presentation Request Object is sealed (signed) by the Verifier. (Wallet reciprocal: 7.1.4)
 2. Nonces and audience restrictions are generated and included. (Wallet reciprocal: 7.1.10)
 3. The `client_id` uses the `x509_hash` Client Identifier Scheme. (Wallet reciprocal: 7.1.5)
-4. `verifier_info` is included, carrying RP Registrar-provided data and, where the Verifier holds one, its WRPRC. (Wallet reciprocal: 7.1.6)
+4. `verifier_info` is included, carrying the Verifier's WRPRC. (Wallet reciprocal: 7.1.6)
 5. All Presentation Responses are validated, including:
     * Signature of Presentation Proof
     * Credential authenticity
-    * Wallet Unit Attestation validity (per HAIP)
     * SD‑JWT‑VC disclosure integrity
     * Holder binding
     * Nonce and audience binding
@@ -350,9 +350,7 @@ The Presentation Request Object MUST include:
 * Disclosure constraints
 * Proof requirements
 * Expiry
-* `verifier_info`: a JSON array containing:
-    * One element with `format`: `registrar_dataset`, whose `data` is a non-empty JSON object carrying the RP Registrar-provided data (identifier, service description, Registrar API URI, intended-use identifier, purpose, and privacy policy URI, and optionally the registered credential/attribute set)
-    * Where the Verifier holds a WRPRC, one further element with `format`: `registration_cert`, whose `data` is the base64url‑encoded WRPRC
+* `verifier_info`: a JSON array containing an element with `format`: `registration_cert`, whose `data` is the base64url‑encoded WRPRC
 * Signature (integrity-protected object)
 
 Wallet Units reject incomplete or invalid request objects, including requests with an unsupported `client_id` scheme or a missing `verifier_info` parameter.
@@ -366,17 +364,6 @@ Wallet Units reject incomplete or invalid request objects, including requests wi
   "aud": "https://wallet.example.org",
   "verifier_info": [
     {
-      "format": "registrar_dataset",
-      "data": {
-        "identifier": "urn:webuild:rp:example-001",
-        "srvDescription": [{ "lang": "en", "value": "Example Verifier Service" }],
-        "registryURI": "https://registrar.example.org/api",
-        "intendedUseIdentifier": "urn:webuild:intended-use:001",
-        "purpose": [{ "lang": "en", "value": "Age verification" }],
-        "policyURI": "https://verifier.example.org/privacy"
-      }
-    },
-    {
       "format": "registration_cert",
       "data": "<base64url-encoded WRPRC>"
     }
@@ -389,7 +376,7 @@ Wallet Units reject incomplete or invalid request objects, including requests wi
 
 Direction: Wallet → Verifier's `response_uri` \
 Method: POST \
-Response Mode: `direct_post.jwt` (encrypted Authorization Response; MUST, per HAIP requirement OIDFVP-HAIP-COMMON-RESP-01) \
+Response Mode: `direct_post.jwt` (encrypted Authorization Response; MUST, per HAIP 1.0 [2]) \
 Request Content-Type: `application/x-www-form-urlencoded`
 
 **Successful Presentation Submission**
@@ -406,8 +393,6 @@ The Wallet MUST POST a single `response` parameter whose value is a compact-seri
   "vp_token": { "<credential_query_id>": ["<SD-JWT-VC presentation>"] },
   "state": "<echoed state, if present in the request>"
 }
-```
-{ "vp_token": "<JWT-Presentation>", "format": "vc+sd-jwt" }
 ```
 
 **Success Response Example**
@@ -458,7 +443,7 @@ An implementation **conforms to this specification as an Issuer** if it:
 
 [2]	OpenID Foundation (2025) OpenID4VC High Assurance Interoperability Profile 1.0. OpenID Foundation, 29 December. Available at: [https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0.html](https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0.html) (Accessed: 23 September 2026).
 
-[3]	ETSI (2026) ETSI TS 119 472-2 V1.2.1: Electronic Signatures and Trust Infrastructures (ESI); Profiles for Electronic Attestation of Attributes; Part 2: Profiles for EAA/PID Presentations to Relying Party. Available at: [https://www.etsi.org/deliver/etsi_ts/119400_119499/11947202/01.02.01_60/ts_11947202v010201p.pdf](https://www.etsi.org/deliver/etsi_ts/119400_119499/11947202/01.02.01_60/ts_11947202v010201p.pdf) (Accessed: 23 September 2026).
+[3]	ETSI (2026) ETSI TS 119 472-2 V1.2.1: Electronic Signatures and Trust Infrastructures (ESI); Profiles for Electronic Attestation of Attributes; Part 2: Profiles for EAA/PID Presentations to Relying Party. Available at: [https://www.etsi.org/deliver/etsi_ts/119400_119499/11947202/01.02.01_60/ts_11947202v010201p.pdf](https://www.etsi.org/deliver/etsi_ts/119400_119499/11947202/01.02.01_60/ts_11947202v010201p.pdf) (Accessed: 23 September 2026). As amended by Commission Implementing Regulation (EU) 2026/1731 of 15 July 2026, Annex XII. Available at: [http://data.europa.eu/eli/reg_impl/2026/1731/oj](http://data.europa.eu/eli/reg_impl/2026/1731/oj) (Accessed: 4 November 2026).
 
 [4]	IETF (2025) SD‑JWT‑based Verifiable Credentials. IETF. Available at: https://www.ietf.org/archive/id/draft-ietf-oauth-sd-jwt-vc-09.html (Accessed: 24 November 2025).
 

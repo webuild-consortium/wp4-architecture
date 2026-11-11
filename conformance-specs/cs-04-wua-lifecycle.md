@@ -1,7 +1,7 @@
 # WE BUILD - Conformance Specification CS-04: Individual Wallet Unit Attestation (WUA) Lifecycle
 
-Version 1.1
-Date: 07-September-2026
+Version 1.2
+Date: 12-October-2026
 
 **Authors / Contributors**: WP4 Architecture
 - Lal Chandran, iGrant.io, Sweden
@@ -70,7 +70,7 @@ This specification defines the conformance expectations for the **lifecycle** of
 In scope:
 - WUA structure and role (WIA and KA) at the level needed to express lifecycle behaviour, based on TS-03 [3]
 - **Lifecycle**: activation, validity, revocation and status maintenance, rotation / re-issuance, as defined in TS-03 [3] and ARF Topic C [2] (Proposal 4, revocation maintenance period)
-- **Binding**: key binding, holder binding and attestation-to-session binding, as defined in TS-03 [3] (see also ARF Topic C [2], Proposal 7)
+- **Binding**: key binding and holder binding, and the verification of the WIA when the Wallet Unit authenticates to the issuer, as defined in TS-03 [3]
 - Signing of the WUA by the Wallet Provider (the signature over the WIA and KA), per TS-03 [3]
 
 Out of scope (handled elsewhere):
@@ -148,10 +148,10 @@ sequenceDiagram
   participant AS as Authorization Server
   participant CI as Credential Issuer
   rect rgb(227, 242, 253)
-  Note over WU,AS: Stage A: token bound to WIA<br/>(attestation-to-session binding)
-  WU->>AS: 1. Token request<br/>(DPoP = WIA cnf key)
-  AS-->>WU: 2. Access Token<br/>(carries cnf.jkt)
-  Note over WU: 3. Verify cnf.jkt = WIA cnf,<br/>else abort
+  Note over WU,AS: Stage A: client authentication<br/>with the WIA
+  WU->>AS: 1. Token request<br/>(WIA + PoP signed<br/>with WIA cnf key)
+  Note over AS: 2. Verify WIA signature (x5c),<br/>expiry and PoP under WIA cnf
+  AS-->>WU: 3. Access Token
   end
   rect rgb(232, 245, 233)
   Note over WU,CI: Stage B: credential bound to KA key<br/>(key binding)
@@ -162,11 +162,11 @@ sequenceDiagram
 
 *Figure 3: Key binding during issuance, in two stages (transport profiled in CS-01 [10]).*
 
-**Stage A - attestation-to-session binding: the Access Token is bound to the WIA.**
+**Stage A - client authentication: the Wallet Unit authenticates to the Authorization Server with the WIA.**
 
-1. **Token request (Wallet Unit -> Authorization Server).** The Wallet Unit requests an Access Token, authenticating with the WIA and using the WIA `cnf` key as its Demonstration of Proof-of-Possession (DPoP) key. By verifying the WIA (its Wallet Provider signature, that it has not expired, and its revocation status), the Authorization Server issues a token only to a genuine, non-revoked Wallet Unit, that is one in the Operational or Valid state of the Wallet Unit lifecycle (ARF 2.9.0 [1], section 4.6.4; TS-03 [3], clause 2.2.1.1).
-2. **Access Token returned (Authorization Server -> Wallet Unit).** The Access Token carries `cnf.jkt`.
-3. **Session-binding check (Wallet Unit).** The Wallet Unit verifies that the Access Token's `cnf.jkt` matches the JWK thumbprint of the WIA `cnf` key, and aborts the session on any mismatch (TS-03 [3], clause 2.2.1.1; ARF Topic C [2], Proposal 7).
+1. **Token request (Wallet Unit -> Authorization Server).** In the Pushed Authorization Request and in the Token Request, the Wallet Unit authenticates with the WIA and a Client Attestation PoP JWT signed with the private key of the WIA `cnf` key (attestation-based client authentication, OpenID4VCI [5], Appendix E; TS-03 [3], clause 2.2.1).
+2. **WIA verification (Authorization Server).** The Authorization Server verifies that the WIA signature verifies under the signing certificate in the `x5c` JOSE header, and that this certificate chains to a trust anchor on the Trusted List for Wallet Providers. It also verifies that the WIA has not expired, and that the PoP signature verifies under the WIA `cnf` key (TS-03 [3], clause 2.2.1.2). Thus the Authorization Server issues a token only to a genuine Wallet Unit. A PID Provider also checks the revocation status of the WIA (section 7.2; TS-03 [3], clause 2.4.3).
+3. **Access Token returned (Authorization Server -> Wallet Unit).** Sender-constrained Access Tokens (for example DPoP) are profiled in CS-01 [10]. CS-04 does not require that the DPoP key is the WIA `cnf` key (see the note in section 7.3).
 
 **Stage B - key binding: the issued credential is bound to a key attested by the KA.**
 
@@ -254,7 +254,7 @@ Actors: Wallet Provider, Wallet Unit.
 
 ## 6.4 Binding
 
-The binding of the Access Token and of the issued credential during issuance is described as a step-by-step sequence in section 5.3 (Stage A and Stage B, Figure 3) and is not repeated here. Holder binding at presentation is out of scope and is profiled in CS-02 [11].
+The client authentication with the WIA and the binding of the issued credential during issuance are described as a step-by-step sequence in section 5.3 (Stage A and Stage B, Figure 3) and is not repeated here. Holder binding at presentation is out of scope and is profiled in CS-02 [11].
 
 # 7. Normative Requirements
 
@@ -312,14 +312,19 @@ Wallet Unit **MUST**:
 > The issuance transport (Authorization Server, Token and Credential endpoints) is profiled in CS-01 [10]. The items below are the binding obligations CS-04 owns.
 
 Wallet Unit **MUST**:
-1. Use the `cnf` key in the WIA as the DPoP key when requesting an Access Token from the Authorization Server (TS-03 [3], clause 2.2.1.1).
-2. Verify, on receipt of an Access Token, that its `cnf.jkt` matches the JWK Thumbprint of the `cnf` key in the WIA presented in the same issuance session, and abort the issuance session on mismatch (TS-03 [3], clause 2.2.1.1; ARF Topic C [2], Proposal 7, HLR WUA_37).
-3. Where a KA is included in a `jwt` proof element, sign that element with the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.1).
-4. Use a WIA in at most one credential issuance process, unless per-issuer reuse applies (TS-03 [3], clause 2.2.1.1).
-5. (WE BUILD profile) Include a **single** `jwt` proof of possession in the Credential Request, signed with the key at index 0 of `attested_keys`, even where the KA attests multiple keys. TS-03 [3] permits a KA to attest multiple keys for batch issuance (clause 2.2.2.1); WE BUILD permits multiple keys but uses a single proof of possession.
+1. Where a KA is included in a `jwt` proof element, sign that element with the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.1).
+2. Use a WIA in at most one credential issuance process, unless per-issuer reuse applies (TS-03 [3], clause 2.2.1.1).
+3. (WE BUILD profile) Include a **single** `jwt` proof of possession in the Credential Request, signed with the key at index 0 of `attested_keys`, even where the KA attests multiple keys. TS-03 [3] permits a KA to attest multiple keys for batch issuance (clause 2.2.2.1); WE BUILD permits multiple keys but uses a single proof of possession.
 
-Relying parties **MUST**:
-1. Verify that the signature of the `jwt` proof element verifies under the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.2).
+Relying parties **MUST** (PID Provider or Attestation Provider):
+1. On receipt of a WIA, verify that the WIA signature verifies under the public key in the signing certificate in the `x5c` JOSE header parameter, and that this certificate can be verified with a trust anchor on the Trusted List for Wallet Providers, with intermediate certificates from `x5c` where necessary (TS-03 [3], clause 2.2.1.2).
+2. On receipt of a WIA, check that the WIA has not expired (TS-03 [3], clause 2.2.1.2).
+3. On receipt of a WIA, verify that the signature of the Client Attestation PoP JWT verifies under the public key in the WIA `cnf` claim (TS-03 [3], clause 2.2.1.2).
+4. Verify that the signature of the `jwt` proof element verifies under the key at index 0 of the `attested_keys` array (TS-03 [3], clause 2.2.2.2).
+
+The revocation status checks of the WIA and the KA are in section 7.2 (TS-03 [3], clause 2.4.3).
+
+> Note (WIA `cnf` and DPoP): TS-03 [3] v1.5.1 added two Wallet Unit requirements to clause 2.2.1.1: use the WIA `cnf` key as the DPoP key at the Token Request, and abort if the Access Token `cnf.jkt` is not the JWK Thumbprint of that key. TS-03 [3] v1.5.2 removed these two requirements after the implementation review. CS-04 follows v1.5.2 and does not require them. Conformance tests must not fail a Wallet Unit that uses a DPoP key other than the WIA `cnf` key.
 
 > Note: Presentation-time holder binding is specified normatively in CS-02 [11]. CS-04 imposes no direct WIA or KA validation obligations on Relying Parties at presentation, because the WIA and KA are not presented to Relying Parties (section 4); CS-04 specifies only how the issued credential becomes bound, during issuance, to a key attested by the KA.
 
@@ -349,7 +354,7 @@ Profiles MUST NOT weaken the mandatory requirements in this specification.
 
 [2] European Commission (2025) ARF Discussion Topic C: Wallet Unit Attestations. Available at: https://eudi.dev/2.9.0/discussion-topics/c-rr-wallet-unit-attestations/ (Accessed: 30 May 2026)
 
-[3] European Commission (2025) EUDI Wallet Technical Specification TS-03: Wallet Unit Attestations (WUA) used in issuance of PID and Attestations. Available at: https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md (Accessed: 30 May 2026)
+[3] European Commission (2025) EUDI Wallet Technical Specification TS-03: Wallet Unit Attestations (WUA) used in issuance of PID and Attestations. Available at: https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts3-wallet-unit-attestation.md, version 1.5.2 (Accessed: 12 October 2026)
 
 [4] ETSI (2026) ETSI TS 119 472-3 V1.1.1: Electronic Signatures and Trust Infrastructures (ESI); Profiles for Electronic Attestation of Attributes; Part 3: Profiles for issuance of EAA or PID
 
@@ -405,7 +410,7 @@ Payload:
 Where each element comes from:
 - `alg` (ES256, ES384 or ES512) - TS-03 [3], clause 2.6.
 - `typ` (`oauth-client-attestation+jwt`) and the JWT encoding - the WIA is a Wallet Attestation per OpenID4VCI [5], Appendix E (TS-03 [3], clause 2.2.1; example in clause 3.1); JWT encoding follows RFC 7519.
-- `cnf` (DPoP key) and token-level `exp` under 24 hours - TS-03 [3], clause 2.2.1.1.
+- `cnf` (the key under which the Client Attestation PoP JWT verifies) - TS-03 [3], clause 2.2.1.2; token-level `exp` under 24 hours - TS-03 [3], clause 2.2.1.1.
 - `wallet_name`, `wallet_version`, `wallet_solution_certification_information`, `wallet_link`, `client_status` - TS-03 [3], clause 2.3.1.
 - `client_status.status` (the `status_list` reference with `idx` and `uri`) - TS-03 [3], clause 2.5.1, using the IETF Token Status List [9].
 - `client_status.exp` (revocation maintenance commitment, at least 31 days ahead at presentation) - TS-03 [3], clauses 2.4.1 and 2.4.2.
@@ -509,5 +514,5 @@ sequenceDiagram
 
 *Figure B.1: Key binding (issuance) and holder binding (presentation). The KA assures the issuer that the `cnf` key is hardware-held; the verifier later checks the KB-JWT against that same key in the credential, not against the WUA.*
 
-> Note: the two `cnf` uses are different. In the WIA, `cnf` is the DPoP key that binds the issuance session (section 7.3). In the issued credential, `cnf` is the holder key the credential is bound to (this annex).
+> Note: the two `cnf` uses are different. In the WIA, `cnf` is the key under which the Client Attestation PoP JWT verifies when the Wallet Unit authenticates to the issuer (section 7.3). In the issued credential, `cnf` is the holder key the credential is bound to (this annex).
 
