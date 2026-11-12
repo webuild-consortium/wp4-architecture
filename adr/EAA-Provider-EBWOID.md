@@ -3,7 +3,10 @@
 **Authors:**
 
 - Werner Folkendt, Robert Bosch GmbH, Germany
-
+- Lal Chandral
+- Eelco Klaver
+- Malin Norlander
+- niels Klomp
 **Related ADRs:**
 *   ADR-168 (EAA Provider Identity Verification via Attestation Chaining)
 *   ADR-371 (A Complementary Hybrid Model for EAA Provider Identity Verification)
