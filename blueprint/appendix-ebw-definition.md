@@ -371,6 +371,8 @@ The following topics are known to be unsettled but is needed for the WE BUILD us
 
 **What is open.** Whether the owner, the provider or a separate attestation provider is the legal issuer; who appears in the issuer field; whether the attestation asserts only that the owner declared the data or that it was verified; which assurance, status and revocation rules apply; and whether this issuance is a trust service. 
 
+**_Decided in WE BUILD:_** _Self-issued attestations are allowed. They are not qualified, and relying parties decide whether they are sufficient for their use case ([ADR](../adr/Acceptance-of-Self-Issued-Attributes.md)). A relying party can verify that the signing key belongs to the issuing owner via its EBWOID ([ADR](../adr/eaa-key-binding-authzen.md)). Whether such issuance is a trust service in the legal sense remains open._
+
 ## QERDS designation, multiplicity and resilience
 
 **What is known.** Requirements on the protocol and the standards for compliant implementations of "the specific" QERDS serving as the mandatory channel, are many but should be open royalty-free standards, end-to-end encryption, and procedures for continuous availability, redundancy and fallback. The EP rapporteur allows one or more QERDS.
