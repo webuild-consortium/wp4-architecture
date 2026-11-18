@@ -287,6 +287,8 @@ Authorisation decisions are based on one or more of: the attestations of the act
 - **conflicts of roles, over-delegation and expired authorisations** are automatically detected and prevented in real time; and
 - **all authorisation logic is interoperable** between European Business Wallets across Member States.
 
+Unlike a personal wallet, where the user may delete the transaction history, a business wallet must keep evidence that remains verifiable long after the transaction, for example when an auditor asks years later. In WE BUILD, presentations and transactions should therefore be sealed, so that the evidence can be verified independently of the wallet, the counterparty and the validity of the original certificates, using long-term validation or a qualified preservation service where required.
+
 The formats for roles and attributes, interoperability mechanisms for mandates and delegations across wallets, protocols and policy language, and logging requirements will be defined in implementing acts; the exchange of data on authorisations with national registers is named as an example of what these acts will cover.
 
 **_WE BUILD implementation note:_** _The WP4 Architecture group, in collaboration with the WP4 Wallet Providers group, will explore the access-control mechanism for business-wallet solutions. This may rely on the EUDI wallets within WE BUILD or on other electronic identification means._
