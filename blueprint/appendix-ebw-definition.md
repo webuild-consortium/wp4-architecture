@@ -349,6 +349,8 @@ The following topics are known to be unsettled but is needed for the WE BUILD us
 
 **_WE BUILD implementation note:_** _per the ITRE briefing, this topic should cover agent identity, delegated authority, revocation, audit evidence, assurance equivalence and accountability — not only an M2M transport protocol._
 
+**_Decided in WE BUILD:_** _As a minimum layer of automation, every EBW lets the wallet owner define which credential types may be shared with or received from which counterparties without human approval. All such rules are visible to and controlled by the owner ([ADR](../adr/EBW-EAA-exchange-automation.md)). The corresponding updates to the WBCS for credential issuance and presentation are in review. Agent identity and delegated authority for agents remain open._
+
 ## Business identity outside eID schemes and mutual identification of wallets
 
 **What is known.** An EBW does not need to be an eID means. Identification and authentication in the framework rely on electronic attestations issued by trusted entities. Wallets must interact with other EBWs and with EUDI Wallets, authenticate relying parties where required, and prove their own authenticity and validity via wallet unit attestations and validation mechanisms.
