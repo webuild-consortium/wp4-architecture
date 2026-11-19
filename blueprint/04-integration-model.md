@@ -80,7 +80,7 @@ User->>Wallet: Accesses the credential
 
 Authentic sources, such as company registers, can make their data available to wallets in several ways:
 
-- **Become a PID or EBWOID Provider**, issuing directly.
+- **Become a EBWOID Provider**, issuing directly.
 - **Become a PuB-EAA Provider**, which requires lighter certification than a QTSP.
 - **Become a QEAA Provider (QTSP)**, issuing following the [WBCS for credential issuance](../conformance-specs/cs-01-credential-issuance.md).
 - **Let a QEAA Provider retrieve attributes** from the authentic source, and issue them as QEAAs.
