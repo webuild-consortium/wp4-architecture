@@ -1,10 +1,13 @@
-# WE BUILD - Pre-flight Conformance Specification: SCA Attestations for Payment Transactions (TS12 Profile)
+# WE BUILD - Pre-flight Conformance Specification: SCA Attestations for Payment and Risk-based Authentication (TS12 Profile)
 
-Version 1.0
-Date: 10 September 2026
+Version 1.2
+Date: 1 October 2026
 
 **Revision history**
 
+* Version 1.2 (1 October 2026): Extended `urn:eudi:sca:login_risk_transaction:1` support to also permit the `sca-iban` attestation type in the Issuer-requested flow, alongside `sca-user`, per the `rb-sca-iban` Rulebook's explicit permission to use SCA-IBAN for "authentication and risk operation authorization" in the ASPSP's own banking application, with the same rules as `sca-user`. Unlike `sca-user`, an `sca-iban` attestation denotes the Holder together with a specific IBAN, but it **MAY** still be presented to confirm an action unrelated to that account. Where `sca-iban` is used for `login_risk_transaction` (unlike for `payment`), the Attestation Provider sets the `aud` claim to its own RP identifier, giving this combination the same `aud`-based RP-permission check as `sca-user`.
+* Version 1.1 (1 October 2026): Extended scope to cover the `urn:eudi:sca:login_risk_transaction:1` transaction type (TS12 [1] section 4.3.2), using the `sca-user` attestation type in the Issuer-requested flow, for confirmation of actions carrying a risk of fraud or abuse under PSD2 [8] Article 97(1)(c) (for example, confirming an update to a Holder's postal address). Treats the KB-JWT `jti` as the Authentication Code for all in-scope SCA presentations, including `login_risk_transaction`, as an industry best practice beyond what PSD2 [8] itself requires outside payment transactions. `account_access` and `emandate` remain out of scope. The Third-party-requested flow is unaffected. Retitled the document accordingly.
+* Version 1.0 (11 September 2026): Published as the approved WE BUILD Conformance Specification on merge of PR #311; version bump only, no content changes from Version 0.9.
 * Version 0.9 (10 September 2026): Returned encrypted request delivery outside the Digital Credentials API to the RECOMMENDED level of TS12 section 3.5 for RPs, keeping WU support mandatory and fixing the negotiation through `request_uri_method` `post`; stated that the response mode is inherited from CS-02; changed the payment schema reference in the VC Type Metadata example from `schema` to `schema_uri` per TS12 section 4.1.
 * Version 0.8 (31 August 2026): Made the document an explicit profile of CS-01 and CS-02, aligned the signed-request rule with CS-02, made encrypted request delivery mandatory outside the Digital Credentials API, corrected TS12 and CS-02 section references and the `sca-user` VCT, labelled the requirement sections by lifecycle phase (issuance vs presentation), verified and expanded the examples against TS12, and applied editorial cleanup.
 * Version 0.7 (31 August 2026): Initial draft, profiling TS12 [1] for use within WE BUILD.
@@ -41,14 +44,14 @@ Table of Contents
 
 # 1. Introduction
 
-This document is a **pre-flight conformance specification** as per ADR-21 [12]. It defines the WE BUILD Conformance Specification for SCA Attestations used in payment transactions. It profiles TS12 [1], the European Commission's technical specification for Strong Customer Authentication (SCA) under PSD2 [8] with the EU Digital Identity Wallet, for use between WE BUILD consortium partners in the WP3 (Wallet for Payments) use cases.
+This document is a **pre-flight conformance specification** as per ADR-21 [12]. It defines the WE BUILD Conformance Specification for SCA Attestations used in payment transactions and in confirmation of actions carrying a risk of fraud or abuse. It profiles TS12 [1], the European Commission's technical specification for Strong Customer Authentication (SCA) under PSD2 [8] with the EU Digital Identity Wallet, for use between WE BUILD consortium partners in the WP3 (Wallet for Payments) use cases. The payment use case addresses PSD2 [8] Article 97(1)(b) (electronic payment initiation); the risk-based authentication use case addresses PSD2 [8] Article 97(1)(c) (actions through a remote channel that may imply a risk of payment fraud or other abuses).
 
 **This CS is a profile of CS-01 [5] (Credential Issuance) and CS-02 [6] (Credential Presentation).** SCA Attestations are issued with the OpenID4VCI profile of CS-01 and presented with the OpenID4VP profile of CS-02. This document does not restate the requirements of those specifications. It defines only the SCA-specific additions, and conformance to this CS presupposes conformance to CS-01 and CS-02 (section 9). It also relies on CS-04 [7] for Wallet Unit Attestation (WUA) validity and revocation, which gates the issuance of SCA Attestations.
 
 TS12 [1] is itself a profile of SD-JWT-VC [9] and OpenID4VP [10], consistent with the baseline protocols adopted in ADR-2 [3] and the credential-format decisions in ADR-3 [4]. This CS narrows TS12 [1] further, for WE BUILD purposes only, as follows:
 
 1. **Attestation types**: only the three SCA Attestation types defined in the WE BUILD Attestation Rulebooks Catalog [2] are in scope: `sca-card-dpc`, `sca-iban` and `sca-user`. No other SCA Attestation type is profiled by this CS.
-2. **Transaction type**: only the `payment` transaction type (`urn:eudi:sca:payment:1`) is used. The `login_risk_transaction`, `account_access` and `emandate` transaction types of TS12 [1] section 4.3 are out of scope for WE BUILD.
+2. **Transaction type**: only the `payment` (`urn:eudi:sca:payment:1`) and `login_risk_transaction` (`urn:eudi:sca:login_risk_transaction:1`) transaction types are used. The `account_access` and `emandate` transaction types of TS12 [1] section 4.3 are out of scope for WE BUILD.
 3. **Single-attestation presentation**: only one SCA Attestation is presented to the RP per Authorization Request. Combined presentations across the three in-scope types are not used in WE BUILD.
 4. **Embedded Disclosure Policy**: WE BUILD does **not** use the Embedded Disclosure Policy feature of TS12 [1] section 3.1.
 5. **Signed requests**: TS12 [1] section 3.1 recommends signed Authorization Requests and permits unsigned requests after a Holder warning. CS-02 [6] requires all Authorization Requests to be signed and requires WUs to reject unsigned requests. This CS follows CS-02: the unsigned-request path of TS12 [1] is not available in WE BUILD (section 7.3, item 3 and section 7.4, item 1).
@@ -60,25 +63,30 @@ This CS keeps one TS12 [1] level unchanged and only fixes how it is negotiated:
 
 1. **Encrypted requests**: TS12 [1] section 3.5 recommends encrypted presentation requests for RPs and requires WUs to support them. This CS keeps both levels. So that any RP and WU pair interoperates, an RP that encrypts delivers the Request Object by reference with `request_uri_method` `post`, the WU provides its encryption keys in the `wallet_metadata` of that POST exchange, and the RP sends the Request Object encrypted. A WU accepts signed Request Objects with or without encryption (section 7.3, item 9 and section 7.4, item 2).
 
+This CS extends one TS12 [1] position beyond its own stated legal basis:
+
+1. **Authentication Code**: TS12 [1] section 3.6 states that a verified KB-JWT `jti` serves as the Authentication Code required by PSD2 [8] specifically for electronic payments. WE BUILD treats a verified `jti` as the Authentication Code for every in-scope SCA presentation, including `login_risk_transaction`, as an industry best practice beyond what PSD2 [8] itself requires outside payment transactions (section 7.4, item 4).
+
 This document supports the Interoperability Test Bed (ITB). It does not define the SCA Attestation types, their claims, or their trust and revocation mechanisms. These are defined in the respective Rulebooks (`rb-sca-card-dpc`, `rb-sca-iban`, `rb-sca-user`) in the Rulebooks Catalog [2].
 
 # 2. Scope
 
-This CS defines conformance requirements for **Attestation Providers**, **Wallet Units (WU)** and **Relying Parties (RP)** when an SCA Attestation of type `sca-card-dpc`, `sca-iban` or `sca-user` is presented to authenticate a payment transaction within WE BUILD.
+This CS defines conformance requirements for **Attestation Providers**, **Wallet Units (WU)** and **Relying Parties (RP)** when an SCA Attestation of type `sca-card-dpc`, `sca-iban` or `sca-user` is presented to authenticate a payment transaction, or an `sca-iban` or `sca-user` attestation is presented to confirm an action carrying a risk of fraud or abuse, within WE BUILD.
 
 **In scope:**
 
 * Detection and processing of SCA Attestations of the three named types, including their `extends` chain to the base SCA VCT.
 * Construction, transmission and validation of a `payment` (`urn:eudi:sca:payment:1`) transaction data object, including Dynamic Linking and consent-screen rendering.
+* Construction, transmission and validation of a `login_risk_transaction` (`urn:eudi:sca:login_risk_transaction:1`) transaction data object, using an `sca-user` or `sca-iban` attestation in the Issuer-requested flow (section 6.1), for confirmation of actions carrying a risk of fraud or abuse under PSD2 [8] Article 97(1)(c).
 * Signed Request Verification (authenticity and integrity of the Authorization Request) for all in-scope SCA presentations. All requests are signed (section 1, item 5).
 * Encrypted delivery of the Authorization Request outside the Digital Credentials API, at the RECOMMENDED level of TS12 [1] section 3.5, with POST delivery of the Request Object and WU-provided encryption keys where used (section 1).
-* The `aud` claim as the only attestation-level RP-permission control available. It applies solely to `sca-user` presentations in the Issuer-requested flow (section 6.1).
+* The `aud` claim as the only attestation-level RP-permission control available. It applies to `sca-user` presentations in the Issuer-requested flow (section 6.1) in all cases, and to `sca-iban` presentations in that flow only for `login_risk_transaction` (not for `payment`).
 * Key Binding JWT (KB-JWT) requirements (`jti`, `amr`, `response_mode`, `transaction_data_hashes`) for SCA presentations.
 
 **Out of scope (deviations from TS12 [1]):**
 
 * **Combined SCA presentations.** Presentation of more than one of the three in-scope SCA Attestation types in a single Authorization Request. Only one of the three in-scope types is presented to the RP at a time. This is a WE BUILD-specific restriction. It is distinct from the Combined Presentation pattern of TS12 [1] section 3.4, which combines one SCA Attestation with non-SCA attestations (for example payment plus age verification, driving licence or loyalty cards). That pattern is not addressed by this CS.
-* **Other transaction types.** TS12 [1] section 4.3 defines four built-in transaction types and requires Wallet Units to process and render all of them. Under this profile, WU conformance is assessed only against the `payment` type. Implementers are not required to implement `login_risk_transaction`, `account_access` or `emandate` to conform to this CS.
+* **Other transaction types.** TS12 [1] section 4.3 defines four built-in transaction types and requires Wallet Units to process and render all of them. Under this profile, WU conformance is assessed only against the `payment` and `login_risk_transaction` types. Implementers are not required to implement `account_access` or `emandate` to conform to this CS.
 * **Embedded Disclosure Policy.** WE BUILD Attestation Providers do not embed a disclosure policy in the three in-scope attestation types (section 7.2). Wallet Units are not required to implement the Disclosure Policy Verification step of TS12 [1] section 3.1 for these attestation types.
 * **Mandatory Transaction Log Inclusion.** TS12 [1] section 5.3 requires transaction logging at a SHALL level. This profile relaxes it to an optional capability (section 7.3, item 11). Wallet Providers are not required to implement it to conform to this CS.
 * **Attestation-level RP-permission control** for `sca-card-dpc`, and for `sca-iban` in the Third-party-requested flow (section 6.2). Because Embedded Disclosure Policy is excluded and no `aud` restriction applies in these cases, this profile has no mechanism that restricts which Relying Parties may request these attestations beyond the authenticity check of Signed Request Verification. A conforming Wallet Unit presents to any Relying Party whose signed request passes Signed Request Verification (section 7.3, item 3).
@@ -95,9 +103,9 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 # 4. Roles and Components
 
 * **Wallet Unit (WU):** the EUDI Wallet software and hardware combination that holds and presents SCA Attestations on behalf of the Holder.
-* **Holder / Payment Service User (PSU):** the natural person who controls the Wallet Unit and completes SCA for a payment.
+* **Holder / Payment Service User (PSU):** the natural person who controls the Wallet Unit and completes SCA for a payment or another in-scope action.
 * **Attestation Provider (ASPSP / Issuer):** the payment service provider that issues an `sca-card-dpc`, `sca-iban` or `sca-user` attestation into a Wallet Unit, per the relevant Rulebook.
-* **Relying Party (RP):** the party that requests the SCA presentation for a payment transaction. Depending on the flow (section 6), the RP is either the Attestation Provider itself (Issuer-requested flow) or a third party such as a Payee, Merchant, PISP or TPP (Third-party-requested flow).
+* **Relying Party (RP):** the party that requests the SCA presentation for a payment transaction or another in-scope action. Depending on the flow (section 6), the RP is either the Attestation Provider itself (Issuer-requested flow) or a third party such as a Payee, Merchant, PISP or TPP (Third-party-requested flow).
 * **Payee:** the intended recipient of the payment funds, represented in the `payment` transaction data payload.
 
 > **Note (terminology mapping)**: In OpenID4VP [10] terminology, the RP plays the **Verifier** role and the WU plays the **Wallet** role, consistent with the mapping used in CS-02 [6] section 4.
@@ -106,11 +114,11 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **
 
 An SCA presentation is a CS-02 [6] presentation with SCA-specific additions from TS12 [1]. The base flow (request creation, invocation, validation, consent, generation, submission, result handling) is defined in CS-02 [6] sections 5 and 6 and is not restated here. This CS adds the following on top of it:
 
-1. The Authorization Request carries a `transaction_data` object of type `urn:eudi:sca:payment:1`, and its DCQL query matches exactly one of the three in-scope VCTs (section 8.1).
-2. During validation, the WU performs Signed Request Verification (section 7.3, item 3) and validates the `transaction_data.payload` against the `urn:eudi:sca:payment:1` schema referenced in the attestation's `transaction_data_types` metadata (section 7.3, item 4). Disclosure Policy Verification does not apply (section 2).
-3. The consent screen becomes a payment confirmation screen. The WU composes the requested attributes, the transactional data and the UI labels, per the visualisation levels declared in the attestation metadata (section 7.3, items 5 and 6).
+1. The Authorization Request carries a `transaction_data` object of type `urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1`, and its DCQL query matches exactly one of the three in-scope VCTs (section 8.1).
+2. During validation, the WU performs Signed Request Verification (section 7.3, item 3) and validates the `transaction_data.payload` against the schema declared for the presented transaction type in the attestation's `transaction_data_types` metadata (section 7.3, item 4). Disclosure Policy Verification does not apply (section 2).
+3. The consent screen becomes a confirmation screen for the presented transaction: a payment confirmation screen for `urn:eudi:sca:payment:1`, or an action confirmation screen for `urn:eudi:sca:login_risk_transaction:1`. The WU composes the requested attributes, the transactional data and the UI labels, per the visualisation levels declared in the attestation metadata (section 7.3, items 5 and 6).
 4. The Holder authenticates locally to the WU with at least two factors from different categories, which the WU records in the `amr` claim (section 7.3, item 8).
-5. The KB-JWT carries the additional claims `jti`, `amr`, `response_mode` and `transaction_data_hashes` (section 7.3, item 8 and section 8.2). The RP treats the `jti` as the PSD2 Authentication Code (section 7.4, item 4).
+5. The KB-JWT carries the additional claims `jti`, `amr`, `response_mode` and `transaction_data_hashes` (section 7.3, item 8 and section 8.2). The RP treats the `jti` as the Authentication Code for the presentation (section 1 and section 7.4, item 4).
 6. The WU can log the transaction locally (section 7.3, item 11).
 
 # 6. High-level Flows
@@ -125,15 +133,15 @@ Applicable when the RP is the Attestation Provider itself (the Holder's own ASPS
 
 > **Note**: The Rulebooks [2] govern which attestation types are available in each flow. The `rb-sca-card-dpc` Rulebook currently describes SCA-Card (DPC) for the 3-party model in remote commerce, where the credential issuer and the verifier are different organisations, which excludes the Issuer-requested case. Where a revision of that Rulebook permits use with the Attestation Provider and the RP in the same organisation, `sca-card-dpc` can also be used in this flow; the Rulebook is authoritative.
 
-1. **Request creation**: The ASPSP, acting as RP, creates a signed Authorization Request for `urn:eudi:sca:payment:1` that targets a single attestation. It targets an `sca-iban` attestation to identify the account being debited, or an `sca-user` attestation where the account context is already established out of band (for example within the ASPSP's own online or mobile banking session) and the SCA Attestation serves only as the second authentication factor.
+1. **Request creation**: The ASPSP, acting as RP, creates a signed Authorization Request for the transaction type being confirmed, that targets a single attestation. For `urn:eudi:sca:payment:1`, it targets an `sca-iban` attestation to identify the account being debited, or an `sca-user` attestation where the account context is already established out of band (for example within the ASPSP's own online or mobile banking session) and the SCA Attestation serves only as the second authentication factor. For `urn:eudi:sca:login_risk_transaction:1`, it targets an `sca-user` attestation, which denotes the Holder only and no specific account or payment instrument, or an `sca-iban` attestation, which denotes the Holder together with a specific IBAN but **MAY** nonetheless be presented to confirm an action carrying a risk of fraud or abuse under PSD2 [8] Article 97(1)(c) regardless of whether that action relates to the identified account (for example, updating a postal address) or is scoped to it (for example, changing the account's daily transaction limit), per the `rb-sca-iban` Rulebook.
 2. **Invocation**: Same as CS-02 [6] sections 6.1.1 to 6.1.2 (same-device) or 6.2.1 to 6.2.2 (cross-device).
-3. **Request authenticity and RP permission**: The WU performs Signed Request Verification on the Authorization Request in all cases (section 7.3, item 3). Where an `sca-user` attestation is requested, the WU additionally checks the `aud` claim, which the Attestation Provider sets to the ASPSP's own RP identifier (section 7.2, item 3), to confirm that the request originates from the issuing ASPSP. This is the only attestation-level RP-permission check available in this flow. Where an `sca-iban` attestation is requested, no equivalent permission check is available, because `aud` restriction is not evaluated for `sca-iban` in payment use (per the `rb-sca-iban` Rulebook; see also section 2).
-4. **Validation**: The WU validates the `payment` payload (section 7.3, items 4 to 6).
-5. **Consent**: The Holder reviews the consent screen for the single presented attestation (account details for `sca-iban`, or a User-level confirmation only for `sca-user`) and confirms.
+3. **Request authenticity and RP permission**: The WU performs Signed Request Verification on the Authorization Request in all cases (section 7.3, item 3). Where an `sca-user` attestation is requested, or an `sca-iban` attestation is requested for a `login_risk_transaction` presentation, the WU additionally checks the `aud` claim, which the Attestation Provider sets to the ASPSP's own RP identifier (section 7.2, items 3 and 6), to confirm that the request originates from the issuing ASPSP. This is the only attestation-level RP-permission check available in this flow. Where an `sca-iban` attestation is requested for a `payment` presentation, no equivalent permission check is available, because `aud` restriction is not evaluated for `sca-iban` in payment use (per the `rb-sca-iban` Rulebook; see also section 2).
+4. **Validation**: The WU validates the `transaction_data.payload` for the presented transaction type (section 7.3, items 4 to 6).
+5. **Consent**: The Holder reviews the consent screen for the single presented attestation (account details for `sca-iban`, or a User-level confirmation of the payment or action for `sca-user`) and confirms.
 6. **Generation**: The WU generates a single KB-JWT for the presented attestation (section 7.3, item 8).
-7. **Submission and outcome**: Same as CS-02 [6] sections 6.1.6 to 6.1.7. The ASPSP validates the KB-JWT and proceeds with payment execution.
+7. **Submission and outcome**: Same as CS-02 [6] sections 6.1.6 to 6.1.7. The ASPSP validates the KB-JWT and proceeds with payment execution or the confirmed action, as applicable.
 
-> **Note**: Combined presentation is out of scope (section 2) and the `login_risk_transaction` type is out of scope. An `sca-user` attestation presented alone for a `payment` transaction therefore relies on the account or card context being established outside the wallet exchange, for example within the ASPSP's own online or mobile banking session. This is consistent with the description in TS12 [1] of the Issuer-requested flow as resembling banks' existing authenticator solutions.
+> **Note**: Combined presentation is out of scope (section 2). An `sca-user` attestation presented alone for a `payment` transaction relies on the account or card context being established outside the wallet exchange, for example within the ASPSP's own online or mobile banking session; for a `login_risk_transaction` presentation using `sca-user`, no account or card context is needed, since the attestation confirms the Holder's identity for the action itself. An `sca-iban` attestation inherently carries its account context in both cases, whether or not the specific action it confirms relates to that account. Both uses are consistent with the description in TS12 [1] of the Issuer-requested flow as resembling banks' existing authenticator solutions.
 
 ## 6.2 Third-party-requested Flow
 
@@ -151,7 +159,7 @@ The requirements below are additions on top of CS-01 [5] (issuance) and CS-02 [6
 
 ## 7.1 Common Requirements (Attestation Provider, WU and RP)
 
-1. Implementations **SHALL** restrict `transaction_data.type` to `urn:eudi:sca:payment:1` for all SCA presentations. RPs **SHALL NOT** request, and WUs **MAY** reject, presentations declaring `urn:eudi:sca:login_risk_transaction:1`, `urn:eudi:sca:account_access:1` or `urn:eudi:sca:emandate:1`.
+1. Implementations **SHALL** restrict `transaction_data.type` to `urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1` for all SCA presentations. RPs **SHALL NOT** request, and WUs **MAY** reject, presentations declaring `urn:eudi:sca:account_access:1` or `urn:eudi:sca:emandate:1`.
 2. Implementations **SHALL** restrict SCA Attestation processing to the `sca-card-dpc`, `sca-iban` and `sca-user` types, identified via their `vct` `extends` chain to the base SCA VCT.
 3. Implementations **SHALL NOT** treat Signed Request Verification (section 7.3, item 3) as providing RP-permission control. It establishes request authenticity and integrity only.
 
@@ -163,7 +171,8 @@ All requirements in this section apply at issuance time. The Attestation Provide
 2. **SHALL** validate the Wallet Unit's WUA per CS-04 [7] before issuance, and **SHALL** ensure that the SCA Attestation's validity period does not exceed the WUA's validity period (TS12 [1] section 5.1).
 3. **SHALL**, for `sca-user` attestations, set the `aud` claim to its own RP identifier(s), consistent with the two-party-only model defined in the `rb-sca-user` Rulebook.
 4. **SHALL NOT** rely on `aud` restriction for `sca-card-dpc` and `sca-iban` attestations intended for use in a Third-party-requested flow (section 6.2). No attestation-level RP-permission control applies to these cases (section 2).
-5. **SHALL** declare `transaction_data_types` metadata covering, at minimum, `urn:eudi:sca:payment:1`, and **MAY** omit the other three transaction types of TS12 [1] section 4.3.
+5. **SHALL** declare `transaction_data_types` metadata covering, at minimum, `urn:eudi:sca:payment:1` for `sca-card-dpc` attestations, and `urn:eudi:sca:payment:1` and/or `urn:eudi:sca:login_risk_transaction:1` for `sca-iban` and `sca-user` attestations, consistent with the Attestation Provider's intended use of each attestation. The Attestation Provider **MAY** omit `urn:eudi:sca:account_access:1` and `urn:eudi:sca:emandate:1` metadata, which remain out of scope (section 2).
+6. **SHALL**, for `sca-iban` attestations intended for use with `urn:eudi:sca:login_risk_transaction:1` in the Issuer-requested flow (section 6.1), set the `aud` claim to its own RP identifier(s), per the `rb-sca-iban` Rulebook's permission to apply the same rules as `sca-user` to this use case. This requirement does **NOT** apply to `sca-iban` attestations used for `urn:eudi:sca:payment:1` (item 4).
 
 **Example (illustrative, non-normative) VC Type Metadata** for an `sca-iban` attestation, showing the SCA-specific parameters of TS12 [1] sections 2.3, 3.3.3 and 4.1 and the VCT hierarchy of the `rb-sca-iban` Rulebook [2]:
 
@@ -208,14 +217,101 @@ All requirements in this section apply at issuance time. The Attestation Provide
           { "lang": "en", "value": "Cancel Payment" }
         ]
       }
+    },
+    "urn:eudi:sca:login_risk_transaction:1": {
+      "schema_uri": "urn:eudi:sca:login_risk_transaction:1",
+      "claims": [
+        {
+          "path": ["payload", "service"],
+          "visualisation": 2,
+          "display": [
+            {
+              "lang": "en-GB",
+              "label": "Service",
+              "description": "Service requesting confirmation"
+            }
+          ]
+        },
+        {
+          "path": ["payload", "action"],
+          "visualisation": 1,
+          "display": [
+            {
+              "lang": "en-GB",
+              "label": "Action",
+              "description": "Action to be confirmed"
+            }
+          ]
+        }
+      ],
+      "ui_labels": {
+        "affirmative_action_label": [
+          { "lang": "en", "value": "Confirm" }
+        ],
+        "denial_action_label": [
+          { "lang": "en", "value": "Cancel" }
+        ]
+      }
     }
   }
 }
 ```
 
+This example shows an `sca-iban` attestation declaring both in-scope transaction types: `urn:eudi:sca:payment:1` to identify the account being debited (section 6.1, step 1), and `urn:eudi:sca:login_risk_transaction:1` to confirm an action under PSD2 [8] Article 97(1)(c), per the `aud`-setting requirement of item 6 above.
+
 In this profile, the key of each `transaction_data_types` entry is the transaction type itself (`urn:eudi:sca:payment:1`), so the value that the RP sends as `transaction_data.type` is also the key that the WU looks up (TS12 [1] section 3.2).
 
 The payment schema is referenced by its URN in `schema_uri`, which TS12 [1] section 4.1 defines for references, whereas `schema` is defined for an embedded JSON Schema. The WU recognises `urn:eudi:sca:payment:1` as the built-in payment schema of TS12 [1] section 4.3.1 and does not resolve it. The non-normative example in TS12 [1] section 2.3 uses `schema` for the same URN; this inconsistency is reported upstream in eudi-doc-standards-and-technical-specifications issue 651.
+
+**Example (illustrative, non-normative) VC Type Metadata** for an `sca-user` attestation declaring `urn:eudi:sca:login_risk_transaction:1`, per TS12 [1] section 4.3.2:
+
+```json
+{
+  "vct": "https://issuer.bank.example/credentials/sca/user/1.0",
+  "name": "Example Bank SCA-User Attestation",
+  "extends": "https://webuildconsortium.eu/sca/sca-user/1.0",
+  "category": "urn:eu:europa:ec:eudi:sua:sca",
+  "transaction_data_types": {
+    "urn:eudi:sca:login_risk_transaction:1": {
+      "schema_uri": "urn:eudi:sca:login_risk_transaction:1",
+      "claims": [
+        {
+          "path": ["payload", "service"],
+          "visualisation": 2,
+          "display": [
+            {
+              "lang": "en-GB",
+              "label": "Service",
+              "description": "Service requesting confirmation"
+            }
+          ]
+        },
+        {
+          "path": ["payload", "action"],
+          "visualisation": 1,
+          "display": [
+            {
+              "lang": "en-GB",
+              "label": "Action",
+              "description": "Action to be confirmed"
+            }
+          ]
+        }
+      ],
+      "ui_labels": {
+        "affirmative_action_label": [
+          { "lang": "en", "value": "Confirm" }
+        ],
+        "denial_action_label": [
+          { "lang": "en", "value": "Cancel" }
+        ]
+      }
+    }
+  }
+}
+```
+
+The WU recognises `urn:eudi:sca:login_risk_transaction:1` as the built-in login and risk-based authentication schema of TS12 [1] section 4.3.2 and does not resolve it, following the same `schema_uri` convention as the payment schema above.
 
 ## 7.3 Wallet Unit Requirements (Presentation)
 
@@ -224,8 +320,8 @@ All requirements in this section apply at presentation time. The WU obtains SCA 
 1. **SHALL** evaluate the SD-JWT VC Type Metadata `category` claim per TS12 [1] section 3 to detect SCA Attestations, restricted to the three in-scope types (section 7.1, item 2).
 2. **SHALL NOT** perform Disclosure Policy Verification (TS12 [1] section 3.1) for attestations in scope of this CS.
 3. **SHALL** perform Signed Request Verification (TS12 [1] section 3.1) for every SCA Authorization Request, regardless of flow: verify the signature and certificate, and cease processing and inform the Holder if the verification fails. The WU **SHALL** reject unsigned requests, as required by CS-02 [6] section 7.1. The unsigned-request path of TS12 [1] section 3.1 (warn the User and continue on confirmation) **SHALL NOT** be used.
-4. **SHALL** validate `transaction_data.payload` against the `urn:eudi:sca:payment:1` schema declared in the attestation's `transaction_data_types` metadata, per TS12 [1] section 3.2, and **SHALL** cease processing on validation failure.
-5. **SHALL** render the payment confirmation screen per the visualisation levels declared in the attestation's Claim Metadata, defaulting to level `3` where unset (TS12 [1] sections 3.3.1 to 3.3.2).
+4. **SHALL** validate `transaction_data.payload` against the schema declared for the presented `transaction_data.type` (`urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1`) in the attestation's `transaction_data_types` metadata, per TS12 [1] section 3.2, and **SHALL** cease processing on validation failure.
+5. **SHALL** render the confirmation screen for the presented transaction per the visualisation levels declared in the attestation's Claim Metadata, defaulting to level `3` where unset (TS12 [1] sections 3.3.1 to 3.3.2).
 6. **SHALL** display the `affirmative_action_label` and, if present, the `denial_action_label`, `transaction_title` and `security_hint` UI elements per TS12 [1] section 3.3.3.
 7. **SHALL NOT** present more than one SCA Attestation, across `sca-card-dpc`, `sca-iban` and `sca-user`, in response to a single Authorization Request. Combined presentation of these types is out of scope (section 2).
 8. **SHALL** include the following in every KB-JWT generated in an SCA presentation, per TS12 [1] section 3.6 and OpenID4VP [10]:
@@ -234,8 +330,8 @@ All requirements in this section apply at presentation time. The WU obtains SCA 
    * an `amr` array with **at least two** entries from different categories (`knowledge`, `possession`, `inherence`), where each entry is an object that pairs the category with the specific method used, for example `{"knowledge": "pin_6_or_more_digits"}`;
    * `transaction_data_hashes`, calculated over the presented `transaction_data`, together with the `transaction_data_hashes_alg` that identifies the algorithm used.
 9. **SHALL** support processing of encrypted Authorization Requests per TS12 [1] section 3.5 and JAR [11]. For requests delivered outside the Digital Credentials API, the WU **SHALL** support POST delivery of the Request Object (`request_uri_method` `post`, OpenID4VP [10] section 5.10), **SHALL** provide its encryption keys to the RP in the `wallet_metadata` of that POST exchange, and **SHALL** accept signed Request Objects delivered with or without encryption.
-10. **MAY** reject any request declaring a transaction type other than `urn:eudi:sca:payment:1` (section 7.1, item 1).
-11. **MAY**, for every SCA presentation (successful or not), log at least the `transaction_data.payload.transaction_id`, the `payee.name` and, where available, the `pisp.legal_name`, consistent with the Transaction Log Inclusion requirement of TS12 [1] section 5.3. WE BUILD relaxes this from a mandatory to an optional requirement: Wallet Providers are not required to implement this logging capability to conform to this CS.
+10. **MAY** reject any request declaring a transaction type other than `urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1` (section 7.1, item 1).
+11. **MAY**, for every SCA presentation (successful or not), log at least the `transaction_data.payload.transaction_id`, and additionally: for a `urn:eudi:sca:payment:1` presentation, the `payee.name` and, where available, the `pisp.legal_name`; for a `urn:eudi:sca:login_risk_transaction:1` presentation, the `service` attribute where available; consistent with the Transaction Log Inclusion requirement of TS12 [1] section 5.3. WE BUILD relaxes this from a mandatory to an optional requirement: Wallet Providers are not required to implement this logging capability to conform to this CS.
 
 ## 7.4 Relying Party Requirements (Presentation)
 
@@ -244,10 +340,11 @@ All requirements in this section apply at presentation time. The RP acts as a Ve
 1. **SHALL** send signed Authorization Requests (JAR [11], OpenID4VP [10] section 5) for SCA presentations, as required by CS-02 [6] sections 5 and 7.2. This CS tightens TS12 [1] section 3.1, which recommends signing (section 1, item 5).
 2. **SHOULD**, for requests delivered outside the Digital Credentials API (the `openid4vp://` flows of CS-02 [6] section 6), deliver the Authorization Request encrypted, as recommended by TS12 [1] section 3.5. An RP that encrypts **SHALL** deliver the Request Object by reference with `request_uri_method` `post` (OpenID4VP [10] section 5.10), **SHALL** obtain the WU's encryption keys from the `wallet_metadata` that the WU sends in that POST exchange, and **SHALL** send the Request Object encrypted (JAR [11]). An RP that does not encrypt delivers the signed Request Object per CS-02 [6] section 8. This CS keeps the RECOMMENDED level of TS12 [1] section 3.5 (section 1).
 3. **SHALL**, where the RP is the Attestation Provider (Issuer-requested flow, section 6.1) and requests an `sca-user` attestation, ensure that its identifier is present in the attestation's `aud` claim, per the `rb-sca-user` Rulebook.
-4. **SHALL** treat the `jti` of a validated KB-JWT as the PSD2 Authentication Code for the corresponding transaction.
+4. **SHALL** treat the `jti` of a validated KB-JWT as the Authentication Code for the corresponding SCA presentation. For `urn:eudi:sca:payment:1` presentations this satisfies PSD2 [8]; for `urn:eudi:sca:login_risk_transaction:1` presentations, WE BUILD applies the same treatment as an industry best practice, beyond what PSD2 [8] itself requires outside payment transactions (section 1).
 5. **SHALL** verify that the `amr` array of each validated KB-JWT contains at least two entries from different categories before treating SCA as satisfied.
-6. **SHALL** validate the presentation and the attestation per CS-02 [6] section 7.2, including revocation status where a `status_list` claim is present, **SHALL** recompute and verify `transaction_data_hashes` against the exact `transaction_data` sent in the Authorization Request, and **SHALL** cease the payment process on a negative result (TS12 [1] section 5.2).
+6. **SHALL** validate the presentation and the attestation per CS-02 [6] section 7.2, including revocation status where a `status_list` claim is present, **SHALL** recompute and verify `transaction_data_hashes` against the exact `transaction_data` sent in the Authorization Request, and **SHALL** cease the underlying process (payment execution or the confirmed action, as applicable) on a negative result (TS12 [1] section 5.2).
 7. **SHALL NOT** construct an Authorization Request querying for more than one of `sca-card-dpc`, `sca-iban` or `sca-user` (section 2).
+8. **SHALL**, where the RP is the Attestation Provider (Issuer-requested flow, section 6.1) and requests an `sca-iban` attestation for a `urn:eudi:sca:login_risk_transaction:1` presentation, ensure that its identifier is present in the attestation's `aud` claim, per the `rb-sca-iban` Rulebook. This requirement does **NOT** apply where the RP requests an `sca-iban` attestation for a `urn:eudi:sca:payment:1` presentation (section 6.1, step 3).
 
 # 8. Interface Definitions
 
@@ -263,10 +360,10 @@ All requirements in this section apply at presentation time. The RP acts as a Ve
   - `https://webuildconsortium.eu/sca/sca-iban/1.0`
   - `https://webuildconsortium.eu/sca/sca-user/1.0`
 * **`transaction_data`** (array, present in every Authorization Request): exactly one entry with:
-  - `type`: `urn:eudi:sca:payment:1`
+  - `type`: `urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1`, matching the transaction being confirmed
   - `credential_ids`: references exactly one credential ID, corresponding to the single SCA Attestation matched by the DCQL query (section 2)
   - `transaction_data_hashes_alg`: REQUIRED, consistent with TS12 [1] section 4.2; values and processing as defined by OpenID4VP [10]
-  - `payload`: REQUIRED, object per TS12 [1] section 4.3.1. All payload fields of TS12 [1] section 4.3.1 remain available, including the OPTIONAL `pisp`, `execution_date` and `recurrence` elements. The example below shows the REQUIRED fields only.
+  - `payload`: REQUIRED, object per TS12 [1] section 4.3.1 for `urn:eudi:sca:payment:1`, or TS12 [1] section 4.3.2 for `urn:eudi:sca:login_risk_transaction:1`. All payload fields of TS12 [1] section 4.3.1 remain available for a payment payload, including the OPTIONAL `pisp`, `execution_date` and `recurrence` elements. The examples below show the REQUIRED fields only.
 
 **Example (illustrative, non-normative) DCQL query** for an `sca-iban` presentation:
 
@@ -303,7 +400,53 @@ All requirements in this section apply at presentation time. The RP acts as a Ve
 }
 ```
 
-**Error handling**: If the request is unsigned or incorrectly signed, the WU rejects it (section 7.3, item 3). If the requested `transaction_data.type` is not supported by the presented attestation's `transaction_data_types` metadata (the expected outcome where an Attestation Provider has omitted an out-of-scope type per section 7.2, item 5), the WU ceases processing and informs the Holder with an appropriate error message (section 7.3, items 3 and 4). Independently, the WU may reject a request declaring a `transaction_data.type` other than `urn:eudi:sca:payment:1` even where the presented attestation's metadata still supports it (section 7.1, item 1; section 7.3, item 10).
+**Example (illustrative, non-normative) DCQL query** for an `sca-user` presentation:
+
+```json
+{
+  "credentials": [
+    {
+      "id": "sca_user",
+      "format": "dc+sd-jwt",
+      "meta": {
+        "vct_values": ["https://webuildconsortium.eu/sca/sca-user/1.0"]
+      }
+    }
+  ]
+}
+```
+
+**Example (illustrative, non-normative) `transaction_data` entry** for a `urn:eudi:sca:login_risk_transaction:1` presentation, shown decoded:
+
+```json
+{
+  "type": "urn:eudi:sca:login_risk_transaction:1",
+  "credential_ids": ["sca_user"],
+  "transaction_data_hashes_alg": "sha-256",
+  "payload": {
+    "transaction_id": "3f8a2c71-9b4d-4e3a-8c5e-7a1b2c3d4e5f",
+    "service": "Example Bank Online Banking",
+    "action": "Update postal address"
+  }
+}
+```
+
+**Example (illustrative, non-normative) `transaction_data` entry** for a `urn:eudi:sca:login_risk_transaction:1` presentation using an `sca-iban` attestation (section 6.1, step 1), shown decoded. The DCQL query is the `sca-iban` query shown above; `credential_ids` references its `id`:
+
+```json
+{
+  "type": "urn:eudi:sca:login_risk_transaction:1",
+  "credential_ids": ["sca_iban"],
+  "transaction_data_hashes_alg": "sha-256",
+  "payload": {
+    "transaction_id": "5e9d4b82-1a7c-4f6e-9b3a-8c2d1e0f6a7b",
+    "service": "Example Bank Online Banking",
+    "action": "Change daily transaction limit from 1,000 EUR to 10,000 EUR"
+  }
+}
+```
+
+**Error handling**: If the request is unsigned or incorrectly signed, the WU rejects it (section 7.3, item 3). If the requested `transaction_data.type` is not supported by the presented attestation's `transaction_data_types` metadata (the expected outcome where an Attestation Provider has omitted an out-of-scope type per section 7.2, item 5), the WU ceases processing and informs the Holder with an appropriate error message (section 7.3, items 3 and 4). Independently, the WU may reject a request declaring a `transaction_data.type` other than `urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1` even where the presented attestation's metadata still supports it (section 7.1, item 1; section 7.3, item 10).
 
 ## 8.2 SCA Authorization Response
 
@@ -317,7 +460,7 @@ All requirements in this section apply at presentation time. The RP acts as a Ve
 * `jti`: fresh, unique per presentation (section 7.3, item 8); RP treatment per section 7.4, item 4
 * `response_mode`: echoes the request's `response_mode`
 * `amr`: per section 7.3, item 8
-* `transaction_data_hashes`, `transaction_data_hashes_alg`: binding to the presented `payment` payload
+* `transaction_data_hashes`, `transaction_data_hashes_alg`: binding to the presented `transaction_data` payload
 
 **Example (illustrative, non-normative) decoded KB-JWT**, answering the request of section 8.1. The `transaction_data_hashes` value is the SHA-256 hash of the base64url-encoded `transaction_data` entry of that request:
 
@@ -358,7 +501,7 @@ An implementation **conforms to this specification as an Attestation Provider** 
 An implementation **conforms to this specification as a Wallet Unit** if it:
 
 1. Conforms to CS-01 [5] and CS-02 [6] as a Wallet Provider.
-2. Restricts SCA processing to the `sca-card-dpc`, `sca-iban` and `sca-user` attestation types and the `urn:eudi:sca:payment:1` transaction type (sections 2 and 7.1).
+2. Restricts SCA processing to the `sca-card-dpc`, `sca-iban` and `sca-user` attestation types and the `urn:eudi:sca:payment:1` and `urn:eudi:sca:login_risk_transaction:1` transaction types (sections 2 and 7.1).
 3. Implements Signed Request Verification for all in-scope SCA presentations, rejects unsigned requests, supports encrypted requests with POST delivery of the Request Object outside the Digital Credentials API, and does not implement or require Disclosure Policy Verification for these attestation types (section 7.3).
 4. Implements transaction data discovery, validation and rendering per sections 5, 6 and 7.3.
 5. Generates Key Binding JWTs meeting the `jti`, `amr`, `response_mode` and `transaction_data_hashes` requirements of section 7.3.
@@ -367,7 +510,7 @@ An implementation **conforms to this specification as a Wallet Unit** if it:
 An implementation **conforms to this specification as a Relying Party** if it:
 
 1. Conforms to CS-02 [6] as a Verifier.
-2. Issues only `urn:eudi:sca:payment:1` transaction data requests for SCA presentations (section 7.1).
+2. Issues only `urn:eudi:sca:payment:1` or `urn:eudi:sca:login_risk_transaction:1` transaction data requests for SCA presentations (section 7.1).
 3. Sends signed Authorization Requests for all SCA presentations and, where it encrypts them outside the Digital Credentials API, does so with POST delivery of the Request Object and the WU-provided keys (section 7.4).
 4. Treats the KB-JWT `jti` per the requirements of section 7.4.
 5. Constructs Authorization Requests querying for at most one of `sca-card-dpc`, `sca-iban` or `sca-user` per request (section 7.4).
