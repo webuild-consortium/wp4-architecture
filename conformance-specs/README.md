@@ -60,6 +60,7 @@ graph TB
 | CS-003 | [Remote Qualified Signing with Wallet Units](cs-03-remote-signing-with-wallet-units.md) | 1.2 | Approved |
 | CS-004 | [Individual Wallet Unit Attestation (WUA) Lifecycle](cs-04-wua-lifecycle.md) | 1.2 | Approved |
 | CS-005 | [Business Wallet Unit Attestation (BWUA) Lifecycle](cs-05-bwua-lifecycle.md) | 1.1 | Approved |
+| CS-006 | [Issuance of Relying Party Access and Registration Certificates](cs-06-issuance-of-relying-party-access-and-registration-certificates.md) | 1.1 | Approved |
 | CS-007 | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) | 1.0 | Pre-flight |
 | CS-010 | [Attestation Revocation Mechanism](cs-10-revocation-mechanism.md) | 1.1 | Pre-flight |
 | CS-012 | [SCA Attestations for Payment and Risk-based Authentication (TS12 Profile)](cs-12-sca-payments.md) | 1.2 | Pre-flight |
@@ -75,7 +76,6 @@ Links go to the draft PR where one exists, otherwise to the issue.
 <!--BEGIN INDEX-->
 | **WBCS #** | **WBCS Title** | **Status** | **Priority** | **Needed by** |
 | ---------- | -------------- | ---------- | ------------ | ------------- |
-| CS-006 | [Wallet-Relying Party Access and Registration Certificates](https://github.com/webuild-consortium/wp4-architecture/pull/287) | 🟢 *In review* | Must-have | All use cases |
 | CS-011 | [Remote QESeal Creation](https://github.com/webuild-consortium/wp4-architecture/pull/198) | 🟡 *Drafting* | Must-have | |
 | CS-014 | [Proximity / Offline Profile](https://github.com/webuild-consortium/wp4-architecture/issues/251) | 🔵 *Investigating* | Should-have | SC1 |
 | CS-017 | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/pull/370) | 🟡 *Drafting* | Must-have | BU4, PA4, SC5 |
