@@ -53,7 +53,7 @@ On terminology: the Commission proposal used the term "mandate" for the permissi
 ## Authorisation and mandate terminology
 The Business Wallet lets the wallet owner manage who may invoke which wallet functions: employees, service providers and automated systems, such as scheduled jobs acting through an API. Authorisations follow the organisation's internal governance, can be limited by role, function or scope, and can be revoked one at a time.
 
-As described under [Wallet owner, users and representatives](#wallet-owner-users-and-representatives), these authorisations are technical and do not by themselves give authority to bind the organisation towards third parties. Where an action requires legal representation, the wallet presents and verifies evidence of that authority, such as an authorised signatory attestation or a power of attorney, in accordance with applicable Union and national law.
+As described under [Wallet owner, users and representatives](#wallet-owner-users-and-representatives), these authorisations are technical and do not by themselves give authority to bind the organisation towards third parties. Where an action requires legal representation, the wallet could for example present and verify evidence of that authority, such as an authorised signatory attestation or a power of attorney, in accordance with applicable Union and national law.
 
 ## Relationship with the EUDI Wallet
 
