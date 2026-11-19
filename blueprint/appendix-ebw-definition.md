@@ -48,6 +48,11 @@ On terminology: the Commission proposal used the term "mandate" for the permissi
 1. Authorisations in the wallet are **technical**. They do not create, limit or otherwise affect any power of attorney or legal mandate under national or Union law.
 2. The authorisation system should remain compatible with the EU digital power of attorney established by Directive (EU) 2025/25.
 
+## Authorisation and mandate terminology
+The Business Wallet lets the wallet owner manage who may invoke which wallet functions: employees, service providers and automated systems, such as scheduled jobs acting through an API. Authorisations follow the organisation's internal governance, can be limited by role, function or scope, and can be revoked one at a time.
+
+As described under [Wallet owner, users and representatives](#wallet-owner-users-and-representatives), these authorisations are technical and do not by themselves give authority to bind the organisation towards third parties. Where an action requires legal representation, the wallet could for example present and verify evidence of that authority, such as an authorised signatory attestation or a power of attorney, in accordance with applicable Union and national law.
+
 ## Relationship with the EUDI Wallet
 
 The EBW builds on and complements the EUDI Framework:
