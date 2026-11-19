@@ -84,7 +84,7 @@ Authentic sources, such as company registers, can make their data available to w
 - **Become a PuB-EAA Provider**, which requires lighter certification than a QTSP.
 - **Become a QEAA Provider (QTSP)**, issuing following the [WBCS for credential issuance](../conformance-specs/cs-01-credential-issuance.md).
 - **Let a QEAA Provider retrieve attributes** from the authentic source, and issue them as QEAAs.
-- **Let a QEAA Provider verify attributes** against the authentic source at the user's request, as foreseen in Article 45e of eIDAS.
+- **Let a QEAA Provider verify attributes** against the authentic source at the user's request, as foreseen in Article 45e of eIDAS 2.0.
 
 The last two require an interface between the QTSP and the authentic source, which WE BUILD has not specified. Use cases that need it can propose a WBCS following the [WBCS process](../conformance-specs/README.md).
 
