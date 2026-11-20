@@ -15,6 +15,7 @@ Date: 20 November 2026
 * Stefan Kauhaus, Visa
 * Thodoris Papadopoulos, GRNET
 * Michal Stava, Aricoma
+* Magnus Svensson, SUNET
 
 Table Of Contents
 
