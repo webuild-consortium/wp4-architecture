@@ -67,6 +67,7 @@ graph TB
 | CS-013 | [Relying Party Intermediaries](cs-13-intermediary-services-preflight.md) | 1.0 | Pre-flight |
 | CS-015 | [EBW–QTSP WMP Interface](cs-15-ebw-qtsp-wmp.md) | 1.0 | Approved |
 | CS-016 | [Inter-QTSP Message Relay (QERDS AS4)](cs-16-qerds-as4.md) | 1.0 | Approved |
+| CS-018 | [Baseline Trust Validation](cs-18-baseline-trust-validation.md) | 1.0 | Pre-flight |
 <!--END INDEX-->
 
 ### WBCS Under Development
@@ -79,7 +80,6 @@ Links go to the draft PR where one exists, otherwise to the issue.
 | CS-011 | [Remote QESeal Creation](https://github.com/webuild-consortium/wp4-architecture/pull/198) | 🟡 *Drafting* | Must-have | |
 | CS-014 | [Proximity / Offline Profile](https://github.com/webuild-consortium/wp4-architecture/issues/251) | 🔵 *Investigating* | Should-have | SC1 |
 | CS-017 | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/pull/370) | 🟡 *Drafting* | Must-have | BU4, PA4, SC5 |
-| CS-018 | [Baseline Trust Validation](https://github.com/webuild-consortium/wp4-architecture/pull/363) | 🟢 *In review* | Must-have | All use cases |
 | CS-019 | [Support for Data Spaces](https://github.com/webuild-consortium/wp4-architecture/issues/334) | 🟡 *Drafting* | Should-have | SC2 |
 | CS-020 | [Document References, Linked Attestations and Evidence in (Q)EAAs](https://github.com/webuild-consortium/wp4-architecture/pull/373) | 🟡 *Drafting* | Should-have | SC1, SC5, PA3, PA4 |
 | CS-XXX| [RP-QERDS Interface](https://github.com/webuild-consortium/wp4-architecture/issues/254) | 🟣 *Candidate* | Low | |
