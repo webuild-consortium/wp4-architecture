@@ -1,4 +1,4 @@
-# WE BUILD - Pre-flight Conformance Specification CS-019: Attestation Chaining
+# WE BUILD - Pre-flight Conformance Specification CS-021: Attestation Chaining
 
 Version 0.9 / Pre-flight\
 Date: 12 November 2026
