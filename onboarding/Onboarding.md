@@ -1,0 +1,373 @@
+# Onboarding – Generic Process and Reference Guidance
+
+**Purpose:** Reusable WP4 instructions for all partners and scenarios. Maintained centrally by WP4. Do not copy this document into individual partner trackers.
+
+**Scope:** Stages 1–8 provide generic onboarding and provisioning instructions; Stage 9 is documented only as a hand-off to the use-case tracker, where interoperability test execution and results are recorded.
+
+**Status rule:** All scenario-specific applicability, exact test-case IDs, owners, evidence, results and sign-off belong in `WP4_Tracker_TEMPLATE.md` or its approved scenario/partner copies. Generic examples below are not mandatory test-case selections.
+
+## Identification and Wallet Setup
+
+### Stage 1 – Role identification
+
+1. Identify the use case, scenario, partner and business role (e.g., supplier, buyer, bank).
+2. Confirm each technical role: 
+   - Holder (natural and/or legal person)
+   - Verifier/Relying Party
+   - Issuer
+   - Intermediary 
+   A partner may have multiple technical roles.
+3. Identify the required EUDI Wallet and/or Enterprise Business Wallet (EBW) implementations for each role.
+4. Record the approved role assignment and wallet inventory in the scenario-specific partner tracker.
+
+**Exit criterion:** Roles and wallet requirements have been confirmed by the use-case level.
+
+### Stage 2 – Wallet initialization and deployment
+
+**Goal:** A conformant wallet instance matching your role is installed and reachable.
+
+**Actions**
+
+1. Choose your wallet from the [WEBUILD WP4 Wallets Directory](https://webuild-consortium.github.io/wp4-wallets-group/), or deploy your own WEBUILD-conformant business wallet.
+
+| Wallet type                          | Needed when                                          | Directory filter                              | 
+|:-------------------------------------|:-----------------------------------------------------|:----------------------------------------------|
+| **EUDI Wallet** (natural person)     | The use case has a Holder played by a natural person | `Wallets that can be used by natural persons` |
+| **EBW** (Enterprise Business Wallet) | A legal entity acts as Holder, Verifier/RP or Issuer | `Wallets that can be used by legal persons`   |
+
+3. Install the **EUDI Wallet first**. Activating an EBW needs an **EBWOID**, and issuing the EBWOID requires a natural person with an EUDI Wallet to authorize it (see Stage 8, EBWOID guidance).
+3. If you use several distinct EUDI Wallet implementations, track each one separately.
+
+**Exit criteria:** Wallet(s) installed; EBW endpoint reachable (if applicable).
+**Record in tracker:** Provider, app name, version, role, endpoint URL.
+
+---
+
+## ITB Onboarding and Basic Conformance
+
+### Stage 3 – ITB onboarding
+
+**Goal:** You can log in to the Interoperability Test Bed and coordinate testing.
+
+*Prerequisite: Wallet access sufficient to begin ITB testing (Stage 2).*
+
+**Actions**
+
+1. Request ITB credentials: email **Nico** or **Ester** (*contact details to be added*) or ask on Slack. Portal: [ITB Login Portal](https://dev-i4mlab.aegean.gr/itb/app#/login)
+2. Join Slack channel [#wp4-testing](https://we-build-consortium.slack.com/archives/C09K65GLKT2).
+3. Read the [WEBUILD master guidance (Google Doc)](https://docs.google.com/document/d/1NR6O5WGA1z1rw4zHtBmGvFkjd9SyTTVdR2TjbJrubc0/edit?pli=1&tab=t.0#heading=h.l16nv1c1n7ja).
+
+**Exit criteria:** You can log in to the ITB; you are in #wp4-testing.
+**Record in tracker:** ITB username, date of access.
+
+---
+
+### Stage 4. ITB Basic Conformance (CS-Basic)
+
+**Goal:** Your wallet can receive and present credentials (no trust check).
+
+*Prerequisite: Stage 3.*
+
+**How to run any CTS block**
+
+1. Log in to the ITB.
+2. Open **My Conformance Statements** → **Base Protocols**.
+3. Execute the tests of each block one by one, according to your use-case definition.
+
+| Block                  | Purpose                                               | Test cases                                                                                                                                        | Notes                                                                                                   |
+|:-----------------------|:------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------|
+| **CS-01 Issuance**     | The wallet can receive credentials/attestations       | At least one, defined by the use case. Illustrative example: `VCI-006` in `PA3.Scenario1` (pre-authorized code, SD-JWT, X.509, without BWUA)                   | **Key Attestation (KA) is required.**                                                                   |
+| **CS-02 Presentation** | The wallet can present requested claims to a Verifier | At least one, defined by the use case. Illustrative example: `VP-001` in `PA3.Scenario1` (DCQL request for `urn:eu.europa.ec.eudi:pid:1`, claim `family_name`) | Flow: retrieve the `openid4vp` request → present the credential → check and log the transaction status. |
+
+> **Naming:** In the tracker, CS-01 and CS-02 are grouped as **CS-Basic**. Run them once per wallet type (EBW and each EUDI Wallet).
+
+**Exit criteria:** All specified CS-01 and CS-02 test cases passed for every wallet you operate.
+**Record in tracker:** Test case ID, execution date, result link or screenshot.
+
+---
+
+**Scenario-specific rule:** The use-case lead selects the applicable CS-01/CS-02 cases; the partner tracker records test IDs, runs, evidence and results. Do not treat the examples above as universally mandatory.
+
+## Trust and Role-Specific Conformance
+
+### Stage 5 – WEBUILD Trust List Registration
+
+To establish ecosystem-wide trust, every certificate/key used to build trust in your MVP must be registered in the correct trusted list on the IDunion console ([IDunion Trusted Lists](https://console.dev.idunion.info/trusted-lists)).
+
+#### General procedure
+
+1. **Get console access:** Register a contact person for your company on the [IDunion Console](https://console.dev.idunion.info/).
+2. **Register your certificate** (for all registries *except* Access and Registration Certificates):
+   * **Export CSR:** Connect to your wallet instance and export your Certificate Signing Request (CSR) or public certificate.
+   * **Register:** Upload your certificate to the registry matching your MVP role (see sections 5.1–5.4).
+3. **Access and Registration Certificates** cannot be registered directly on the console. They must be issued by the Access Certificate Authority or Registration Certificate Authority (Raidiam in this ecosystem). See the [Raidiam WEBUILD Ecosystem Docs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs).
+
+#### Reference: Access / Registration Certificate registries
+
+These two registries are used by Verifiers and by Issuers of EUDI credentials. Both registrations are required.
+
+| Registry | Description | Reference |
+|:---|:---|:---|
+| **WEBUILD – Access Certificate Authorities** | Trusted list of Access Certificate Authorities | [Raidiam Docs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **WEBUILD – Registration Certificate Authorities** *(shown on the console as "Access Registration Authorities")* | Trusted list of Registration Certificate Authorities | [Raidiam Docs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+
+#### 5.1 Relying Party (Verifier)
+
+| Credentials verified | Registration needed |
+|:---|:---|
+| **EUDI credentials** (e.g., personal identity via EUDI Wallet) | Access Certificate + Registration Certificate (see reference above), obtained via Raidiam |
+| **EBW credentials** | None, unless your use case requires it |
+
+#### 5.2 Issuer
+
+Find your credential type below to locate the target registry. The links for subsections 5.2.1–5.2.4 currently point to the same console URL. Confirm the correct registry for each issuer type before use.
+
+| Issuer type | Registry | Link |
+|:---|:---|:---|
+| **4.2.1 PuB-EAA** (Public Sector Attribute Attestation) | WEBUILD – Pub-EAA Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **4.2.2 QEAA** (Qualified Electronic Attribute Attestation) | WEBUILD – QEAA Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **4.2.3 EBWOID** (Enterprise Business Wallet OID) | WEBUILD – EBWOID Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **4.2.4 PID / Registration** | WEBUILD – PID Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+
+#### 5.2.5 Sectoral & bilateral EAAs for EUDI Wallets (e.g., SCA, PCF Auditors, DPC)
+
+Direct onboarding is available for each sectoral EAA:
+
+| Registry | Description | Link |
+|:---|:---|:---|
+| **Chamber of Auditors EAA Provider** | Trusted PCF (Product Carbon Footprint) Auditors | [IDunion Console](https://console.dev.idunion.info/trusted-lists/) |
+| **UseCase Bank SCA** | Bank-issued credentials in financial scenarios (e.g., SCA) | [IDunion Console](https://console.dev.idunion.info/trusted-lists/) |
+| **UseCase DPC** | Trusted EAA Providers for Digital Payment Credentials (DPC) | [IDunion Console](https://console.dev.idunion.info/trusted-lists/) |
+
+In addition, **Access and Registration Certificates are required** (see reference above).
+
+#### 5.2.6 Issuer of other EUDI credentials (e.g., Employee, A1)
+
+Access and Registration Certificates are required (see reference above). If one entity issues several attestation types, **a separate Registration Certificate is required for each attestation type.**
+
+#### 5.2.7 Issuer of EBW credentials
+
+No registration is required unless the use case specifies otherwise.
+
+**Note:** If the use case requires additional registration to establish trust or authorization, contact the IDunion team for support. 
+
+#### 5.3 Intermediary / Transit
+
+| Registry | Description | Reference |
+|:---|:---|:---|
+| **WEBUILD – WP 4 – Group 5 – Trust Registry Infrastructure Access Certificate Authority** | Anchor list allowing intermediaries to securely connect to the Group 5 testing APIs | [Act as Intermediary tutorial](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs/act-as-intermediary/) |
+
+#### 5.4 Wallet Provider
+
+| Registry | Description | Onboarding |
+|:---|:---|:---|
+| **WEBUILD – Wallet Providers** | Providers of digital identity wallet solutions | Onboarding portal link: *[to be added]* |
+
+#### Holder role exception
+
+Pure **Holders** (natural persons using EUDI mobile wallets, or businesses using Enterprise Wallets with no issuance or verification role) **need no registry entries** on the IDunion console. Their trust is established by presenting credentials that trace back cryptographically to the registered Issuers.
+
+#### Stage 5 checklist
+
+| Check | Requirement | Status | Evidence / Notes |
+|:---:|:---|:---:|:---|
+| 🔲 | Contact person registered on IDunion Console | ⚪ | |
+| 🔲 | Certificate/CSR registered in role-specific registry | ⚪ | Registry: |
+| 🔲 | Access Certificate obtained (if applicable) | ⚪ | |
+| 🔲 | Registration Certificate(s) obtained (if applicable) | ⚪ | One per attestation type |
+
+---
+
+### Stage 6 – Trust conformance (CS-Trust)
+
+**Goal:** Demonstrate the applicable trust-framework integration using the ITB. The generic reference covers wallet trust and, where relevant, Wallet Instance Attestation, WBCS-001/002/004, `VCI-006` and `VP-001`.
+
+**Applicability:** Defined by the use-case lead for each technical role and wallet implementation. The business-wallet validation specification is marked **to be confirmed** in the source guidance.
+
+**Procedure:** Select the approved CS-Trust cases in the ITB, execute them, and record test case IDs, execution date, results and evidence in the partner tracker.
+
+**Exit criterion:** Every applicable CS-Trust case has passed, or an approved exception is recorded.
+
+### Stage 7 – Sectorial-specific conformance (use-case-dependent)
+
+*Prerequisites: Stage 3 passed; Stage 5 trust registration and Stage 6 trust conformance completed where required.*
+
+| Block            | What it validates                                                                                                   | Applies to   | Status of definition |
+|:-----------------|:--------------------------------------------------------------------------------------------------------------------|:-------------|:---|
+| **CS-Issuer**    | The entity can successfully trigger EAA issuance                                                                    | EBW and EUDI | Defined |
+| **CS-Signature** | The wallet can present a PID, obtain a QES via a QTSP and sign the document hash                                    | EUDI         | Defined |
+| **CS-QERS**      | The wallet can communicate over the QERDS channel | EUDI/EBW     | Defined |
+
+*Extensions for further processes: to be added.*
+
+**Exit criteria:** All blocks required by the use-case definition passed.
+**Record in tracker:** Test case ID, execution date, result link.
+
+---
+
+## Prerequisites Provisioning and MVP Execution
+
+### Stage 8 – Generic prerequisite provisioning guidance
+
+**Principle:** The use-case defines which credentials, schemas, proof requests, issuers and test data are required for each Holder, Verifier and Issuer. The approved scenario tracker is the source of those requirements. The following is a reference catalog and procedural guide, not a universal checklist.
+
+### 8.1 Credential selection and dependencies
+
+**Reference ID note:** The source credential catalog uses legacy IDs 8.1–8.8; the detailed instructions below are grouped as subsections 8.2.1–8.2.8. These are reference identifiers only, not partner-tracker task IDs.
+
+#### Credential dependency chain
+
+Obtain credentials in this order. Skip what your use case does not need.
+
+| ID  | Credential                                               | Held in     | Requires first               | Test issuer                                           |
+|:---:|:---------------------------------------------------------|:------------|:-----------------------------|:------------------------------------------------------|
+| 8.1 | **PID** (Personal Identification Data)                   | EUDI Wallet | EUDI Wallet installed        | PID test issuers (see 8.1)                            |
+| 8.2 | **QEAA** (e.g., qualified attestation)                   | EUDI Wallet | EUDI Wallet installed        | issued to eudi wallet by QTSP Provider (see 8.2)      |
+| 8.3 | **EAA** (ex. Employee,A1,.....)                          | EUDI Wallet | EUDI Wallet installed        | issued to eudi wallet by other entities see 8.3)      |
+| 8.4 | **EBWOID** (Enterprise Business Wallet ID)               | EBW         | PID + EBW installed          | EBWOID Issuers see 8.4)                               |
+| 8.5 | **EUCC** (EU Company Credential)                         | EBW         | EBWOID                       | EUCC issuers (see 8.5                                  |
+| 8.6 | **QEAA** (ex. VAT,TAX,...)                               | EBW         |                              | issued by QTSP (contact QTSP Provider) (8.6)          |
+| 8.7 | **EAA** (ex. IBAN,SCA,.....)                             | EBW         | EBW OID + process to obtain  | issued to your company wallet by other entities (8.7) |
+| 8.8 | **Self-EAA** (ex. CompanyInfo, ContactPerson, VAT, etc.) | EBW         | EBW + imported schemas       | Self-issued via your company wallet (8.8)             |
+
+Rulebook catalog: [webuild-attestation-rulebooks-catalog](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks)
+
+#### Role-specific provisioning guidance
+
+* **As holder:** Obtain the credential (section "How to obtain").
+* **As verifier/RP:** Import the schema into your EBW and prepare the DCQL query (section "Prepare proof request") with the respective VCT 
+* **As issuer:** Import the schema into your EBW and use the test data provided in the respective schemas folder
+---
+
+#### 8.2.1 Personal Identification Data (PID)
+
+**Rulebook:** [rb-pid](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-pid)
+
+##### How to obtain
+
+1. **Prepare attributes:** legal name, first name, date of birth, place of birth. *(To confirm: should this read Family Name and Given Name, matching the `family_name` claim?)*
+2. **Choose a generic PID issuer supporting multiple countries:**
+
+| PID issuer                   | Location                                                                  | Remarks                                                                  |
+|:-----------------------------|:--------------------------------------------------------------------------|:-------------------------------------------------------------------------|
+| EUDI Wallet demo application | [PID Issuer Portal](https://issuer.eudiw.dev/display_credential_offer)    | Define your own PID. **Not registered in the WEBUILD trusted list.**     |
+| Credenco Wallet              | [Credenco Playground](https://playground.credenco.com/webuild)            | Dutch playground with 6 predefined PIDs or a generic one.                |
+| eGov                         | [eGOV Playground](https://wallet.dev.egov.md/rp-tester/credential-claims) |                                                                          |
+| other                        |                                                                           |                                                                          |
+
+*note* For country PID issuers support check here : [PID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#pid-issuers)
+
+3. **Fill in** the required data fields.
+4. **Accept in wallet:** scan the QR code with your mobile EUDI Wallet and accept.
+
+##### Prepare proof request (RP)
+
+* Import `PID.schema.json` into your EBW (or ask your wallet provider to enable it).
+* Build the request yourself, or use `PID.dcql.standard.json`. Baseline test: `urn:eu.europa.ec.eudi:pid:1` with `family_name`.
+
+---
+#### 8.2.2 QEAA to EUDI Wallet 
+- To be completed for the relevant scenario.
+- 
+#### 8.2.3 EAA to EUDI Wallet 
+- To be completed for the relevant scenario (e.g., Employee or SCA).
+
+#### 8.2.4 Enterprise Business Wallet ID (EBWOID)
+
+**Rulebook:** *to be confirmed.* The source document links `rb-eucc`, which is the EUCC rulebook and is probably a copy-paste error.
+
+*Prerequisites: PID in your EUDI Wallet (8.1); company EBW installed.*
+
+##### How to obtain
+
+1. **Get authorized-person data:** look up the legal representative (name, surname, birthdate, location) in public registers.
+2. **Choose a generic EBWOID issuer supporting multiple countries:**
+ 
+ | EBWOID issuer                          | Location                                                                                 | Remarks                                      |
+ |:---------------------------------------|:-----------------------------------------------------------------------------------------|:---------------------------------------------|
+ | Bundesanzeiger predefined EBWOID demo  | [EBWOID Demo](https://demo-banz-issuance.eidademo.spherity.dev/attested-issuance/ebwoid) | Predefined EBWOID demo                       |
+ | eGov                                   | [eGOV Playground](https://wallet.dev.egov.md/rp-tester/credential-claims)                |                                              |
+ | Bundesanzeiger generic EBWOID issuance | [Attested Issuance Page](https://eida-issuer.spherity.dev/attested-issuance)             | Generic EBWOID issuance (multiple countries) |
+ | Infogreffe                             | To add                                                                                   | To add                                       |
+
+*note* For country EBWOID issuers support check here :[EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#ebwoid-issuers)
+
+3. **Open the issuer portal and select** *EBWOID Attestation*.
+4. **Identify the company:** search for and select it.
+5. **Scan and present PID:** use your EUDI Wallet (with the PID from 8.1) to scan the QR code and authorize.
+6. **Claim:** copy the Credential Offer link and paste it into your company EBW.
+
+##### Prepare proof request (RP)
+
+* Import `EBWOID.schema.json`; use `EBWOID.dcql.standard.json` or build your own.
+
+---
+
+#### 8.2.5 European Union Company Credential (EUCC)
+
+**Rulebook:** [rb-eucc](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-eucc)
+
+*Prerequisite: EBWOID in your company EBW (8.4).*
+
+##### How to obtain
+
+1. **Initiate issuance:** An EBWOID is required.
+2. **Choose a generic EUCC issuer supporting multiple countries:**
+   [Bundesanzeiger Attested Issuance Page](https://eida-issuer.spherity.dev/attested-issuance/eucc). 
+
+3. **Request proof:** copy the generated presentation request.
+4. **Present EBWOID:** paste the request into your company EBW, review the requested attributes, present.
+5. **Claim:** Return to the Spherity page, copy the **EUCC Credential Offer** link, accept it in your company EBW.
+
+##### Prepare proof request (RP)
+
+* Import `EUCC.schema.json`; use `EUCC.dcql.standard.json` or build your own.
+
+---
+#### 8.2.6 QEAA for business wallet 
+To be completed by the use-case lead. 
+
+#### 8.2.7 EAA for business wallet 
+
+Ex:
+| **IBAN-OV** | [rb-iban-.iv](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `ibanov.schema.json` | `ibanov.dcql.standard.json` |
+| **SCA** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `sca.schema.json` | `sca.dcql.standard.json` |
+| **GS1** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `gs1.schema.json` | `gs1.dcql.standard.json` |
+etc 
+
+
+####### How to obtain it, repeated per attestation
+
+1. **Load schemas:** make sure the rulebook schema is imported in your company wallet.
+2. **Prepare data:** gather the mandatory fields. Demo data can be taken from the rulebook definition.
+3. **Trigger issuance:** start the issuer process, enter the data and copy the Credential Offer. *(To confirm: which issuer or tool performs this step.)*
+4. **Accept in wallet:** paste the offer into your company wallet, review, confirm.
+
+##### Prepare proof request (RP)
+
+Import the schema files from the table into your EBW, then build the request yourself or use the matching `*.dcql.standard.json` file.
+
+
+
+#### 8.2.8 Company Self-Attested Attestations (Self-EAA)
+
+Ex:
+| **CompanyInfo** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `CompanyInfo.schema.json` | `CompanyInfo.dcql.standard.json` |
+all other self attested 
+
+####### How to obtain it, repeated per attestation
+
+1. **Load schemas:** make sure the rulebook schema is imported in your company wallet.
+2. **Prepare data:** gather the mandatory fields. Demo data can be taken from the rulebook definition.
+3. **Trigger issuance:** start the issuer process, enter the data and copy the Credential Offer. *(To confirm: which issuer or tool performs this step.)*
+4. **Accept in wallet:** paste the offer into your company wallet, review, confirm.
+
+##### Prepare proof request (RP)
+
+Import the schema files from the table into your EBW, then build the request yourself or use the matching `*.dcql.standard.json` file.
+
+### Stage 9 – MVP interoperability execution
+
+Stage 9 is **tracked only in the scenario/partner tracker**. The use-case lead defines the end-to-end test steps and acceptance criteria; participating partners record each execution run, actual result, evidence, defects, retests and final approval. This generic onboarding document does not store MVP test results.
+
+WP4 owns this generic document. Proposed changes should be reviewed centrally; scenario-specific selections and evidence must remain in the trackers.
