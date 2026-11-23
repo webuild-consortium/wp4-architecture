@@ -37,7 +37,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 28. [PID Attributes for Cross-Border Identity Matching](002-identity-matching-and-subject-linking.md)
 29. [Extend TS11 credential metadata with OpenID Federation Trust Marks](openid-federation-trust-marks.md)
 30. [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md)
-31. [Baseline protocols update](baseline-protocols-and-versions-2.md) — obsoletes no. 2
+31. [Baseline protocols update](baseline-protocols-and-versions.md) — obsoletes no. 2
 <!--END INDEX-->
 
 ## Supporting analysis
