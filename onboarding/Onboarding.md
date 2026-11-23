@@ -157,6 +157,8 @@ No registration is required unless the use case specifies otherwise.
 |:---|:---|:---|
 | **WEBUILD – WP 4 – Group 5 – Trust Registry Infrastructure Access Certificate Authority** | Anchor list allowing intermediaries to securely connect to the Group 5 testing APIs | [Act as Intermediary tutorial](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs/act-as-intermediary/) |
 
+For non-qualified EAA Providers: If your Use Case requires a Trusted List (or LoTE) that is not available, please request your list to be set up via info@idunion.eu. Please provide some basic information about your Use Case (Work Package, number of listed entities, potential restrictions for listings, etc.)
+
 #### 5.4 Wallet Provider
 
 | Registry | Description | Onboarding |
