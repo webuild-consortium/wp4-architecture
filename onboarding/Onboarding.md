@@ -196,7 +196,7 @@ Pure **Holders** (natural persons using EUDI mobile wallets, or businesses using
 |:-----------------|:--------------------------------------------------------------------------------------------------------------------|:-------------|:---|
 | **CS-Issuer**    | The entity can successfully trigger EAA issuance                                                                    | EBW and EUDI | Defined |
 | **CS-Signature** | The wallet can present a PID, obtain a QES via a QTSP and sign the document hash                                    | EUDI         | Defined |
-| **CS-QERS**      | The wallet can communicate over the QERDS channel | EUDI/EBW     | Defined |
+| **CS-QERDS**     | The wallet can communicate over the QERDS channel | EUDI/EBW     | Defined |
 
 *Extensions for further processes: to be added.*
 
