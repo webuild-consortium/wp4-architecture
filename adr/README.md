@@ -8,7 +8,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 
 <!--BEGIN INDEX-->
 1. [Publish consortium trusted lists](trusted-lists.md)
-2. [Baseline protocols](base-protocols.md)
+2. ~~[Baseline protocols](base-protocols.md)~~ — obsoleted by no. 31
 3. [Specify PID and eAA formats](document-formats.md)
 4. [Provide EBWOID as a stable minimal basis](basic-lpid.md)
 5. [Wallet Unit Attestation and Lifecycle Management (For EBW)](wallet-unit-lifecycle-management.md)
@@ -37,6 +37,7 @@ Propose new ADRs using the [template](_template.md). Announce them to the [Archi
 28. [PID Attributes for Cross-Border Identity Matching](002-identity-matching-and-subject-linking.md)
 29. [Extend TS11 credential metadata with OpenID Federation Trust Marks](openid-federation-trust-marks.md)
 30. [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md)
+31. [Baseline protocols update](baseline-protocols-and-versions-2.md) — obsoletes no. 2
 <!--END INDEX-->
 
 ## Supporting analysis
