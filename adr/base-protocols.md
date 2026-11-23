@@ -8,6 +8,8 @@
 - George J Padayatti, iGrant.io, Sweden
 - Lal Chandran, iGrant.io, Sweden
 
+> **Obsoleted by:** [Baseline protocols, formats and versions](baseline-protocols-and-versions.md)
+
 ## Context
 The EUDI Wallet ecosystem is mandated by eIDAS to ensure secure, interoperable cross-border digital identity.
 This implementation is guided by the Architecture and Reference Framework (ARF), which translates legal mandates into technical specifications.
