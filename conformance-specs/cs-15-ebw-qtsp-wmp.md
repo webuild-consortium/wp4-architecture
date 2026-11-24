@@ -489,7 +489,6 @@ sequenceDiagram
 Per [WMP-CORE] Section 4.4.6, the `ebcore` scheme authenticates with `mtls` or `bearer`. This profile constrains that choice:
 
 - The EBW **MUST** authenticate using `auth.type` of `mtls`, presenting its Subscriber certificate (Section 8.4) as the TLS client certificate.
-- The EBW **MAY** additionally use `x5c` challenge-response authentication where the deployment terminates TLS at a component that cannot forward the client certificate. In that case the EBW **MUST** complete `wmp.session.authenticate` with a `signed_challenge` over the challenge issued in the session create result, per [WMP-CORE] Section 4.4.3.
 - The QTSP **MUST NOT** accept `auth.type` of `bearer` or `opaque` on a QERDS session.
 
 The QTSP **MUST**:
