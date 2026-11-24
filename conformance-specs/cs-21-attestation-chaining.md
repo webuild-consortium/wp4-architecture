@@ -167,7 +167,7 @@ sequenceDiagram
 | **EBP-TV-02** | The EBWOID Provider **MUST** require a Proof of Possession (PoP) signature for the `cnf_signing` public key during the OpenID4VCI issuance flow before including it in the credential. |
 | **EBP-TV-03** | The EBWOID Provider **MUST** include its full X.509 certificate chain (excluding the TLoL root) in the `x5c` JOSE header of the issued EBWOID. |
 
-### 6.2 EAA Provider Requirements
+### 6.2 EAA Provider Requirements (Issuance)
 
 | ID | Requirement |
 | :--- | :--- |
