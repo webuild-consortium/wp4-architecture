@@ -48,6 +48,11 @@ On terminology: the Commission proposal used the term "mandate" for the permissi
 1. Authorisations in the wallet are **technical**. They do not create, limit or otherwise affect any power of attorney or legal mandate under national or Union law.
 2. The authorisation system should remain compatible with the EU digital power of attorney established by Directive (EU) 2025/25.
 
+## Authorisation and mandate terminology
+The Business Wallet lets the wallet owner manage who may invoke which wallet functions: employees, service providers and automated systems, such as scheduled jobs acting through an API. Authorisations follow the organisation's internal governance, can be limited by role, function or scope, and can be revoked one at a time.
+
+As described under [Wallet owner, users and representatives](#wallet-owner-users-and-representatives), these authorisations are technical and do not by themselves give authority to bind the organisation towards third parties. Where an action requires legal representation, the wallet could for example present and verify evidence of that authority, such as an authorised signatory attestation or a power of attorney, in accordance with applicable Union and national law.
+
 ## Relationship with the EUDI Wallet
 
 The EBW builds on and complements the EUDI Framework:
@@ -276,6 +281,8 @@ The Commission establishes, operates and maintains a **European Digital Director
 
 For each owner, providers submit at least: the official name (as in the national register of the country of establishment or habitual residence), the unique identifier, the digital address(es), and the country of establishment. Public sector bodies that are not EBW owners are also listed, with the same categories of information. The Directory relies on information made available by business registers (including through BRIS) without duplicating it, and must comply with data-protection principles such as data minimisation.
 
+**_WE BUILD implementation note:_** _In WE BUILD, the directory resolves an economic operator's legal identity (via its unique identifier) and is the entry point for discovery, while endpoints and capabilities are kept in ecosystem-specific registries ([ADR](../adr/build-edd-identification-discovery-connection.md)). Every wallet publishes a credential offer and issuance endpoint ([ADR](../adr/EAA-extension-for-the-EDD.md)), resolved through a registry and a permissioned lookup service ([ADR](../adr/ebw-endpoint-lookup-service.md)). The interfaces are being specified in CS-017._
+
 ### Access control mechanism
 
 To enable wallet owners, authorised representatives and other authorised users to access the business wallet while preventing unauthorised access, each business wallet implements role-based access control for the assets it protects, including digital documents and the secure communication channel. To identify, authenticate, and authorise wallet users, the access control mechanism relies on electronic identification means, such as digital identity wallets, and, potentially, on trust services for the electronic attestation of attributes. Access to a wallet unit is granted only after successful authentication with a notified eID means at assurance level "substantial" at least, or an alternative mechanism recognised as equivalent.
@@ -286,6 +293,8 @@ Authorisation decisions are based on one or more of: the attestations of the act
 - **mappings between roles and attributes** are verifiable, auditable, revocable and traceable to their legitimate issuers;
 - **conflicts of roles, over-delegation and expired authorisations** are automatically detected and prevented in real time; and
 - **all authorisation logic is interoperable** between European Business Wallets across Member States.
+
+Unlike a personal wallet, where the user may delete the transaction history, a business wallet must keep evidence that remains verifiable long after the transaction, for example when an auditor asks years later. In WE BUILD, presentations and transactions should therefore be sealed, so that the evidence can be verified independently of the wallet, the counterparty and the validity of the original certificates, using long-term validation or a qualified preservation service where required.
 
 The formats for roles and attributes, interoperability mechanisms for mandates and delegations across wallets, protocols and policy language, and logging requirements will be defined in implementing acts; the exchange of data on authorisations with national registers is named as an example of what these acts will cover.
 
@@ -345,6 +354,8 @@ The following topics are known to be unsettled but is needed for the WE BUILD us
 
 **_WE BUILD implementation note:_** _per the ITRE briefing, this topic should cover agent identity, delegated authority, revocation, audit evidence, assurance equivalence and accountability — not only an M2M transport protocol._
 
+**_Decided in WE BUILD:_** _As a minimum layer of automation, every EBW lets the wallet owner define which credential types may be shared with or received from which counterparties without human approval. All such rules are visible to and controlled by the owner ([ADR](../adr/EBW-EAA-exchange-automation.md)). The corresponding updates to the WBCS for credential issuance and presentation are in review. Agent identity and delegated authority for agents remain open._
+
 ## Business identity outside eID schemes and mutual identification of wallets
 
 **What is known.** An EBW does not need to be an eID means. Identification and authentication in the framework rely on electronic attestations issued by trusted entities. Wallets must interact with other EBWs and with EUDI Wallets, authenticate relying parties where required, and prove their own authenticity and validity via wallet unit attestations and validation mechanisms.
@@ -364,6 +375,8 @@ The following topics are known to be unsettled but is needed for the WE BUILD us
 **What is known.** Attestations can be issued, by the provider on behalf of the owner, for data for which the owner is the primary source, and linked into verifiable chains.
 
 **What is open.** Whether the owner, the provider or a separate attestation provider is the legal issuer; who appears in the issuer field; whether the attestation asserts only that the owner declared the data or that it was verified; which assurance, status and revocation rules apply; and whether this issuance is a trust service. 
+
+**_Decided in WE BUILD:_** _Self-issued attestations are allowed. They are not qualified, and relying parties decide whether they are sufficient for their use case ([ADR](../adr/Acceptance-of-Self-Issued-Attributes.md)). A relying party can verify that the signing key belongs to the issuing owner via its EBWOID ([ADR](../adr/eaa-key-binding-authzen.md))._
 
 ## QERDS designation, multiplicity and resilience
 
