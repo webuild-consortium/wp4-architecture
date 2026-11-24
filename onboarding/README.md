@@ -1,4 +1,4 @@
-# Tracking – Operating Concept
+# Onboarding & Tracking 
 
 **Purpose:** Define how UseCases manages generic onboarding guidance, scenario-specific requirements and evidence-based MVP execution tracking.
 
@@ -6,8 +6,8 @@
 
 | Document                   | Owner                                                   | Scope | Copies                                                                      |
 |----------------------------|---------------------------------------------------------|---|-----------------------------------------------------------------------------|
-| `wp4/onboarding.md`        | WP4                                                     | Generic procedures, ITB, trust registration, conformance and prerequisite provisioning | One                                                                         |
-| `wp4/tracking_template.md` | WP4; generic template                                   | Scenario requirements and partner-specific status, evidence and MVP execution | Generic Template |
+| `wp4/Onboarding.md`        | WP4                                                     | Generic procedures, ITB, trust registration, conformance and prerequisite provisioning | One                                                                         |
+| `wp4/Tracking_template.md` | WP4; generic template                                   | Scenario requirements and partner-specific status, evidence and MVP execution | Generic Template |
 
 **Separation of concerns:** 
 - Onboarding describes **how**; 
