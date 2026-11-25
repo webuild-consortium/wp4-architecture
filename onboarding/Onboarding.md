@@ -250,12 +250,7 @@ Rulebook catalog: [webuild-attestation-rulebooks-catalog](https://github.com/web
 
 | PID issuer                   | Location                                                                  | Remarks                                                                  |
 |:-----------------------------|:--------------------------------------------------------------------------|:-------------------------------------------------------------------------|
-| EUDI Wallet demo application | [PID Issuer Portal](https://issuer.eudiw.dev/display_credential_offer)    | Define your own PID. **Not registered in the WEBUILD trusted list.**     |
-| Credenco Wallet              | [Credenco Playground](https://playground.credenco.com/webuild)            | Dutch playground with 6 predefined PIDs or a generic one.                |
-| eGov                         | [eGOV Playground](https://wallet.dev.egov.md/rp-tester/credential-claims) |                                                                          |
-| other                        |                                                                           |                                                                          |
-
-*note* For country PID issuers support check here : [PID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#pid-issuers)
+Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#pid-issuers), maintained by the PID/EBWOID group. It includes country issuers and generic test issuers supporting multiple countries. Note that some test issuers are not registered in the WE BUILD trusted lists.
 
 3. **Fill in** the required data fields.
 4. **Accept in wallet:** scan the QR code with your mobile EUDI Wallet and accept.
