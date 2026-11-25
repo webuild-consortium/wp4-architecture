@@ -4,7 +4,7 @@
 
 **Scope:** Stages 1–8 provide generic onboarding and provisioning instructions; Stage 9 is documented only as a hand-off to the use-case tracker, where interoperability test execution and results are recorded.
 
-**Status rule:** All scenario-specific applicability, exact test-case IDs, owners, evidence, results and sign-off belong in `WP4_Tracker_TEMPLATE.md` or its approved scenario/partner copies. Generic examples below are not mandatory test-case selections.
+**Status rule:** All scenario-specific applicability, exact test-case IDs, owners, evidence, results and sign-off belong in the use case's copy of [Tracking_template.md](Tracking_template.md), in the use case's own repository. Generic examples below are not mandatory test-case selections.
 
 ## Identification and Wallet Setup
 
