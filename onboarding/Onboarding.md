@@ -161,7 +161,7 @@ For non-qualified EAA Providers: If your Use Case requires a Trusted List (or Lo
 
 | Registry | Description | Onboarding |
 |:---|:---|:---|
-| **WEBUILD – Wallet Providers** | Providers of digital identity wallet solutions | Onboarding portal link: *[to be added]* |
+| **WEBUILD – Wallet Providers** | Providers of digital identity wallet solutions | [Wallet Provider onboarding](https://github.com/webuild-consortium/wp4-wallets-group/blob/main/guidance/trusted-list-onboarding/README.md) |
 
 #### Holder role exception
 
