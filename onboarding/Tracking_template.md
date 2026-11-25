@@ -1,6 +1,6 @@
 # Tracking Template – Scenario Requirements and Partner Execution
 
-**Usage:** Copy this template first to an approved scenario baseline, then create a partner-specific copy for each partner/role combination. The use-case lead defines requirements; partners update actual progress. Generic procedures are maintained in [`WP4_Onboarding.md`](Onboarding.md).
+**Usage:** Copy this template to your use case's own repository, first as an approved scenario baseline, then as a partner-specific copy for each partner/role combination. The use-case lead defines requirements; partners update actual progress. Generic procedures are maintained in the [WP4 onboarding guide](https://github.com/webuild-consortium/wp4-architecture/blob/main/onboarding/Onboarding.md).
 
 **Statuses:** ⚪ Not started · 🟡 In progress · ✅ Done · 🔴 Blocked · ➖ N/A · ❔ To confirm. **Test outcomes:** Not run / Pass / Fail / Blocked / Retest pending.
 
