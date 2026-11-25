@@ -246,14 +246,12 @@ Rulebook catalog: [webuild-attestation-rulebooks-catalog](https://github.com/web
 ##### How to obtain
 
 1. **Prepare attributes:** see the mandatory attributes in the [PID Rulebook, section 3.2](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/rb-pid/README.md#32-mandatory-attributes) (e.g. `family_name`, `given_name`, `birth_date`).
-2. **Choose a generic PID issuer supporting multiple countries:**
+2. **Choose a PID issuer:**
+   a. choose a predefined PID Issuers if your use case already have one
+   b. choose a generic PID Test Issuers or a country Issuers (according to your use case) from the [List of PID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#pid-issuers), maintained by the PID/EBWOID group. It includes country issuers and generic test issuers supporting multiple countries. Note that some test issuers are not registered in the WE BUILD trusted lists.
 
-| PID issuer                   | Location                                                                  | Remarks                                                                  |
-|:-----------------------------|:--------------------------------------------------------------------------|:-------------------------------------------------------------------------|
-Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#pid-issuers), maintained by the PID/EBWOID group. It includes country issuers and generic test issuers supporting multiple countries. Note that some test issuers are not registered in the WE BUILD trusted lists.
-
-3. **Fill in** the required data fields.
-4. **Accept in wallet:** scan the QR code with your mobile EUDI Wallet and accept.
+4. **Fill in** the required data fields.
+5. **Accept in wallet:** scan the QR code with your mobile EUDI Wallet and accept.
 
 ##### Prepare proof request (RP)
 
@@ -276,12 +274,14 @@ Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-
 ##### How to obtain
 
 1. **Get authorized-person data:** look up the legal representative (name, surname, birthdate, location) in public registers.
-2. **Choose an EBWOID issuer** from the [List of EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#ebwoid-issuers), maintained by the PID/EBWOID group. It includes country issuers and generic test issuers supporting multiple countries.
+2. **Choose an EBWOID issuer**
+   a. choose a predefined EBWOID Test Issuers if your use case already have one
+   b. choose a generic EBWOID Issuers or a country Issuers (according to your use case) from the [List of EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#ebwoid-issuers), maintained by the PID/EBWOID group. It includes country issuers and generic test issuers supporting multiple countries.
 
-3. **Open the issuer portal and select** *EBWOID Attestation*.
-4. **Identify the company:** search for and select it.
-5. **Scan and present PID:** use your EUDI Wallet (with the PID from 8.1) to scan the QR code and authorize.
-6. **Claim:** copy the Credential Offer link and paste it into your company EBW.
+4. **Open the issuer portal and select** *EBWOID Attestation*.
+5. **Identify the company:** search for and select it.
+6. **Scan and present PID:** use your EUDI Wallet (with the PID from 8.1) to scan the QR code and authorize.
+7. **Claim:** copy the Credential Offer link and paste it into your company EBW.
 
 ##### Prepare proof request (RP)
 
@@ -300,7 +300,6 @@ Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-
 1. **Initiate issuance:** An EBWOID is required.
 2. **Choose a generic EUCC issuer supporting multiple countries:**
    [Bundesanzeiger Attested Issuance Page](https://eida-issuer.spherity.dev/attested-issuance/eucc). 
-
 3. **Request proof:** copy the generated presentation request.
 4. **Present EBWOID:** paste the request into your company EBW, review the requested attributes, present.
 5. **Claim:** Return to the Spherity page, copy the **EUCC Credential Offer** link, accept it in your company EBW.
