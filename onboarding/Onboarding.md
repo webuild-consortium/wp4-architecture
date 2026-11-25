@@ -198,7 +198,7 @@ Pure **Holders** (natural persons using EUDI mobile wallets, or businesses using
 | **CS-Signature** | The wallet can present a PID, obtain a QES via a QTSP and sign the document hash                                    | EUDI         | Defined |
 | **CS-QERDS**     | The wallet can communicate over the QERDS channel | EUDI/EBW     | Defined |
 
-*Extensions for further processes: to be added.*
+ITB blocks and the WBCS they test: CS-Issuer → CS-01, CS-Signature → CS-03, CS-QERDS → CS-15 / CS-16. See the [WBCS list](https://github.com/webuild-consortium/wp4-architecture/blob/main/conformance-specs/README.md). *Extensions for further processes: to be added.*
 
 **Exit criteria:** All blocks required by the use-case definition passed.
 **Record in tracker:** Test case ID, execution date, result link.
