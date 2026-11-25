@@ -124,10 +124,10 @@ Find your credential type below to locate the target registry. The links for sub
 
 | Issuer type | Registry | Link |
 |:---|:---|:---|
-| **4.2.1 PuB-EAA** (Public Sector Attribute Attestation) | WEBUILD – Pub-EAA Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
-| **4.2.2 QEAA** (Qualified Electronic Attribute Attestation) | WEBUILD – QEAA Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
-| **4.2.3 EBWOID** (Enterprise Business Wallet OID) | WEBUILD – EBWOID Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
-| **4.2.4 PID / Registration** | WEBUILD – PID Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **PuB-EAA** (Public Sector Attribute Attestation) | WEBUILD – Pub-EAA Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **QEAA** (Qualified Electronic Attribute Attestation) | WEBUILD – QEAA Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **EBWOID** (European Business Wallet Owner Identification Data) | WEBUILD – EBWOID Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
+| **PID** | WEBUILD – PID Providers | [IDunion Console](https://console.dev.idunion.info/trusted-lists/OsVKoh6j) · [Raidiam Specs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs) |
 
 #### 5.2.5 Sectoral & bilateral EAAs for EUDI Wallets (e.g., SCA, PCF Auditors, DPC)
 
