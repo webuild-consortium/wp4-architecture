@@ -59,3 +59,17 @@ Statuses: `Not started`, `In progress`, `Done`, `Blocked`, `Not applicable`, `To
 | Verifier / RP                  | EBW or verifier implementation | Based on credential type and scenario | Trust/verification tests as specified | Import schemas and prepare DCQL requests |
 | Issuer                         | Issuer implementation / EBW    | Based on attestation type             | CS-Issuer and other applicable tests  | Configure schema, data and issuance      |
 | Intermediary / Wallet Provider | As specified                   | Scenario-dependent                    | Scenario-dependent                    | Scenario-dependent                       |
+
+## Link, don't copy
+
+The guide links to the sources maintained by other WP4 groups. In your use case documentation, **link to the same sources instead of copying their content**, so there is one place to update. If a source is missing or out of date, raise an issue in that group's repository.
+
+| Topic | Source |
+|---|---|
+| Choosing a wallet | [Wallets directory](https://webuild-consortium.github.io/wp4-wallets-group/) |
+| Interoperability Test Bed | [ITB user guide](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/user-guide-interoperability-test-bed.md), [Use case testing](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/use-case-testing.md) |
+| Trusted lists, Wallet Providers | [Wallet Provider onboarding](https://github.com/webuild-consortium/wp4-wallets-group/blob/main/guidance/trusted-list-onboarding/README.md) |
+| Trusted lists, PID and EBWOID Providers | [Guidance for PID and EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/Guidance%20PID%20EBWOID%20Issuance.md) |
+| PID and EBWOID issuers | [List of issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md) |
+| Attestation rulebooks | [Rulebooks catalog](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks) |
+| Conformance specifications | [WBCS](../conformance-specs/README.md) |
