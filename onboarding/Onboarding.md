@@ -93,7 +93,7 @@
 
 ### Stage 5 – WEBUILD Trust List Registration
 
-To establish ecosystem-wide trust, every certificate/key used to build trust in your MVP must be registered in the correct trusted list on the IDunion console ([IDunion Trusted Lists](https://console.dev.idunion.info/trusted-lists)).
+To establish ecosystem-wide trust, organisations that issue or verify credentials must be registered. The WP4 Trust group maintains the onboarding guides: [Trusted Lists onboarding](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task1-use-cases/subtask1-1-onboarding/trusted-lists-onboarding.md) and [Relying Party registry onboarding](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task1-use-cases/subtask1-1-onboarding/relying-party-registry-onboarding.md). This section summarises which registration applies to which role.
 
 #### General procedure
 
