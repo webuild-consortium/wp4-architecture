@@ -6,8 +6,8 @@
 
 | Document                   | Owner                                                   | Scope | Copies                                                                      |
 |----------------------------|---------------------------------------------------------|---|-----------------------------------------------------------------------------|
-| `wp4/Onboarding.md`        | WP4                                                     | Generic procedures, ITB, trust registration, conformance and prerequisite provisioning | One                                                                         |
-| `wp4/Tracking_template.md` | WP4; generic template                                   | Scenario requirements and partner-specific status, evidence and MVP execution | Generic Template |
+| [Onboarding.md](Onboarding.md)        | WP4                                                     | Generic procedures, ITB, trust registration, conformance and prerequisite provisioning | **No.** Read and link to it. |
+| [Tracking_template.md](Tracking_template.md) | WP4; generic template                                   | Scenario requirements and partner-specific status, evidence and MVP execution | **Yes**, into your use case's own repository |
 
 **Separation of concerns:** 
 - Onboarding describes **how**; 
