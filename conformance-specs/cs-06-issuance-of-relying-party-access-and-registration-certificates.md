@@ -3,7 +3,7 @@
 Version 1.1
 Date: 25 Août 2026
 Original Author: Jilles Van Oossanen
-Modified Proposal by : François CHASSERYa
+Modified Proposal by : François CHASSERY
 
 ## Table of Contents
 
