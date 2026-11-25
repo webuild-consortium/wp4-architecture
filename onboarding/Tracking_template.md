@@ -43,7 +43,7 @@
 | ID | Requirement | Status | Date | Evidence |
 |---|---|---|---|---|
 | 3.1 | ITB portal access activated | ⚪ | | |
-| 3.2 | Joined `#wp4-testing` and reviewed guidance | ⚪ | | |
+| 3.2 | Joined `#itb-support` and reviewed the ITB user guide | ⚪ | | |
 
 ## Stage 4 – ITB Basic Conformance
 
