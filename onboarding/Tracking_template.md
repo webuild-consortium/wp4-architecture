@@ -81,7 +81,7 @@ Refer to the role-specific registries, Access/Registration Certificate requireme
 
 ## Stage 8 – Role-specific prerequisite provisioning
 
-**Use-case lead:** Define the required credentials and attestation types. Holder obtains credentials; Verifier imports schemas and prepares DCQL; Issuer configures schemas, test data and issuance. See generic Stage 8 for PID, QEAA, EAA, EBWOID, EUCC and Self-EAA instructions.
+**Use-case lead:** Define the required credentials and attestation types. Holder obtains credentials; Verifier imports schemas and prepares DCQL; Issuer configures schemas, test data and issuance. See Stage 8 of the [WP4 onboarding guide](https://github.com/webuild-consortium/wp4-architecture/blob/main/onboarding/Onboarding.md) for PID, QEAA, EAA, EBWOID, EUCC and Self-EAA instructions.
 
 | ID | Role | Credential / prerequisite | Requirement (obtain / schema / DCQL / issue) | Required? | Status | Owner | Date | Evidence / dependency |
 |---|---|---|---|---|---|---|---|---|
