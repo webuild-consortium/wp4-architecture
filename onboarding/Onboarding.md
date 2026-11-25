@@ -145,7 +145,7 @@ Access and Registration Certificates are required (see reference above). If one 
 
 #### 5.2.7 Issuer of EBW credentials
 
-No registration is required unless the use case specifies otherwise.
+No registration is required unless the use case specifies otherwise. Note: whether an Access Certificate is required when issuing to another business wallet is an open decision in WP4. Check with your use-case lead.
 
 **Note:** If the use case requires additional registration to establish trust or authorization, contact the IDunion team for support. 
 
