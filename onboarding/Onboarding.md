@@ -269,7 +269,7 @@ Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-
 
 #### 8.2.4 Enterprise Business Wallet ID (EBWOID)
 
-**Rulebook:** *to be confirmed.* The source document links `rb-eucc`, which is the EUCC rulebook and is probably a copy-paste error.
+**Rulebook:** [rb-ebwoid](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-ebwoid)
 
 *Prerequisites: PID in your EUDI Wallet (8.1); company EBW installed.*
 
