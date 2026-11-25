@@ -28,7 +28,7 @@
 
 **Actions**
 
-1. Choose your wallet from the [WEBUILD WP4 Wallets Directory](https://webuild-consortium.github.io/wp4-wallets-group/), or deploy your own WEBUILD-conformant business wallet.
+1. Choose your wallet from the [WEBUILD WP4 Wallets Directory]([https://webuild-consortium.github.io/wp4-wallets-group/](https://wallets.webuildconsortium.eu/)), or deploy your own WEBUILD-conformant business wallet.
 
 | Wallet type                          | Needed when                                          | Directory filter                              | 
 |:-------------------------------------|:-----------------------------------------------------|:----------------------------------------------|
