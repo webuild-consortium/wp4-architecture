@@ -847,4 +847,3 @@ Profiles for specific WE BUILD credential types MUST NOT relax these requirement
 [19] IETF (2019) RFC 8615 — Well-Known Uniform Resource Identifiers (URIs). Standards Track, May 2019. https://www.rfc-editor.org/rfc/rfc8615
 
 [20] WE BUILD Attestation Rulebooks Catalog — EBWOID Attestation Rulebook (rb-ebwoid). https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-ebwoid
-
