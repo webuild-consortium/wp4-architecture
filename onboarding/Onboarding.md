@@ -267,7 +267,7 @@ Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-
 #### 8.2.3 EAA to EUDI Wallet 
 - To be completed for the relevant scenario (e.g., Employee or SCA).
 
-#### 8.2.4 Enterprise Business Wallet ID (EBWOID)
+#### 8.2.4 European Business Wallet Owner Identification Data (EBWOID)
 
 **Rulebook:** [rb-ebwoid](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-ebwoid)
 
