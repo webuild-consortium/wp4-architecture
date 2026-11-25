@@ -221,7 +221,7 @@ Obtain credentials in this order. Skip what your use case does not need.
 
 | ID  | Credential                                               | Held in     | Requires first               | Test issuer                                           |
 |:---:|:---------------------------------------------------------|:------------|:-----------------------------|:------------------------------------------------------|
-| 8.1 | **PID** (Personal Identification Data)                   | EUDI Wallet | EUDI Wallet installed        | PID test issuers (see 8.1)                            |
+| 8.1 | **PID** (Person Identification Data)                     | EUDI Wallet | EUDI Wallet installed        | PID test issuers (see 8.1)                            |
 | 8.2 | **QEAA** (e.g., qualified attestation)                   | EUDI Wallet | EUDI Wallet installed        | issued to eudi wallet by QTSP Provider (see 8.2)      |
 | 8.3 | **EAA** (ex. Employee,A1,.....)                          | EUDI Wallet | EUDI Wallet installed        | issued to eudi wallet by other entities see 8.3)      |
 | 8.4 | **EBWOID** (European Business Wallet Owner Identification Data) | EBW | PID + EBW installed | EBWOID Issuers see 8.4)                               |
