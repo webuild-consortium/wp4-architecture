@@ -66,7 +66,7 @@ The guide links to the sources maintained by other WP4 groups. In your use case 
 
 | Topic | Source |
 |---|---|
-| Choosing a wallet | [Wallets directory](https://webuild-consortium.github.io/wp4-wallets-group/) |
+| Choosing a wallet | [Wallets directory](https://wallets.webuildconsortium.eu/) |
 | Interoperability Test Bed | [ITB user guide](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/user-guide-interoperability-test-bed.md), [Use case testing](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/use-case-testing.md) |
 | Trusted lists, Wallet Providers | [Wallet Provider onboarding](https://github.com/webuild-consortium/wp4-wallets-group/blob/main/guidance/trusted-list-onboarding/README.md) |
 | Trusted lists, PID and EBWOID Providers | [Guidance for PID and EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/Guidance%20PID%20EBWOID%20Issuance.md) |
