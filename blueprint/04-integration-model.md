@@ -76,6 +76,19 @@ Wallet-->>Wallet: Stores the credential
 User->>Wallet: Accesses the credential
 ```
 
+### Authentic Sources
+
+Authentic sources, such as company registers, can make their data available to wallets in several ways:
+
+- **Become a EBWOID Provider**, issuing directly.
+- **Become an EAA Provider** (in the case of private sector).
+- **Become a PuB-EAA Provider** (in the case of public sector), which requires lighter certification than a QTSP.
+- **Become a QEAA Provider (QTSP)**, issuing following the [WBCS for credential issuance](../conformance-specs/cs-01-credential-issuance.md).
+- **Let a QEAA Provider retrieve attributes** from the authentic source, and issue them as QEAAs.
+- **Let a QEAA Provider verify attributes** against the authentic source at the user's request, as foreseen in Article 45e of eIDAS 2.0.
+
+The last two require an interface between the QTSP and the authentic source, which WE BUILD has not specified. Use cases that need it can propose a WBCS following the [WBCS process](../conformance-specs/README.md).
+
 ## Interaction Pattern: Attestation Presentation (Receiving) 
 
 In this pattern, a verifier requests specific attestations from the wallet. The wallet presents the requested information, typically using selective disclosure mechanisms, and the verifier validates the received data.

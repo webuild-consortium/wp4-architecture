@@ -50,33 +50,39 @@ graph TB
 
 ### Approved WBCS
 
+### Published WBCS
+
 <!--BEGIN INDEX-->
-| **WBCS #** | **WBCS Title**                                                                         |
-| -------- | ------------------------------------------------------------------------------------ |
-| CS-001   | [Credential Issuance - v1.4](cs-01-credential-issuance.md)         |
-| CS-002   | [Credential Presentation - v1.0](cs-02-credential-presentation.md) |
-| CS-003   | [Remote Qualified Signing with Wallet Units - v1.0](cs-03-remote-signing-with-wallet-units.md) |
-| CS-004   | [Individual Wallet Unit Attestation (WUA) Lifecycle - v1.2](cs-04-wua-lifecycle.md) |
-| CS-005   | [Business Wallet Unit Attestation (BWUA) Lifecycle - v1.1](cs-05-bwua-lifecycle.md) |
-| CS-007   | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) |
-| CS-010   | [Revocation Mechanism - v1.1](cs-10-revocation-mechanism.md) |
-| CS-012   | [SCA Attestations for Payment Transactions (TS12 Profile) - v1.0](cs-12-sca-payments.md) |
-| CS-013   | [Relying Party Intermediaries v1.0](cs-13-intermediary-services-preflight.md) |
-| CS-015   | [QERDS - EBW Interface - v1.0](cs-15-ebw-qtsp-wmp.md) |
-| CS-016   | [Inter-QTSP Message Relay (QERDS AS4) - v1.0](cs-16-qerds-as4.md) |
+| **WBCS #** | **WBCS Title** | **Version** | **Maturity** |
+| ---------- | -------------- | ----------- | ------------ |
+| CS-001 | [Credential Issuance](cs-01-credential-issuance.md) | 1.5 | Approved |
+| CS-002 | [Credential Presentation](cs-02-credential-presentation.md) | 1.3 | Approved |
+| CS-003 | [Remote Qualified Signing with Wallet Units](cs-03-remote-signing-with-wallet-units.md) | 1.2 | Approved |
+| CS-004 | [Individual Wallet Unit Attestation (WUA) Lifecycle](cs-04-wua-lifecycle.md) | 1.2 | Approved |
+| CS-005 | [Business Wallet Unit Attestation (BWUA) Lifecycle](cs-05-bwua-lifecycle.md) | 1.1 | Approved |
+| CS-006 | [Issuance of Relying Party Access and Registration Certificates](cs-06-issuance-of-relying-party-access-and-registration-certificates.md) | 1.1 | Approved |
+| CS-007 | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) | 1.0 | Pre-flight |
+| CS-010 | [Attestation Revocation Mechanism](cs-10-revocation-mechanism.md) | 1.1 | Pre-flight |
+| CS-012 | [SCA Attestations for Payment and Risk-based Authentication (TS12 Profile)](cs-12-sca-payments.md) | 1.2 | Pre-flight |
+| CS-013 | [Relying Party Intermediaries](cs-13-intermediary-services-preflight.md) | 1.0 | Pre-flight |
+| CS-015 | [EBW–QTSP WMP Interface](cs-15-ebw-qtsp-wmp.md) | 1.0 | Approved |
+| CS-016 | [Inter-QTSP Message Relay (QERDS AS4)](cs-16-qerds-as4.md) | 1.0 | Approved |
 <!--END INDEX-->
 
 ### WBCS Under Development
 
+Links go to the draft PR where one exists, otherwise to the issue.
+
 <!--BEGIN INDEX-->
-| **WBCS #** | **WBCS Title**                                                                                                                      | **Status**         | **Priority** | **Target Date** |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------ | --------------- |
-| CS-006     | [Issuance of WRPAC/WRPRC](https://github.com/webuild-consortium/wp4-architecture/pull/287)                                          | 🟢 *In review*     | Must-have    | Oct 2026        |
-| CS-011     | [Remote QESeal creation](https://github.com/webuild-consortium/wp4-architecture/pull/198)                                           | 🟢 *In review*     | Must-have    | Oct 2026        |
-| CS-014     | [Proximity / Offline profile](https://github.com/webuild-consortium/wp4-architecture/issues/251)                                    | 🔵 *Investigating* | Should-have  | Nov 2026        |
-| CS-017     | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/issues/253)                                    | 🔵 *Investigating* | Must-have    | Oct 2026        |
-|            | [RP-QERDS interface](https://github.com/webuild-consortium/wp4-architecture/issues/254)                                             | 🟣 *Candidate*     | Low          | Jan 2027        |
-|            | [Support for Data spaces](https://github.com/webuild-consortium/wp4-architecture/issues/335)                                        | 🟣 *Candidate*     | SC2 specific | Jan 2027        |
+| **WBCS #** | **WBCS Title** | **Status** | **Priority** | **Needed by** |
+| ---------- | -------------- | ---------- | ------------ | ------------- |
+| CS-011 | [Remote QESeal Creation](https://github.com/webuild-consortium/wp4-architecture/pull/198) | 🟡 *Drafting* | Must-have | |
+| CS-014 | [Proximity / Offline Profile](https://github.com/webuild-consortium/wp4-architecture/issues/251) | 🔵 *Investigating* | Should-have | SC1 |
+| CS-017 | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/pull/370) | 🟡 *Drafting* | Must-have | BU4, PA4, SC5 |
+| CS-018 | [Baseline Trust Validation](https://github.com/webuild-consortium/wp4-architecture/pull/363) | 🟢 *In review* | Must-have | All use cases |
+| CS-019 | [Support for Data Spaces](https://github.com/webuild-consortium/wp4-architecture/issues/334) | 🟡 *Drafting* | Should-have | SC2 |
+| CS-020 | [Document References, Linked Attestations and Evidence in (Q)EAAs](https://github.com/webuild-consortium/wp4-architecture/pull/373) | 🟡 *Drafting* | Should-have | SC1, SC5, PA3, PA4 |
+| CS-XXX| [RP-QERDS Interface](https://github.com/webuild-consortium/wp4-architecture/issues/254) | 🟣 *Candidate* | Low | |
 <!--END INDEX-->
 
 ### Status Definitions 

@@ -1,6 +1,6 @@
 # WE BUILD - Pre-flight Conformance Specification: Credential Presentation and Issuance via the Digital Credentials API
 
-Version 0.1 / Pre-flight Draft
+Version 1.0 / Pre-flight Draft
 Date: 4 July 2026
 
 **Authors**: WP4 Architecture
