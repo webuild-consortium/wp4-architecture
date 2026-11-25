@@ -245,7 +245,7 @@ Rulebook catalog: [webuild-attestation-rulebooks-catalog](https://github.com/web
 
 ##### How to obtain
 
-1. **Prepare attributes:** legal name, first name, date of birth, place of birth. *(To confirm: should this read Family Name and Given Name, matching the `family_name` claim?)*
+1. **Prepare attributes:** see the mandatory attributes in the [PID Rulebook, section 3.2](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/blob/main/rulebooks/rb-pid/README.md#32-mandatory-attributes) (e.g. `family_name`, `given_name`, `birth_date`).
 2. **Choose a generic PID issuer supporting multiple countries:**
 
 | PID issuer                   | Location                                                                  | Remarks                                                                  |
