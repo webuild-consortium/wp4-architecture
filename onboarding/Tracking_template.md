@@ -17,7 +17,7 @@
 | Last updated               | `<YYYY-MM-DD>`                  |
 | Overall status             | ⚪                               |
 
-## Wallet inventory (availabe wallets use case specifics)
+## Wallet inventory (available wallets, use case specific)
 
 | Wallet| Wallet type / purpose                                          | MVP or MVP+ | Provider / version                | Scenario / partner / role | Status | Evidence |
 |-------|----------------------------------------------------------------|-------------|-----------------------------------|---------------------------|--------|----------|
