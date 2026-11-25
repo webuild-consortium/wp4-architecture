@@ -276,16 +276,7 @@ Use a PID test issuer from the [List of PID issuers](https://github.com/webuild-
 ##### How to obtain
 
 1. **Get authorized-person data:** look up the legal representative (name, surname, birthdate, location) in public registers.
-2. **Choose a generic EBWOID issuer supporting multiple countries:**
- 
- | EBWOID issuer                          | Location                                                                                 | Remarks                                      |
- |:---------------------------------------|:-----------------------------------------------------------------------------------------|:---------------------------------------------|
- | Bundesanzeiger predefined EBWOID demo  | [EBWOID Demo](https://demo-banz-issuance.eidademo.spherity.dev/attested-issuance/ebwoid) | Predefined EBWOID demo                       |
- | eGov                                   | [eGOV Playground](https://wallet.dev.egov.md/rp-tester/credential-claims)                |                                              |
- | Bundesanzeiger generic EBWOID issuance | [Attested Issuance Page](https://eida-issuer.spherity.dev/attested-issuance)             | Generic EBWOID issuance (multiple countries) |
- | Infogreffe                             | To add                                                                                   | To add                                       |
-
-*note* For country EBWOID issuers support check here :[EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#ebwoid-issuers)
+2. **Choose an EBWOID issuer** from the [List of EBWOID issuers](https://github.com/webuild-consortium/wp4-pid-ebwoid-group/blob/main/List%20of%20issuers.md#ebwoid-issuers), maintained by the PID/EBWOID group. It includes country issuers and generic test issuers supporting multiple countries.
 
 3. **Open the issuer portal and select** *EBWOID Attestation*.
 4. **Identify the company:** search for and select it.
