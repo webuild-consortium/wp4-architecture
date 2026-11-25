@@ -22,7 +22,7 @@
 | Wallet| Wallet type / purpose                                          | MVP or MVP+ | Provider / version                | Scenario / partner / role | Status | Evidence |
 |-------|----------------------------------------------------------------|-------------|-----------------------------------|---------------------------|--------|----------|
 | EBW   | EBW for legal-entity workflows                                 | MVP         | <to be filled by use case>        | Business/Technical roles  | ❔      |          |
-| EUDI  | EUDI Wallet for legal representative to obtain EBWOID& & EUCC  | MVP         | <to be filled by use case>        | Business/Technical roles  | ❔      |          |
+| EUDI  | EUDI Wallet for legal representative to obtain EBWOID & EUCC   | MVP         | <to be filled by use case>        | Business/Technical roles  | ❔      |          |
 
 
 ## Stage 1 – Role identification
