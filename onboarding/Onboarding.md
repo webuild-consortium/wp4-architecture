@@ -97,11 +97,8 @@ To establish ecosystem-wide trust, every certificate/key used to build trust in 
 
 #### General procedure
 
-1. **Get console access:** Register a contact person for your company on the [IDunion Console](https://console.dev.idunion.info/).
-2. **Register your certificate** (for all registries *except* Access and Registration Certificates):
-   * **Export CSR:** Connect to your wallet instance and export your Certificate Signing Request (CSR) or public certificate.
-   * **Register:** Upload your certificate to the registry matching your MVP role (see sections 5.1–5.4).
-3. **Access and Registration Certificates** cannot be registered directly on the console. They must be issued by the Access Certificate Authority or Registration Certificate Authority (Raidiam in this ecosystem). See the [Raidiam WEBUILD Ecosystem Docs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs).
+1. **Trusted Lists:** follow the [Trusted Lists onboarding guide](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task1-use-cases/subtask1-1-onboarding/trusted-lists-onboarding.md) to register on the IDunion console.
+2. **Access and Registration Certificates** are issued by Raidiam, not registered on the console. See [Relying Party registry onboarding](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task1-use-cases/subtask1-1-onboarding/relying-party-registry-onboarding.md) and the [Raidiam WE BUILD docs](https://www.raidiam.com/developers/docs/raidiam-webuild-eudi-ecosystem-docs).
 
 #### Reference: Access / Registration Certificate registries
 
