@@ -340,6 +340,8 @@ Import the schema files from the table into your EBW, then build the request you
 #### 8.2.8 Company Self-Attested Attestations (Self-EAA)
 
 Ex:
+| Attestation | Rulebook | Schema | DCQL |
+|:---|:---|:---|:---|
 | **CompanyInfo** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `CompanyInfo.schema.json` | `CompanyInfo.dcql.standard.json` |
 all other self attested 
 
