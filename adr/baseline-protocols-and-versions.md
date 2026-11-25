@@ -36,7 +36,7 @@ WE BUILD does not introduce a separate machine-to-machine protocol for attestati
 | Wallet | Formats |
 |---|---|
 | EUDI Wallet | SD-JWT VC (remote); mdoc (proximity) |
-| European Business Wallet | SD-JWT VC; mdoc where proximity is needed; **W3C VCDM 2.0 (JSON-LD) between business wallets only**, where a use case needs it (for example data spaces) |
+| European Business Wallet | SD-JWT VC; mdoc where proximity is needed. W3C VCDM 2.0 (JSON-LD) is not a baseline format: it is used only between business wallets in use cases that need it, as specified in a pre-flight WBCS (currently CS-019 for data spaces). |
 
 JSON-LD is never used towards EUDI Wallets.
 
