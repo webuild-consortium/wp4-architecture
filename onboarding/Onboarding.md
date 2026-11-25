@@ -287,10 +287,9 @@ Use a supported federated account to authenticate and initiate the credential is
 There are several ways to obtain the EBWOID Attestation, depending on the issuer and supported issuance flow. **Please refer to the respective issuer's instructions for the applicable process.**
 
 **Option 1 – Via the Issuer Service**
-1. **Access the issuer service:** Open the issuer portal and select *EBWOID Attestation*.
-2. **Identify the company:** Search for and select the relevant company.
-3. **Verify the legal representative:** Use the EUDI Wallet (with the PID obtained in Section 8.1) to verify the identity of the company's legal representative.
-4. **Claim the credential:** Copy the Credential Offer link and import it into the company EBW. Depending on the implementation, the credential may be transferred automatically.
+1. **Access the issuer service and select the company:** the company for which the EBWOID will be selected
+2. **Verify the legal representative:** Use the EUDI Wallet (with the PID obtained in Section 8.1) to verify the identity of the company's legal representative.
+3. **Claim the credential** : the issuer generate the offer and this can be take it over to the company business wallet manually, semi-manual or automatic depends on the company policy and issuer process.
 **Option 2 – Directly via the Business Wallet**
 Initiate the credential issuance process directly from the Business Wallet, following the supported issuer flow.
 **Option 3 – Via a Federated Account**
@@ -311,10 +310,18 @@ Use a supported federated account to authenticate and initiate the credential is
 
 1. **Initiate issuance:** An EBWOID is required.
 2. **Choose a generic EUCC issuer supporting multiple countries:**
-   [Bundesanzeiger Attested Issuance Page](https://eida-issuer.spherity.dev/attested-issuance/eucc). 
-3. **Request proof:** copy the generated presentation request.
-4. **Present EBWOID:** paste the request into your company EBW, review the requested attributes, present.
-5. **Claim:** Return to the Spherity page, copy the **EUCC Credential Offer** link, accept it in your company EBW.
+   [Bundesanzeiger Attested Issuance Page](https://eida-issuer.spherity.dev/attested-issuance/eucc).
+
+There are several ways to obtain the EUCC Attestation, depending on the issuer and supported issuance flow. **Please refer to the respective issuer's instructions for the applicable process.**
+
+**Option 1 – Via the Issuer Service**
+1. **Request proof & Present EBWOID :** this can be done manually, semi-manual or automatic depends on the company policy and issuer process
+2. **Claim the credential** : the issuer generate the offer and this can be take it over to the company business wallet manually, semi-manual or automatic depends on the company policy and issuer process
+**Option 2 – Directly via the Business Wallet**
+Initiate the credential issuance process directly from the Business Wallet, following the supported issuer flow.
+**Option 3 – Via a Federated Account**
+Use a supported federated account to authenticate and initiate the credential issuance process, according to the issuer's requirements.
+
 
 ##### Prepare proof request (RP)
 
