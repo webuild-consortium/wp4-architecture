@@ -33,7 +33,7 @@
 ## Scenario instantiation workflow
 
 1. WP4 maintains the generic onboarding guidance and tracker template.
-2. The use-case lead copies the tracker template to `MVP_<UseCase>-<Scenario>_Tracker_Baseline.md` and defines roles, applicability, test cases, credentials, acceptance criteria and dependencies.
+2. The use-case lead copies the tracker template **to the use case's own repository, not to this repository**: open [Tracking_template.md](Tracking_template.md), click **Raw**, copy the content and create a new file such as `onboarding/MVP_<UseCase>-<Scenario>_Tracker_Baseline.md` in the use case repository. The lead then defines roles, applicability, test cases, credentials, acceptance criteria and dependencies.
 3. Create a partner tracker from the approved baseline for each partner and technical role combination.
 4. Partners record status, dates, evidence, blockers and results. The use-case lead reviews exceptions and signs off the scenario.
 
