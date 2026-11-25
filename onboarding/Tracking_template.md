@@ -56,7 +56,7 @@
 
 ## Stage 5 – WEBUILD Trust List Registration
 
-Refer to the role-specific registries, Access/Registration Certificate requirements and Holder exception in `WP4_Onboarding.md` Stage 5.
+Refer to the role-specific registration guidance in Stage 5 of the [WP4 onboarding guide](https://github.com/webuild-consortium/wp4-architecture/blob/main/onboarding/Onboarding.md).
 
 | ID | Role / credential type | Registration / certificate requirement                        | Required? | Status | Owner | Date | Registry / evidence / N/A reason |
 |---|---|---------------------------------------------------------------|---|---|---|---|---|
