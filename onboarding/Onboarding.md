@@ -316,8 +316,10 @@ To be completed by the use-case lead.
 #### 8.2.7 EAA for business wallet 
 
 Ex:
-| **IBAN-OV** | [rb-iban-.iv](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `ibanov.schema.json` | `ibanov.dcql.standard.json` |
-| **SCA** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `sca.schema.json` | `sca.dcql.standard.json` |
+| Attestation | Rulebook | Schema | DCQL |
+|:---|:---|:---|:---|
+| **IBAN-OV** | [rb-iban-ov](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-iban-ov) | `ibanov.schema.json` | `ibanov.dcql.standard.json` |
+| **SCA** | [rb-sca-iban](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-sca-iban), [rb-sca-card-dpc](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-sca-card-dpc), [rb-sca-user](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-sca-user) | `sca.schema.json` | `sca.dcql.standard.json` |
 | **GS1** | [rb-company-info](https://github.com/webuild-consortium/webuild-attestation-rulebooks-catalog/tree/main/rulebooks/rb-company-info) | `gs1.schema.json` | `gs1.dcql.standard.json` |
 etc 
 
