@@ -120,7 +120,7 @@ These two registries are used by Verifiers and by Issuers of EUDI credentials. B
 
 #### 5.2 Issuer
 
-Find your credential type below to locate the target registry. The links for subsections 5.2.1–5.2.4 currently point to the same console URL. Confirm the correct registry for each issuer type before use.
+Find your credential type below. How to request the listing is described in the [Trusted Lists onboarding guide](https://github.com/webuild-consortium/wp4-trust-group/blob/main/task1-use-cases/subtask1-1-onboarding/trusted-lists-onboarding.md).
 
 | Issuer type | Registry | Link |
 |:---|:---|:---|
