@@ -55,7 +55,8 @@
 
 1. Request ITB credentials: email **Nico** or **Ester** (*contact details to be added*) or ask on Slack. Portal: [ITB Login Portal](https://dev-i4mlab.aegean.gr/itb/app#/login)
 2. Join Slack channel [#wp4-testing](https://we-build-consortium.slack.com/archives/C09K65GLKT2).
-3. Read the [WEBUILD master guidance (Google Doc)](https://docs.google.com/document/d/1NR6O5WGA1z1rw4zHtBmGvFkjd9SyTTVdR2TjbJrubc0/edit?pli=1&tab=t.0#heading=h.l16nv1c1n7ja).
+1. Request ITB access as described in the [ITB user guide, section 2.1](https://github.com/webuild-consortium/wp4-interop-test-bed/blob/main/docs/user-guide-interoperability-test-bed.md#21-obtaining-the-access): post in the [#itb-support](https://we-build-consortium.slack.com/archives/C09K65GLKT2) Slack channel with your organisation, intended roles and targeted protocol versions.
+2. Log in to the [ITB portal](https://dev-i4mlab.aegean.gr/itb/app#/login) once you have received your credentials.
 
 **Exit criteria:** You can log in to the ITB; you are in #wp4-testing.
 **Record in tracker:** ITB username, date of access.
