@@ -224,7 +224,7 @@ Obtain credentials in this order. Skip what your use case does not need.
 | 8.1 | **PID** (Personal Identification Data)                   | EUDI Wallet | EUDI Wallet installed        | PID test issuers (see 8.1)                            |
 | 8.2 | **QEAA** (e.g., qualified attestation)                   | EUDI Wallet | EUDI Wallet installed        | issued to eudi wallet by QTSP Provider (see 8.2)      |
 | 8.3 | **EAA** (ex. Employee,A1,.....)                          | EUDI Wallet | EUDI Wallet installed        | issued to eudi wallet by other entities see 8.3)      |
-| 8.4 | **EBWOID** (Enterprise Business Wallet ID)               | EBW         | PID + EBW installed          | EBWOID Issuers see 8.4)                               |
+| 8.4 | **EBWOID** (European Business Wallet Owner Identification Data) | EBW | PID + EBW installed | EBWOID Issuers see 8.4)                               |
 | 8.5 | **EUCC** (EU Company Credential)                         | EBW         | EBWOID                       | EUCC issuers (see 8.5                                  |
 | 8.6 | **QEAA** (ex. VAT,TAX,...)                               | EBW         |                              | issued by QTSP (contact QTSP Provider) (8.6)          |
 | 8.7 | **EAA** (ex. IBAN,SCA,.....)                             | EBW         | EBW OID + process to obtain  | issued to your company wallet by other entities (8.7) |
