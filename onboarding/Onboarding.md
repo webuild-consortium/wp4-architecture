@@ -180,7 +180,7 @@ Pure **Holders** (natural persons using EUDI mobile wallets, or businesses using
 
 ### Stage 6 – Trust conformance (CS-Trust)
 
-**Goal:** Demonstrate the applicable trust-framework integration using the ITB. The generic reference covers wallet trust and, where relevant, Wallet Instance Attestation, WBCS-001/002/004, `VCI-006` and `VP-001`.
+**Goal:** Demonstrate the applicable trust-framework integration using the ITB. The generic reference covers wallet trust and, where relevant, Wallet Instance Attestation ([CS-01, CS-02, CS-04](https://github.com/webuild-consortium/wp4-architecture/blob/main/conformance-specs/README.md)). Baseline trust validation is being specified in CS-018 (pre-flight).
 
 **Applicability:** Defined by the use-case lead for each technical role and wallet implementation. The business-wallet validation specification is marked **to be confirmed** in the source guidance.
 
