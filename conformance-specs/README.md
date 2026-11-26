@@ -1,40 +1,99 @@
-<h1 align="center">
-   Conformance Specifications (CS)
-</h1>
-
-<p align="center">
-  <a href="#about">About</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#approved-css">Approved CSs</a> •
-  <a href="#licensing">Licensing</a>
-</p>
+# WE BUILD Conformance Specifications (WBCS)
 
 ## About
-The Conformance Specifications define how WE BUILD participants implement wallet interfaces and communication protocols between issuers, wallets, and relying parties (RPs). 
+The WE BUILD Conformance Specifications (WBCS) define how WE BUILD participants implement wallet interfaces and communication protocols between issuers, wallets, and relying parties. 
 They ensure interoperability and conformance by translating ADR decisions into precise implementation requirements.
 
-The ITB will be based on the CS as a starting point. The test suites in the ITB are relying predominantly on the CS. 
+The ITB will be based on the WBCS as a starting point. The test suites in the ITB are relying predominantly on the WBCS. 
 
 ## Contributing
 
-The Architecture group define the CS, with help from all implementing participants (wallets, issuers and verifiers). For members of the consortium, find more information on the CS processes are held on [open social - Architecture Group](https://portal.webuildconsortium.eu/group/architecture). 
+The Architecture group define the WBCS, with help from all implementing participants. Propose new WBCSs using the [template](_template.md).
 
 ## CS Process Summary for WE BUILD Large Scale Pilots (LSPs)
 
-Conformance Specifications (CS) progress through the following process towards the Large Scale Pilots (LSPs):
+```mermaid
+---
+config:
+  flowchart:
+    defaultRenderer: 'elk'
+    subGraphTitleMargin:
+      bottom: 25
+---
 
-![CS Process and Roles](https://github.com/webuild-consortium/wp4-architecture/blob/main/images/WPRoles.png)
+graph TB
+%% flowchart
 
-### Approved CSs
+    subgraph "WP4 (Architecture)"
+        Proposal -- Discuss --> Review
+        Review -- Rejected --> Proposal
+        Review -- Approved --> WBCS
+    end
 
-| **CS #** | **CS Title**                                                                         |
-| -------- | ------------------------------------------------------------------------------------ |
-| CS-001   | [Credential Issuance - v1.0](cs-01-credential-issuance.md)         |
-| CS-002   | [Credential Presentation - v1.0](cs-02-credential-presentation.md) |
-|          |
-### CSs Under Development
+    subgraph "Participants from WP2, WP3 and WP4"
+        Implementations["Implementations
+        (wallets, issuers, verifiers)"]
+    end
 
-| **CS #** | **CS Title** |
-| -------- | ------------ |
-|          |              |
+    subgraph "Testing Group"
+        ITB["ITB"]
+    end
+
+    WBCS -- "Guiding" --> Implementations
+    WBCS -- "Configure" --> ITB
+    Implementations -- "Test" --> ITB
+
+    Anyone -- "Create/adapt" --> Proposal
+    SpecEfforts["Specification efforts"] -- "New wallet interface definitions" --> WBCS
+    TestDev["Test development"] -- "New version test cases" --> ITB
+```
+
+### Approved WBCS
+
+### Published WBCS
+
+<!--BEGIN INDEX-->
+| **WBCS #** | **WBCS Title** | **Version** | **Maturity** |
+| ---------- | -------------- | ----------- | ------------ |
+| CS-001 | [Credential Issuance](cs-01-credential-issuance.md) | 1.5 | Approved |
+| CS-002 | [Credential Presentation](cs-02-credential-presentation.md) | 1.3 | Approved |
+| CS-003 | [Remote Qualified Signing with Wallet Units](cs-03-remote-signing-with-wallet-units.md) | 1.2 | Approved |
+| CS-004 | [Individual Wallet Unit Attestation (WUA) Lifecycle](cs-04-wua-lifecycle.md) | 1.2 | Approved |
+| CS-005 | [Business Wallet Unit Attestation (BWUA) Lifecycle](cs-05-bwua-lifecycle.md) | 1.1 | Approved |
+| CS-006 | [Issuance of Relying Party Access and Registration Certificates](cs-06-issuance-of-relying-party-access-and-registration-certificates.md) | 1.1 | Approved |
+| CS-007 | [Credential Presentation and Issuance via the Digital Credentials API](cs-07-credential-presentation-dc-api.md) | 1.0 | Pre-flight |
+| CS-010 | [Attestation Revocation Mechanism](cs-10-revocation-mechanism.md) | 1.1 | Pre-flight |
+| CS-012 | [SCA Attestations for Payment and Risk-based Authentication (TS12 Profile)](cs-12-sca-payments.md) | 1.2 | Pre-flight |
+| CS-013 | [Relying Party Intermediaries](cs-13-intermediary-services-preflight.md) | 1.0 | Pre-flight |
+| CS-015 | [EBW–QTSP WMP Interface](cs-15-ebw-qtsp-wmp.md) | 1.0 | Approved |
+| CS-016 | [Inter-QTSP Message Relay (QERDS AS4)](cs-16-qerds-as4.md) | 1.0 | Approved |
+<!--END INDEX-->
+
+### WBCS Under Development
+
+Links go to the draft PR where one exists, otherwise to the issue.
+
+<!--BEGIN INDEX-->
+| **WBCS #** | **WBCS Title** | **Status** | **Priority** | **Needed by** |
+| ---------- | -------------- | ---------- | ------------ | ------------- |
+| CS-011 | [Remote QESeal Creation](https://github.com/webuild-consortium/wp4-architecture/pull/198) | 🟡 *Drafting* | Must-have | |
+| CS-014 | [Proximity / Offline Profile](https://github.com/webuild-consortium/wp4-architecture/issues/251) | 🔵 *Investigating* | Should-have | SC1 |
+| CS-017 | [Directory & Discovery (EDD)](https://github.com/webuild-consortium/wp4-architecture/pull/370) | 🟡 *Drafting* | Must-have | BU4, PA4, SC5 |
+| CS-018 | [Baseline Trust Validation](https://github.com/webuild-consortium/wp4-architecture/pull/363) | 🟢 *In review* | Must-have | All use cases |
+| CS-019 | [Support for Data Spaces](https://github.com/webuild-consortium/wp4-architecture/issues/334) | 🟡 *Drafting* | Should-have | SC2 |
+| CS-020 | [Document References, Linked Attestations and Evidence in (Q)EAAs](https://github.com/webuild-consortium/wp4-architecture/pull/373) | 🟡 *Drafting* | Should-have | SC1, SC5, PA3, PA4 |
+| CS-XXX| [RP-QERDS Interface](https://github.com/webuild-consortium/wp4-architecture/issues/254) | 🟣 *Candidate* | Low | |
+<!--END INDEX-->
+
+### Status Definitions 
+<!--BEGIN INDEX-->
+| Status | Description |
+|---|---|
+| **Not started** | No active work has started yet. |
+| **Investigating** | The topic is being investigated and potential approaches are being evaluated. |
+| **Drafting** | The specification is being drafted. |
+| **In review** | A concrete draft exists and is under review. |
+| **On hold** | Work has been temporarily paused. |
+| **Dropped** | The specification will not be taken forward. |
+<!--END INDEX-->
 
