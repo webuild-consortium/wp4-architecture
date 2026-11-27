@@ -1329,6 +1329,10 @@ Authenticated by mutual TLS with the Subscriber's current certificate.
 | `rotated_at` | string | MUST | ISO 8601 rotation time |
 | `old_certificate_valid_until` | string | MUST | ISO 8601 end of the grace period (≤24 h after rotation) |
 
+**Leave (optional):** `{onboarding_endpoint}/leave`
+
+Authenticated as rotate, request field `subscriber_id`. The QTSP removes the Subscriber's KeyPackages and SMP entry, closes its sessions and refuses new ones until it onboards again. Response field `left_at` (ISO 8601).
+
 ---
 
 ## 19.4 Evidence Repository API
