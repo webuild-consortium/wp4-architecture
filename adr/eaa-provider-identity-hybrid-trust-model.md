@@ -29,7 +29,7 @@ The two models were compared in the focus group on EBWOID, mutual identification
 
 The Chaining Model and the Central Registry API Model are adopted as **complementary** mechanisms for EAA Provider identity verification, not as mutually exclusive alternatives. Both mechanisms MAY be used within the WE BUILD ecosystem, and the choice between them is made per attestation type.
 
-1. **The EAA Provider selects the mechanism per use case.** The attestation rulebook for each EAA type SHALL state which trust mechanism applies. Where the rulebook selects the Chaining Model, the EAA header MUST carry the chained EBWOID (and delegated Issuing Attestation where used) as specified in #168. Where the rulebook selects the Central Registry API Model, the EAA header MUST carry the issuer's EUID and signing key as specified in #336.
+1. **The EAA Provider selects the mechanism per use case.** The attestation rulebook for each EAA type SHALL state which trust mechanism applies. Where the rulebook selects the Chaining Model, the EAA header MUST carry the chained EBWOID (and delegated Issuing Attestation where used). Where the rulebook selects the Central Registry API Model, the EAA header MUST carry the issuer's EUID and signing key.
 
 2. **The Verifier supports both mechanisms.** A Verifier (an EBW in the Verifier role, or any other validator of EAAs) SHALL be able to handle both patterns. On receiving an EAA, it inspects the header:
    - If a full chained credential (such as the EBWOID) is present, it performs the offline, self-contained cryptographic validation of the chain as specified in #168.
