@@ -926,6 +926,7 @@ The record **MUST** populate at least the schema's required properties:
 The QTSP **MUST** additionally:
 
 - Set `MessageIdentifier` to the `original_message_id` of the corresponding notification, binding the record to the WMP message it attests to.
+- As Sender QTSP, use the WMP message `id` as the ERD `MessageIdentifier` when relaying the message to the Recipient QTSP.
 - Set `SubmissionTime` on records generated after submission acceptance.
 - Populate `EventReasons` on every rejection, failure, non-delivery, and non-retrieval record. A negative evidence record that does not say *why* is of little use to the party it is issued against.
 - Sign the record with `jadesSignature`, per Section 15.5.
