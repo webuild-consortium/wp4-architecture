@@ -11,7 +11,7 @@
 
 **Obsoletes:** N/A
 
-**Related ADRs:** This ADR builds upon and reconciles [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md) ([#168](https://github.com/webuild-consortium/wp4-architecture/pull/168)) and [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md) ([#336](https://github.com/webuild-consortium/wp4-architecture/pull/336)).
+**Related ADRs:** This ADR builds upon and reconciles [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md) and [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md).
 
 ## Context
 
