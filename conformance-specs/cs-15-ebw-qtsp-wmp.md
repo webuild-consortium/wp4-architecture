@@ -599,6 +599,12 @@ sequenceDiagram
     note over S_EBW,R_EBW: MLS group established.<br>Epoch 0. QTSPs hold no group key.
 ```
 
+**Scope of the two-member rule.** The group spans the Sender and the Recipient EBW because the evidence chain does: every event in Section 15 attests a transmission between the two **Subscribers** — the legal entities — and a third party in the group would hold content the chain does not speak for. [WMP-MLS] groups are not limited to two members in general (Section 3.3 there adds participants), but a QERDS correspondence group carries exactly the correspondence's two parties. A deployment that needs a third reader — an auditor, an escrow agent, a regulator's copy — composes it as additional correspondences: one bilateral group and one evidence chain per recipient, each chain independently complete. This profile defines no single-group multi-recipient correspondence.
+
+**A Subscriber's own devices.** The two parties are the Subscribers, not their leaf nodes. One Subscriber MAY operate more than one EBW instance in the correspondence's group — a desktop wallet and a mobile wallet, or an onboarding wallet migrating to a full wallet ([CS-04]): adding the Subscriber's own device is a member rotation within the same correspondence, not a new correspondence, and the evidence chain is continuous across it. A device's leaf MUST carry the same Subscriber certificate (Section 10.4) — an instance that cannot prove the Subscriber identity MUST NOT be added.
+
+The QTSP prohibition is unaffected and absolute: the delivery service is a role, never a party, and **MUST NOT** be added to the group under any composition.
+
 The Sender EBW **MUST** verify the recipient's KeyPackage credential before adding it to the group: the X.509 chain **MUST** validate to the eDelivery trust anchor and the SAN URI **MUST** encode exactly the `ebcore` identifier the sender intends to address. Skipping this check would let a compromised KeyPackage directory silently substitute a recipient — the evidence chain would then attest to correct delivery of content encrypted to the wrong party.
 
 An EBW **MUST** perform an MLS key update ([WMP-MLS] §3.5) after every 100 messages or every hour, whichever comes first ([WMP-MLS] §7.3).
