@@ -64,7 +64,7 @@ How do we address the risks introduced by this change?
 
 - The additional effort for Wallet Providers is smaller than it appears. Chain validation per [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md) is a mandatory prerequisite for any wallet that verifies the EBWOID, so that work is largely a sunk cost. The incremental work is the client-side logic for the [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md) query, which is specified in terms of an existing OpenID AuthZEN profile.
 - The conformance specifications for the Verifier role cover both patterns, so that header inspection and both resulting branches are tested rather than assumed.
-- The Chaining Model is piloted in the MVP+ iteration, and the gaps found in the Central Registry API Model are fed back to the European Commission and recorded against #336.
+- The Chaining Model is piloted in the MVP+ iteration, and the gaps found in the Central Registry API Model are fed back to the European Commission and recorded against the [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md) ADR.
 
 ## Advice
 
