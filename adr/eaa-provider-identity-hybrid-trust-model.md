@@ -35,7 +35,7 @@ The Chaining Model and the Central Registry API Model are adopted as **complemen
    - If a full chained credential (such as the EBWOID) is present, it performs the offline, self-contained cryptographic validation of the chain.
    - If only the issuer's identifier and signing key are present, it performs the live key-binding query against the Member State trust registry endpoint as specified in #336, including authentication of that endpoint against a Trusted List or List of Trusted Entities, and handles a negative decision or an unreachable endpoint according to its trust policy.
 
-3. **Neither ADR is obsoleted.** #168 and #336 each remain the normative specification of their respective mechanism. This ADR governs how they coexist. The requirement in #168 that every EAA carry the chained EBWOID is to be read as applying to EAAs whose rulebook selects the Chaining Model.
+3. **Neither ADR is obsoleted.** [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md) and [Verify EAA issuer key binding via an AuthZEN API call](eaa-key-binding-authzen.md) each remain the normative specification of their respective mechanism. This ADR governs how they coexist. The requirement in [EAA Provider Identity Verification via Attestation Chaining](EAA-Chaining.md) is that every EAA carry the chained EBWOID is to be read as applying to EAAs whose rulebook selects the Chaining Model.
 
 ```mermaid
 flowchart TD
