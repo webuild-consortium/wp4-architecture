@@ -32,7 +32,7 @@ The Chaining Model and the Central Registry API Model are adopted as **complemen
 1. **The EAA Provider selects the mechanism per use case.** The attestation rulebook for each EAA type SHALL state which trust mechanism applies. Where the rulebook selects the Chaining Model, the EAA header MUST carry the chained EBWOID (and delegated Issuing Attestation where used). Where the rulebook selects the Central Registry API Model, the EAA header MUST carry the issuer's EUID and signing key.
 
 2. **The Verifier supports both mechanisms.** A Verifier (an EBW in the Verifier role, or any other validator of EAAs) SHALL be able to handle both patterns. On receiving an EAA, it inspects the header:
-   - If a full chained credential (such as the EBWOID) is present, it performs the offline, self-contained cryptographic validation of the chain as specified in #168.
+   - If a full chained credential (such as the EBWOID) is present, it performs the offline, self-contained cryptographic validation of the chain.
    - If only the issuer's identifier and signing key are present, it performs the live key-binding query against the Member State trust registry endpoint as specified in #336, including authentication of that endpoint against a Trusted List or List of Trusted Entities, and handles a negative decision or an unreachable endpoint according to its trust policy.
 
 3. **Neither ADR is obsoleted.** #168 and #336 each remain the normative specification of their respective mechanism. This ADR governs how they coexist. The requirement in #168 that every EAA carry the chained EBWOID is to be read as applying to EAAs whose rulebook selects the Chaining Model.
